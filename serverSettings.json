@@ -1,0 +1,10 @@
+{
+    "postgresIpAdress": "127.0.0.1",
+    "postgresDbName": "vocascan",
+    "postgresUserName": "user",
+    "postgresPassword": "user",
+    "postgresPort": 5432,
+
+    "serverIpAdress": "127.0.0.1",
+    "serverPort": 9000
+}
