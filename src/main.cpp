@@ -1,8 +1,9 @@
 #include <iostream>
 #include <pqxx/pqxx>
 #include "database.hpp"
+#include "requestManager.hpp"
 #include <string>
-#include <httplib.h>
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 // for convenience
@@ -14,7 +15,6 @@ int main()
     std::ifstream file("../serverSettings.json");
     json jsonObj = json::parse(file);
 
-    std::cout << jsonObj;
     //specify settings for Postgres
     std::string dbName = "vocascan";
     std::string userName = "user";
@@ -37,12 +37,11 @@ int main()
               << "| Server   | " << server_hostAddress << " | " << server_port << " |" << std::endl
               << "-------------------------------" << std::endl;
 
-    httplib::Server svr;
 
-    svr.Get("/hi", [](const httplib::Request &, httplib::Response &res) {
-        res.set_content("Hello World!", "text/plain");
-    });
+    //create Server and start it
+    RequestManager requestManager(database);
+    requestManager.startServer();
 
-    //start server
-    svr.listen(jsonObj["serverIpAdress"], jsonObj["serverPort"]);
+
+    
 }
