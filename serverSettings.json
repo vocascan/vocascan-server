@@ -1,10 +1,11 @@
 {
-    "postgresIpAdress": "your_postgres_ip_adress",
-    "postgresDbName": "your_database_name",
-    "postgresUserName": "your_username",
-    "postgresPassword": "your_usernames_password",
+    "postgresIpAdress": "127.0.0.1",
+    "postgresDbName": "vocascan",
+    "postgresUserName": "user",
+    "postgresPassword": "user",
     "postgresPort": 5432,
 
-    "serverIpAdress": "your_server_ip_adress",
-    "serverPort": 9000
+    "serverIpAdress": "127.0.0.1",
+    "serverPort": 9000,
+    "serverDebug": true
 }
