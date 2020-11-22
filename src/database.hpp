@@ -7,12 +7,17 @@
 #include "boilerplate/languagePackage.hpp"
 #include "boilerplate/translatedWord.hpp"
 #include "boilerplate/foreignWord.hpp"
+#include "boilerplate/user.hpp"
+
 
 class Database
 {
 public:
     Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port);
     ~Database();
+
+    //user specific methods
+    bool registerUser (User user);
 
     bool checkTableEmpty(const std::string &tableName);
     bool checkExistingEntity(const std::string &name, const std::string &tableName, const std::string &columnName);

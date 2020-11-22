@@ -110,6 +110,23 @@ bool Database::createTables()
 	}
 }
 
+
+bool Database::registerUser (User user) {
+	try
+	{
+		std::string sql = "INSERT INTO users (name, email, salt, hash) VALUES (" + user.username + ", " + user.email + ", " + user.salt + ", " + user.hash + ");";
+
+		worker.exec(sql);
+		worker.commit();
+		std::cout << "added user" << std::endl;
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
+}
+
 // check if there are any rows in the table and back true or false
 /*bool Database::checkTableEmpty(const std::string &tableName)
 {
