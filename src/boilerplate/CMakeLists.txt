@@ -4,4 +4,5 @@ PRIVATE
     foreignWord.hpp
     languagePackage.hpp
     translatedWord.hpp
+    user.hpp
 )

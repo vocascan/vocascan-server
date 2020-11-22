@@ -2,81 +2,133 @@
 #include <string>
 #include <iostream>
 
-Database::Database(const char *fileName)
+Database::Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port)
+	: connection("dbname = " + dbName + " user = " + userName + " password=" + password + " hostaddr=" + hostAddress + " port=" + std::to_string(port)), worker(connection)
 {
-	// open database when creating object
-	rc = sqlite3_open(fileName, &db);
-	if (rc != SQLITE_OK)
+	try
 	{
-		std::cerr << "Error opening Sqlite database -- " << sqlite3_errmsg(db)
-				  << " --" << std::endl;
+		if (connection.is_open())
+		{
+			std::cout << "Opened database successfully: " << connection.dbname() << std::endl;
+			createTables();
+		}
+		else
+		{
+			std::cout << "Can't open database" << std::endl;
+		}
 	}
-	createTables();
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 }
 
 Database::~Database()
 {
 	// close databse connection when destructing object
-	sqlite3_close(db);
+	connection.disconnect();
+	std::cout << "closed Database" << std::endl;
 }
 
 // create all tables for database
-void Database::createTables()
+bool Database::createTables()
 {
-	std::string sql =
-		"CREATE TABLE IF NOT EXISTS language_package ("
-		"id INTEGER NOT NULL,"
-		"name TEXT NOT NULL,"
-		"foreign_word_language TEXT NOT NULL,"
-		"translated_word_language TEXT NOT NULL,"
-		"vocabs_per_day INTEGER NOT NULL,"
-		"right_words INTEGER NOT NULL,"
-		"PRIMARY KEY(id AUTOINCREMENT));"
-
-		"CREATE TABLE IF NOT EXISTS groups ("
-		"id	INTEGER NOT NULL,"
-		"language_package_id INTEGER NOT NULL,"
-		"name	TEXT NOT NULL,"
-		"FOREIGN KEY(language_package_id) REFERENCES language_package(id),"
-		"PRIMARY KEY(id AUTOINCREMENT));"
-
-		"CREATE TABLE IF NOT EXISTS foreign_word ("
-		"id	INTEGER NOT NULL,"
-		"name	TEXT NOT NULL,"
-		"language_package_id	INTEGER NOT NULL,"
-		"group_id	INTEGER NOT NULL,"
-		"drawer_id	INTEGER NOT NULL,"
-		"FOREIGN KEY(language_package_id) REFERENCES language_package(id),"
-		"FOREIGN KEY(group_id) REFERENCES groups(id),"
-		"FOREIGN KEY(drawer_id) REFERENCES drawer(id),"
-		"PRIMARY KEY(id AUTOINCREMENT));"
-
-		"CREATE TABLE IF NOT EXISTS drawer ("
-		"id	INTEGER NOT NULL,"
-		"name TEXT NOT NULL,"
-		"query_interval	INTEGER NOT NULL,"
-		"language_package_id	INTEGER NOT NULL,"
-		"PRIMARY KEY(id AUTOINCREMENT),"
-		"FOREIGN KEY(language_package_id) REFERENCES language_package(id));"
-
-		"CREATE TABLE IF NOT EXISTS translated_word ("
-		"id	INTEGER NOT NULL,"
-		"foreign_word_id	INTEGER NOT NULL,"
-		"name	TEXT NOT NULL,"
-		"language_package_id	INTEGER NOT NULL,"
-		"PRIMARY KEY(id AUTOINCREMENT),"
-		"FOREIGN KEY(foreign_word_id) REFERENCES foreign_word(id));";
-
-	rc = sqlite3_exec(db, sql.c_str(), NULL, 0, NULL);
-	if (rc != SQLITE_OK)
+	try
 	{
-		std::cerr << "Error creating tables --" << sqlite3_errmsg(db) << " --"
-				  << std::endl;
+		std::string sql =
+
+			"CREATE TABLE IF NOT EXISTS roles ("
+			"id SERIAL PRIMARY KEY NOT NULL,"
+			"name TEXT NOT NULL,"
+			"admin_rights BOOL NOT NULL);"
+
+			"CREATE TABLE IF NOT EXISTS users ("
+			"id SERIAL PRIMARY KEY NOT NULL,"
+			"name TEXT NOT NULL,"
+			"email TEXT NOT NULL,"
+			"salt TEXT NOT NULL,"
+			"hash TEXT NOT NULL,"
+			"role_id INTEGER NOT NULL,"
+			"FOREIGN KEY(role_id) REFERENCES roles(id));"
+
+			"CREATE TABLE IF NOT EXISTS language_package ("
+			"id SERIAL PRIMARY KEY NOT NULL,"
+			"user_id INTEGER NOT NULL,"
+			"name TEXT NOT NULL,"
+			"foreign_word_language TEXT NOT NULL,"
+			"translated_word_language TEXT NOT NULL,"
+			"vocabs_per_day INTEGER NOT NULL,"
+			"right_words INTEGER NOT NULL,"
+			"FOREIGN KEY(user_id) REFERENCES users(id));"
+
+			"CREATE TABLE IF NOT EXISTS drawer ("
+			"id SERIAL PRIMARY KEY NOT NULL,"
+			"user_id INTEGER NOT NULL,"
+			"name TEXT NOT NULL,"
+			"query_interval	INTEGER NOT NULL,"
+			"language_package_id	INTEGER NOT NULL,"
+			"FOREIGN KEY(language_package_id) REFERENCES language_package(id),"
+			"FOREIGN KEY(user_id) REFERENCES users(id));"
+
+			"CREATE TABLE IF NOT EXISTS groups ("
+			"id SERIAL PRIMARY KEY NOT NULL,"
+			"user_id INTEGER NOT NULL,"
+			"language_package_id INTEGER NOT NULL,"
+			"name	TEXT NOT NULL,"
+			"FOREIGN KEY(language_package_id) REFERENCES language_package(id),"
+			"FOREIGN KEY(user_id) REFERENCES users(id));"
+
+			"CREATE TABLE IF NOT EXISTS foreign_word ("
+			"id SERIAL PRIMARY KEY NOT NULL,"
+			"user_id INTEGER NOT NULL,"
+			"name	TEXT NOT NULL,"
+			"language_package_id	INTEGER NOT NULL,"
+			"group_id	INTEGER NOT NULL,"
+			"drawer_id	INTEGER NOT NULL,"
+			"FOREIGN KEY(language_package_id) REFERENCES language_package(id),"
+			"FOREIGN KEY(group_id) REFERENCES groups(id),"
+			"FOREIGN KEY(drawer_id) REFERENCES drawer(id),"
+			"FOREIGN KEY(user_id) REFERENCES users(id));"
+
+			"CREATE TABLE IF NOT EXISTS translated_word ("
+			"id SERIAL PRIMARY KEY NOT NULL,"
+			"user_id INTEGER NOT NULL,"
+			"foreign_word_id	INTEGER NOT NULL,"
+			"name	TEXT NOT NULL,"
+			"language_package_id	INTEGER NOT NULL,"
+			"FOREIGN KEY(foreign_word_id) REFERENCES foreign_word(id),"
+			"FOREIGN KEY(user_id) REFERENCES users(id));";
+
+		worker.exec(sql);
+		worker.commit();
+		std::cout << "created Tables" << std::endl;
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
+}
+
+
+bool Database::registerUser (User user) {
+	try
+	{
+		std::string sql = "INSERT INTO users (name, email, salt, hash) VALUES (" + user.username + ", " + user.email + ", " + user.salt + ", " + user.hash + ");";
+
+		worker.exec(sql);
+		worker.commit();
+		std::cout << "added user" << std::endl;
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
 	}
 }
 
 // check if there are any rows in the table and back true or false
-bool Database::checkTableEmpty(const std::string &tableName)
+/*bool Database::checkTableEmpty(const std::string &tableName)
 {
 	sqlite3_stmt *stmt;
 
@@ -279,3 +331,4 @@ bool Database::addTranslatedWord(const TranslatedWord &lngpckg)
 	}
 	return true;
 }
+*/
