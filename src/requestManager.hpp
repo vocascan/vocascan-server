@@ -15,17 +15,13 @@ class RequestManager
 public:
     RequestManager(Database &db) : database(db), registration(db)
     {
-        std::ifstream file("../serverSettings.json");
+        std::ifstream file("/home/julian/Files/Programmieren/Vocascan/Vocascan-server/serverSettings.json" /*"../serverSettings.json"*/);
         json jsonObj = json::parse(file);
         isDebugMode = jsonObj["serverDebug"];
-
     }
 
     void startServer();
-    auto create_request_handler(); 
-
-    
-
+    auto create_request_handler();
 
 private:
     Database &database;
