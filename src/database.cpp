@@ -131,18 +131,21 @@ bool Database::checkTableEmpty(const std::string &tableName)
 	{
 		pqxx::work worker(connection);
 		//check if any entity is in the table
-		std::string sql = "select count(*) from '" + tableName + "';";
+		std::string sql = "select count(*) from " + tableName + ";";
 
 		pqxx::result result{worker.exec(sql)};
-		worker.commit();
 		//check if result is 0 -> nothing in the database
-		if (result.size() == 0)
+		for (auto row : result)
 		{
-			return true;
-		}
-		else
-		{
-			return false;
+			std::string count = row["count"].c_str();
+			if (count == "0")
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 	catch (const std::exception &e)
