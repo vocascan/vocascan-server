@@ -12,7 +12,7 @@ using json = nlohmann::json;
 int main()
 {
 
-    std::ifstream file("../serverSettings.json");
+    std::ifstream file("/home/julian/Files/Programmieren/Vocascan/Vocascan-server/serverSettings.json" /*"../serverSettings.json"*/);
     json jsonObj = json::parse(file);
 
     //specify settings for Postgres
@@ -37,11 +37,7 @@ int main()
               << "| Server   | " << server_hostAddress << " | " << server_port << " |" << std::endl
               << "-------------------------------" << std::endl;
 
-
     //create Server and start it
     RequestManager requestManager(database);
     requestManager.startServer();
-
-
-    
 }
