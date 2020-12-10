@@ -1,5 +1,5 @@
-target_include_directories(Vocascan-server PRIVATE .)
-target_sources(Vocascan-server 
+target_include_directories(vocascan-server PRIVATE .)
+target_sources(vocascan-server 
 PRIVATE 
     main.cpp
     database.hpp 
