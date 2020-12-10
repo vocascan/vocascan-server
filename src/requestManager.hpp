@@ -20,7 +20,7 @@ public:
         isDebugMode = jsonObj["serverDebug"];
     }
 
-    void startServer();
+    void startServer(const std::string &ipAddress, int port);
     auto create_request_handler();
 
 private:

@@ -54,7 +54,7 @@ auto RequestManager::create_request_handler()
 			std::string email = jsonObj["email"];
 			std::string password = jsonObj["password"];
 
-			registration.registerUser(username, email, password);
+			registration.registerUser(username, email, password, false);
 
 			init_resp(req->create_response())
 				.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
@@ -79,7 +79,7 @@ auto RequestManager::create_request_handler()
 	return router;
 }
 
-void RequestManager::startServer()
+void RequestManager::startServer(const std::string &ipAddress, int port)
 {
 	using namespace std::chrono;
 
@@ -95,8 +95,8 @@ void RequestManager::startServer()
 
 			restinio::run(
 				restinio::on_thread_pool<traits_t>(16)
-					.port(8080)
-					.address("localhost")
+					.port(port)
+					.address(ipAddress)
 					.request_handler(create_request_handler()));
 		}
 		else
@@ -109,8 +109,8 @@ void RequestManager::startServer()
 
 			restinio::run(
 				restinio::on_thread_pool<traits_t>(16)
-					.port(8080)
-					.address("localhost")
+					.port(port)
+					.address(ipAddress)
 					.request_handler(create_request_handler()));
 		}
 	}
