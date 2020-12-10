@@ -34,13 +34,13 @@ Download to your project directory, start or package it:
 clone repository
 
 ```
-https://github.com/vocascan/Vocascan-server.git
+https://github.com/vocascan/vocascan-server.git
 ```
 
 switch to directory
 
 ```
-cd Vocascan-server
+cd vocascan-server
 ```
 
 compile Vocascan-server
@@ -54,7 +54,7 @@ start Vocascan-server
 
 ```
 cd build
-./Vocascan-server
+./vocascan-server
 ```
 
 ## Usage
@@ -69,7 +69,7 @@ Nothing provided yet
 
 
 
-Please [open an issue](https://github.com/vocascan/Vocascan-server/issues/new) for support.
+Please [open an issue](https://github.com/vocascan/vocascan-server/issues/new) for support.
 
 
 
