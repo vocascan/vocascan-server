@@ -19,6 +19,7 @@ public:
     bool registerUser(User user);
 
     bool addRole(const std::string &name, bool adminRights);
+    bool checkTableEmpty(const std::string &tableName);
     //bool checkExistingEntity(const std::string &name, const std::string &tableName, const std::string &columnName);
 
     //void addLanguagePackage(const LanguagePackage &lngPckg);
@@ -36,8 +37,6 @@ private:
     pqxx::connection connection;
 
     bool createTables();
-    bool checkTableEmpty(const std::string &tableName);
-    bool startupFill();
     std::string boolToStr(bool boolean);
 };
 

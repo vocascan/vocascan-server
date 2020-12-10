@@ -11,7 +11,6 @@ Database::Database(std::string dbName, std::string userName, std::string passwor
 		{
 			std::cout << "Opened database successfully: " << connection.dbname() << std::endl;
 			createTables();
-			startupFill();
 		}
 		else
 		{
@@ -155,25 +154,24 @@ bool Database::checkTableEmpty(const std::string &tableName)
 	}
 }
 
-bool Database::startupFill()
-{
-	if (checkTableEmpty("roles"))
-	{
-		addRole("user", false);
-		addRole("admin", true);
-	}
-}
-
 bool Database::registerUser(User user)
 {
 	try
 	{
+		std::string roleId = "";
+		if (user.adminRights)
+		{
+			roleId = "admin";
+		}
+		else
+		{
+			roleId = "user";
+		}
 		pqxx::work worker(connection);
-		std::string sql = "INSERT INTO users (name, email, salt, hash, role_id) VALUES ('" + user.username + "', '" + user.email + "', '" + user.salt + "', '" + user.hash + "', 1);";
+		std::string sql = "INSERT INTO users (name, email, salt, hash, role_id) VALUES ('" + user.username + "', '" + user.email + "', '" + user.salt + "', '" + user.hash + "', (select id from roles where name = '" + roleId + "'));";
 
 		worker.exec(sql);
 		worker.commit();
-		std::cout << "added user" << std::endl;
 	}
 	catch (const std::exception &e)
 	{
@@ -191,7 +189,6 @@ bool Database::addRole(const std::string &name, bool adminRights)
 
 		worker.exec(sql);
 		worker.commit();
-		std::cout << "added role" << std::endl;
 	}
 	catch (const std::exception &e)
 	{
