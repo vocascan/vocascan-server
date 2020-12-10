@@ -79,13 +79,13 @@ auto RequestManager::create_request_handler()
 	return router;
 }
 
-void RequestManager::startServer(const std::string &ipAddress, int port)
+void RequestManager::startServer(const std::string &ipAddress, int port, bool isDebug)
 {
 	using namespace std::chrono;
 
 	try
 	{
-		if (isDebugMode)
+		if (isDebug)
 		{
 			using traits_t =
 				restinio::traits_t<

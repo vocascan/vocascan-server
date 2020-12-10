@@ -14,7 +14,7 @@ using json = nlohmann::json;
 int main()
 {
     //open server settings and parse them to json object
-    std::ifstream file("/home/julian/Files/Programmieren/Vocascan/Vocascan-server/serverSettings.json" /*"../serverSettings.json"*/);
+    std::ifstream file("../serverSettings.json");
     json jsonObj = json::parse(file);
 
     //create database object -> start postgres database server
@@ -76,5 +76,5 @@ int main()
 
     //create Server and start it
     RequestManager requestManager(database);
-    requestManager.startServer(ipAddress, port);
+    requestManager.startServer(jsonObj["serverIpAddress"], jsonObj["serverPort"], jsonObj["serverDebug"]);
 }
