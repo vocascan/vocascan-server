@@ -26,36 +26,7 @@ Vocascan is a highly configurable vocabulary trainer. You can learn your vocabul
 ## Installation
 
 
-
-Download to your project directory, start or package it:
-
-
-
-clone repository
-
-```
-https://github.com/vocascan/vocascan-server.git
-```
-
-switch to directory
-
-```
-cd vocascan-server
-```
-
-compile Vocascan-server
-
-```
-cmake -S . -B build
-cmake --build build
-```
-
-start Vocascan-server
-
-```
-cd build
-./vocascan-server
-```
+For a detailed installation guide visit the [wiki](https://github.com/vocascan/vocascan-server/wiki/Installation)
 
 ## Usage
 
