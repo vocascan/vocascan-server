@@ -26,7 +26,6 @@ Database::Database(std::string dbName, std::string userName, std::string passwor
 Database::~Database()
 {
 	// close databse connection when destructing object
-	connection.disconnect();
 	std::cout << "closed Database" << std::endl;
 }
 
