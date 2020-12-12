@@ -15,22 +15,38 @@ add_executable(vocascan-server)
 set_property(TARGET vocascan-server
     PROPERTY CXX_STANDARD 17)
 
+target_sources(vocascan-server 
+PRIVATE 
+    serverSettings.json
+)
+
 set(JSON_BuildTests OFF CACHE INTERNAL "") 
 include(FetchContent)
 
+#Installing external libs
 
+#json lib
 FetchContent_Declare(json GIT_REPOSITORY https://github.com/nlohmann/json.git)
 FetchContent_MakeAvailable(json)
 TARGET_LINK_LIBRARIES( vocascan-server LINK_PUBLIC nlohmann_json::nlohmann_json)
 
-find_package(fmt REQUIRED)
-# RESTinio itself
-find_package(restinio REQUIRED)
-
-# Make your project dependent on restinio, 
-# and let cmake deal with all the headers paths and linked libs.
-target_link_libraries(vocascan-server PRIVATE restinio::restinio)
+#postgres 
+FetchContent_Declare(libpqxx GIT_REPOSITORY https://github.com/jtv/libpqxx)
+FetchContent_MakeAvailable(libpqxx)
 target_link_libraries(vocascan-server LINK_PUBLIC pqxx)
+
+#crypto lib for hashing
+FetchContent_Declare(cryptopp GIT_REPOSITORY https://github.com/weidai11/cryptopp)
+FetchContent_MakeAvailable(cryptopp)
 target_link_libraries(vocascan-server LINK_PUBLIC cryptopp)
+
+#fmt
+FetchContent_Declare(fmt GIT_REPOSITORY https://github.com/fmtlib/fmt)
+FetchContent_MakeAvailable(fmt)
+target_link_libraries(vocascan-server LINK_PUBLIC fmt)
+
+#Restinio
+find_package(restinio REQUIRED)
+target_link_libraries(vocascan-server PRIVATE restinio::restinio)
 
 add_subdirectory(src) 
