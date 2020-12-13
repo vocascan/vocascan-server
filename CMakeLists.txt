@@ -40,6 +40,11 @@ FetchContent_Declare(cryptopp GIT_REPOSITORY https://github.com/weidai11/cryptop
 FetchContent_MakeAvailable(cryptopp)
 target_link_libraries(vocascan-server LINK_PUBLIC cryptopp)
 
+#jwt-cpp
+FetchContent_Declare(jwtcpp GIT_REPOSITORY https://github.com/Thalhammer/jwt-cpp)
+FetchContent_MakeAvailable(jwtcpp)
+target_link_libraries(vocascan-server LINK_PUBLIC jwt-cpp)
+
 #fmt
 FetchContent_Declare(fmt GIT_REPOSITORY https://github.com/fmtlib/fmt)
 FetchContent_MakeAvailable(fmt)
