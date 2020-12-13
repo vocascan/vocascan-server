@@ -6,16 +6,14 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include "registration.hpp"
-
-using json = nlohmann::json;
+#include "authMiddleware.hpp"
 
 class RequestManager
 {
 
 public:
-    RequestManager(Database &db) : database(db), registration(db)
+    RequestManager(Database &db) : database(db), registration(db), authMiddleware(db)
     {
-
     }
 
     void startServer(const std::string &ipAddress, int port, bool isDebug);
@@ -23,6 +21,7 @@ public:
 
 private:
     Database &database;
+    AuthMiddleware authMiddleware;
     Registration registration;
     bool isDebugMode;
     std::string ipAddress;

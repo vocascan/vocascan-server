@@ -3,6 +3,8 @@
 #include <chrono>
 #include <restinio/all.hpp>
 #include <sstream>
+#include <iostream>
+#include <jwt-cpp/jwt.h>
 
 template <typename RESP>
 RESP init_resp(RESP resp)
@@ -42,7 +44,7 @@ auto RequestManager::create_request_handler()
 			nlohmann::json jsonObj;
 			try
 			{
-				jsonObj = json::parse(body);
+				jsonObj = nlohmann::json::parse(body);
 			}
 			catch (const std::exception &e)
 			{
@@ -63,6 +65,59 @@ auto RequestManager::create_request_handler()
 
 			return restinio::request_accepted();
 		});
+
+	router->http_post(
+		"/api/signIn",
+		[&](auto req, auto params) {
+			std::string body = req->body();
+			nlohmann::json jsonObj;
+			try
+			{
+				jsonObj = nlohmann::json::parse(body);
+			}
+			catch (const std::exception &e)
+			{
+				auto error = e.what();
+				std::cerr << e.what() << std::endl;
+			}
+
+			if (authMiddleware.checkSignIn(jsonObj) == false)
+			{
+				init_resp(req->create_response())
+					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+					.set_body("Fehlgeschlagen")
+					.done();
+				return restinio::request_accepted();
+			}
+			else
+			{
+				init_resp(req->create_response())
+					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+					.set_body("Access granted")
+					.done();
+				return restinio::request_accepted();
+			}
+		});
+
+	router->http_get("/test", [](auto req, auto params) {
+		const auto qp = restinio::parse_query(req->header().query());
+		std::string username = "";
+		std::string password = "";
+
+		std::string option1 = restinio::cast_to<std::string>(qp["option1"]);
+		std::string option2 = restinio::cast_to<std::string>(qp["option2"]);
+
+		std::cout << "Option1: " << option1 << std::endl
+				  << "Option2: " << option2 << std::endl;
+
+		return init_resp(req->create_response())
+			.set_body(
+				fmt::format(
+					"Option1: '{}'\n Option2: '{}'",
+					option1,
+					option2))
+			.done();
+	});
 
 	router->http_get(
 		"/api/admin",
