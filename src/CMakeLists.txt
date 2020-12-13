@@ -9,6 +9,8 @@ PRIVATE
     registration.hpp
     registration.cpp
     encryption.hpp
+    authMiddleware.hpp
+    authMiddleware.cpp
     #languagePackageHandler.hpp
     #languagePackageHandler.cpp
     #newVocabHandler.hpp
