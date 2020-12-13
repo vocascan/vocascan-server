@@ -13,10 +13,12 @@ class Database
 {
 public:
     Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port);
-    ~Database();
 
+    bool checkEntityExist(const std::string &name, const std::string &tableName, const std::string &columnName);
     //user specific methods
     bool registerUser(User user);
+    std::string getHash(const std::string &email);
+    std::string getSalt(const std::string &email);
 
     bool addRole(const std::string &name, bool adminRights);
     bool checkTableEmpty(const std::string &tableName);

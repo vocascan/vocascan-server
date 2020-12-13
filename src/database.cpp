@@ -23,12 +23,6 @@ Database::Database(std::string dbName, std::string userName, std::string passwor
 	}
 }
 
-Database::~Database()
-{
-	// close databse connection when destructing object
-	std::cout << "closed Database" << std::endl;
-}
-
 //convert bool to string
 std::string Database::boolToStr(bool boolean)
 {
@@ -39,6 +33,34 @@ std::string Database::boolToStr(bool boolean)
 	else
 	{
 		return "False";
+	}
+}
+
+//check if entity exists in table
+bool Database::checkEntityExist(const std::string &name, const std::string &tableName, const std::string &columnName)
+{
+	try
+	{
+
+		pqxx::work worker(connection);
+		std::string sql = "SELECT " + columnName + " from " + tableName + " WHERE " + columnName + "='" + name + "';";
+
+		pqxx::result result{worker.exec(sql)};
+		worker.commit();
+		int test = result.size();
+		if (result.size() == 0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
 	}
 }
 
@@ -179,6 +201,52 @@ bool Database::registerUser(User user)
 	}
 }
 
+std::string Database::getHash(const std::string &email)
+{
+	try
+	{
+		//get hash from users table with the given email
+		pqxx::work worker(connection);
+		std::string sql = "SELECT hash from users WHERE email='" + email + "';";
+
+		pqxx::result result{worker.exec(sql)};
+		worker.commit();
+		//iterate through the result and get the key-value pair with the key 'hash'
+		for (auto row : result)
+		{
+			std::string count = row["hash"].c_str();
+			return count;
+		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+}
+
+std::string Database::getSalt(const std::string &email)
+{
+	try
+	{
+		//get salt from users table with the given email
+		pqxx::work worker(connection);
+		std::string sql = "SELECT salt from users WHERE email='" + email + "';";
+
+		pqxx::result result{worker.exec(sql)};
+		worker.commit();
+		//iterate through the result and get the key-value pair with the key 'salt'
+		for (auto row : result)
+		{
+			std::string count = row["salt"].c_str();
+			return count;
+		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+}
+
 bool Database::addRole(const std::string &name, bool adminRights)
 {
 	try
@@ -196,24 +264,7 @@ bool Database::addRole(const std::string &name, bool adminRights)
 	}
 }
 
-// check if there are any rows in the table and back true or false
-/*bool Database::checkTableEmpty(const std::string &tableName)
-{
-	sqlite3_stmt *stmt;
-
-	rc = sqlite3_prepare_v2(db, "select count(*) from language_package", -1,
-							&stmt, NULL);
-	sqlite3_step(stmt);
-	if (sqlite3_column_int(stmt, 0) == 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
+/*
 bool Database::createDrawer(const std::string &name, int queryInterval, const std::string &lngPckgName)
 {
 	std::string sql = "INSERT INTO drawer (name, query_interval, language_package_id) VALUES (?, ?, (SELECT id FROM language_package WHERE name=?));";
