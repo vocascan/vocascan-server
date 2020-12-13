@@ -1,12 +1,12 @@
 #ifndef REQUESTMANAGER_H
 #define REQUESTMANAGER_H
-#include "database.hpp"
+#include "database/database.hpp"
 #include <restinio/all.hpp>
 #include <string>
 #include <nlohmann/json.hpp>
 #include <fstream>
-#include "registration.hpp"
-#include "authMiddleware.hpp"
+#include "actionHandlers/registration.hpp"
+#include "auth/authMiddleware.hpp"
 
 class RequestManager
 {

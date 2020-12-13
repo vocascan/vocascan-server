@@ -1,8 +1,8 @@
 #include <iostream>
 #include <pqxx/pqxx>
-#include "database.hpp"
+#include "database/database.hpp"
 #include "requestManager.hpp"
-#include "registration.hpp"
+#include "actionHandlers/registration.hpp"
 #include <string>
 #include <fstream>
 #include <nlohmann/json.hpp>

@@ -3,8 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include "database.hpp"
-
+#include "../database/database.hpp"
 
 class Registration
 {

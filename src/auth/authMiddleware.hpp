@@ -1,8 +1,8 @@
 #ifndef AUTHMIDDLEWARE_H
 #define AUTHMIDDLEWARE_H
 
-#include "database.hpp"
-#include "string"
+#include "../database/database.hpp"
+#include <string>
 #include <vector>
 #include <nlohmann/json.hpp>
 

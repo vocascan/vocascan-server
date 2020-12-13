@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 #include <pqxx/pqxx>
-#include "boilerplate/languagePackage.hpp"
-#include "boilerplate/translatedWord.hpp"
-#include "boilerplate/foreignWord.hpp"
-#include "boilerplate/user.hpp"
+#include "../boilerplate/languagePackage.hpp"
+#include "../boilerplate/translatedWord.hpp"
+#include "../boilerplate/foreignWord.hpp"
+#include "../boilerplate/user.hpp"
 
 class Database
 {
