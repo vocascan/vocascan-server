@@ -85,7 +85,7 @@ auto RequestManager::create_request_handler()
 			if (authMiddleware.checkSignIn(jsonObj) == false)
 			{
 				//Not valid
-				init_resp(req->create_response())
+				init_resp(req->create_response(restinio::status_forbidden()))
 					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
 					.set_body("Email or password wrong")
 					.done();
@@ -110,7 +110,7 @@ auto RequestManager::create_request_handler()
 				std::string token = JWT::createJwt(userId, role);
 				init_resp(req->create_response())
 					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-					.set_body("Access granted " + token)
+					.set_body(token)
 					.done();
 				return restinio::request_accepted();
 			}
