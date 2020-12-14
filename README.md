@@ -41,6 +41,7 @@ Nothing provided yet
 
 
 Please [open an issue](https://github.com/vocascan/vocascan-server/issues/new) for support.
+For questions or ideas please use [Discussions](https://github.com/vocascan/vocascan-server/discussions)
 
 
 
