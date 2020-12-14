@@ -4,7 +4,7 @@
 #include <restinio/all.hpp>
 #include <sstream>
 #include <iostream>
-#include <jwt-cpp/jwt.h>
+#include "auth/jwt.hpp"
 
 template <typename RESP>
 RESP init_resp(RESP resp)
@@ -70,6 +70,7 @@ auto RequestManager::create_request_handler()
 		"/api/signIn",
 		[&](auto req, auto params) {
 			std::string body = req->body();
+			//parse body to jsonObj
 			nlohmann::json jsonObj;
 			try
 			{
@@ -80,20 +81,36 @@ auto RequestManager::create_request_handler()
 				auto error = e.what();
 				std::cerr << e.what() << std::endl;
 			}
-
+			//check if request body and password is valid
 			if (authMiddleware.checkSignIn(jsonObj) == false)
 			{
+				//Not valid
 				init_resp(req->create_response())
 					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-					.set_body("Fehlgeschlagen")
+					.set_body("Email or password wrong")
 					.done();
 				return restinio::request_accepted();
 			}
 			else
 			{
+				/*//if valid, check if JWT token expired
+				if (JWT::checkTokenExpired("test"))
+				{
+					init_resp(req->create_response())
+						.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+						.set_body("Token expired")
+						.done();
+					return restinio::request_accepted();
+				}
+				else
+				{*/
+				//get user id to create the jwt token
+				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
+				std::string role = database.getUserRole(userId);
+				std::string token = JWT::createJwt(userId, role);
 				init_resp(req->create_response())
 					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-					.set_body("Access granted")
+					.set_body("Access granted " + token)
 					.done();
 				return restinio::request_accepted();
 			}
