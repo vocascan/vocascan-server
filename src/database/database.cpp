@@ -64,6 +64,28 @@ bool Database::checkEntityExist(const std::string &name, const std::string &tabl
 	}
 }
 
+std::string Database::getEntity(std::string select, std::string tableName, std::string columnName, std::string entity)
+{
+	try
+	{
+
+		pqxx::work worker(connection);
+		std::string sql = "SELECT " + select + " from " + tableName + " WHERE " + columnName + "='" + entity + "';";
+
+		pqxx::result result{worker.exec(sql)};
+		worker.commit();
+		int test = result.size();
+		for (auto row : result)
+		{
+			return entity = row[select].c_str();
+		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+}
+
 // create all tables for database
 bool Database::createTables()
 {
@@ -198,6 +220,26 @@ bool Database::registerUser(User user)
 	{
 		std::cerr << e.what() << std::endl;
 		return 1;
+	}
+}
+
+std::string Database::getUserRole(const std::string &id)
+{
+	try
+	{
+		pqxx::work worker(connection);
+		std::string sql = "SELECT name from roles WHERE id=(SELECT role_id from users WHERE id='" + id + "');";
+
+		pqxx::result result{worker.exec(sql)};
+		worker.commit();
+		for (auto row : result)
+		{
+			return row["name"].c_str();
+		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
 	}
 }
 

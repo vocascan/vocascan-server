@@ -15,8 +15,11 @@ public:
     Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port);
 
     bool checkEntityExist(const std::string &name, const std::string &tableName, const std::string &columnName);
+    std::string getEntity(std::string select, std::string tableName, std::string columnName, std::string entity);
     //user specific methods
     bool registerUser(User user);
+    std::string getUserRole(const std::string &id);
+
     std::string getHash(const std::string &email);
     std::string getSalt(const std::string &email);
 
