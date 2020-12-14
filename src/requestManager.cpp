@@ -3,6 +3,8 @@
 #include <chrono>
 #include <restinio/all.hpp>
 #include <sstream>
+#include <iostream>
+#include "auth/jwt.hpp"
 
 template <typename RESP>
 RESP init_resp(RESP resp)
@@ -42,7 +44,7 @@ auto RequestManager::create_request_handler()
 			nlohmann::json jsonObj;
 			try
 			{
-				jsonObj = json::parse(body);
+				jsonObj = nlohmann::json::parse(body);
 			}
 			catch (const std::exception &e)
 			{
@@ -54,7 +56,7 @@ auto RequestManager::create_request_handler()
 			std::string email = jsonObj["email"];
 			std::string password = jsonObj["password"];
 
-			registration.registerUser(username, email, password);
+			registration.registerUser(username, email, password, false);
 
 			init_resp(req->create_response())
 				.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
@@ -63,6 +65,76 @@ auto RequestManager::create_request_handler()
 
 			return restinio::request_accepted();
 		});
+
+	router->http_post(
+		"/api/signIn",
+		[&](auto req, auto params) {
+			std::string body = req->body();
+			//parse body to jsonObj
+			nlohmann::json jsonObj;
+			try
+			{
+				jsonObj = nlohmann::json::parse(body);
+			}
+			catch (const std::exception &e)
+			{
+				auto error = e.what();
+				std::cerr << e.what() << std::endl;
+			}
+			//check if request body and password is valid
+			if (authMiddleware.checkSignIn(jsonObj) == false)
+			{
+				//Not valid
+				init_resp(req->create_response())
+					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+					.set_body("Email or password wrong")
+					.done();
+				return restinio::request_accepted();
+			}
+			else
+			{
+				/*//if valid, check if JWT token expired
+				if (JWT::checkTokenExpired("test"))
+				{
+					init_resp(req->create_response())
+						.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+						.set_body("Token expired")
+						.done();
+					return restinio::request_accepted();
+				}
+				else
+				{*/
+				//get user id to create the jwt token
+				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
+				std::string role = database.getUserRole(userId);
+				std::string token = JWT::createJwt(userId, role);
+				init_resp(req->create_response())
+					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+					.set_body("Access granted " + token)
+					.done();
+				return restinio::request_accepted();
+			}
+		});
+
+	router->http_get("/test", [](auto req, auto params) {
+		const auto qp = restinio::parse_query(req->header().query());
+		std::string username = "";
+		std::string password = "";
+
+		std::string option1 = restinio::cast_to<std::string>(qp["option1"]);
+		std::string option2 = restinio::cast_to<std::string>(qp["option2"]);
+
+		std::cout << "Option1: " << option1 << std::endl
+				  << "Option2: " << option2 << std::endl;
+
+		return init_resp(req->create_response())
+			.set_body(
+				fmt::format(
+					"Option1: '{}'\n Option2: '{}'",
+					option1,
+					option2))
+			.done();
+	});
 
 	router->http_get(
 		"/api/admin",
@@ -79,13 +151,13 @@ auto RequestManager::create_request_handler()
 	return router;
 }
 
-void RequestManager::startServer()
+void RequestManager::startServer(const std::string &ipAddress, int port, bool isDebug)
 {
 	using namespace std::chrono;
 
 	try
 	{
-		if (isDebugMode)
+		if (isDebug)
 		{
 			using traits_t =
 				restinio::traits_t<
@@ -95,8 +167,8 @@ void RequestManager::startServer()
 
 			restinio::run(
 				restinio::on_thread_pool<traits_t>(16)
-					.port(8080)
-					.address("localhost")
+					.port(port)
+					.address(ipAddress)
 					.request_handler(create_request_handler()));
 		}
 		else
@@ -109,8 +181,8 @@ void RequestManager::startServer()
 
 			restinio::run(
 				restinio::on_thread_pool<traits_t>(16)
-					.port(8080)
-					.address("localhost")
+					.port(port)
+					.address(ipAddress)
 					.request_handler(create_request_handler()));
 		}
 	}

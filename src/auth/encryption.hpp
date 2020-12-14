@@ -14,7 +14,7 @@ namespace Encryption
 {
 
     //generate random salt of predefined letters and numbers
-    std::string genSalt(const int len)
+    inline std::string genSalt(const int len)
     {
 
         std::string tmp_s;
@@ -35,7 +35,7 @@ namespace Encryption
     using namespace CryptoPP;
 
     //hash password with random generated salt
-    std::string hashPassword(std::string password, std::string salt)
+    inline std::string hashPassword(std::string password, std::string salt)
     {
 
         const int MAX_PHRASE_LENGTH = 250;
