@@ -40,7 +40,7 @@ Nothing provided yet
 
 
 
-Please [open an issue](https://github.com/vocascan/vocascan-server/issues/new) for support. < br/>
+Please [open an issue](https://github.com/vocascan/vocascan-server/issues/new) for support.<br />
 For questions or ideas please use [Discussions](https://github.com/vocascan/vocascan-server/discussions)
 
 
