@@ -107,10 +107,16 @@ auto RequestManager::create_request_handler()
 				//get user id to create the jwt token
 				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
 				std::string role = database.getUserRole(userId);
-				std::string token = JWT::createJwt(userId, role);
+				std::string jwt = JWT::createJwt(userId, role);
+				std::string username = database.getEntity("name", "users", "email", jsonObj["email"]);
+				//create response body
+				nlohmann::json body = {
+					{"username", username},
+					{"jwt", jwt}};
+
 				init_resp(req->create_response())
-					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-					.set_body(token)
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body(body.dump())
 					.done();
 				return restinio::request_accepted();
 			}
@@ -124,16 +130,15 @@ auto RequestManager::create_request_handler()
 		std::string option1 = restinio::cast_to<std::string>(qp["option1"]);
 		std::string option2 = restinio::cast_to<std::string>(qp["option2"]);
 
-		std::cout << "Option1: " << option1 << std::endl
-				  << "Option2: " << option2 << std::endl;
+		nlohmann::json testObj = {
+			{"option1", option1},
+			{"option2", option2}};
 
-		return init_resp(req->create_response())
-			.set_body(
-				fmt::format(
-					"Option1: '{}'\n Option2: '{}'",
-					option1,
-					option2))
+		init_resp(req->create_response())
+			.append_header(restinio::http_field::content_type, "application/json")
+			.set_body(testObj.dump())
 			.done();
+		return restinio::request_accepted();
 	});
 
 	router->http_get(

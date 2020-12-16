@@ -5,11 +5,11 @@
 Database::Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port)
 {
 	conn = "dbname = " + dbName + " user = " + userName + " password=" + password + " hostaddr=" + hostAddress + " port=" + std::to_string(port);
-	/*try
+	try
 	{
+		pqxx::connection connection(conn);
 		if (connection.is_open())
 		{
-			std::cout << "Opened database successfully: " << connection.dbname() << std::endl;
 			createTables();
 		}
 		else
@@ -20,7 +20,7 @@ Database::Database(std::string dbName, std::string userName, std::string passwor
 	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
-	}*/
+	}
 }
 
 //convert bool to string
