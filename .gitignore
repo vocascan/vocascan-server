@@ -1,3 +1,5 @@
 build/
 launch.json
 settings.json
+serverSettings.json
+Release/
