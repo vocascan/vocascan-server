@@ -39,7 +39,7 @@ public:
     //bool addTranslatedWord(const TranslatedWord &translatedWord);
 
 private:
-    pqxx::connection connection;
+    std::string conn;
 
     bool createTables();
     std::string boolToStr(bool boolean);

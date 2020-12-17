@@ -3,13 +3,13 @@
 #include <iostream>
 
 Database::Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port)
-	: connection("dbname = " + dbName + " user = " + userName + " password=" + password + " hostaddr=" + hostAddress + " port=" + std::to_string(port))
 {
+	conn = "dbname = " + dbName + " user = " + userName + " password=" + password + " hostaddr=" + hostAddress + " port=" + std::to_string(port);
 	try
 	{
+		pqxx::connection connection(conn);
 		if (connection.is_open())
 		{
-			std::cout << "Opened database successfully: " << connection.dbname() << std::endl;
 			createTables();
 		}
 		else
@@ -41,12 +41,13 @@ bool Database::checkEntityExist(const std::string &name, const std::string &tabl
 {
 	try
 	{
-
+		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
 		std::string sql = "SELECT " + columnName + " from " + tableName + " WHERE " + columnName + "='" + name + "';";
 
 		pqxx::result result{worker.exec(sql)};
 		worker.commit();
+		connection.close();
 		int test = result.size();
 		if (result.size() == 0)
 		{
@@ -68,7 +69,7 @@ std::string Database::getEntity(std::string select, std::string tableName, std::
 {
 	try
 	{
-
+		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
 		std::string sql = "SELECT " + select + " from " + tableName + " WHERE " + columnName + "='" + entity + "';";
 
@@ -91,6 +92,7 @@ bool Database::createTables()
 {
 	try
 	{
+		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
 		std::string sql =
 
@@ -171,11 +173,13 @@ bool Database::checkTableEmpty(const std::string &tableName)
 {
 	try
 	{
+		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
 		//check if any entity is in the table
 		std::string sql = "select count(*) from " + tableName + ";";
 
 		pqxx::result result{worker.exec(sql)};
+		worker.commit();
 		//check if result is 0 -> nothing in the database
 		for (auto row : result)
 		{
@@ -210,6 +214,7 @@ bool Database::registerUser(User user)
 		{
 			roleId = "user";
 		}
+		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
 		std::string sql = "INSERT INTO users (name, email, salt, hash, role_id) VALUES ('" + user.username + "', '" + user.email + "', '" + user.salt + "', '" + user.hash + "', (select id from roles where name = '" + roleId + "'));";
 
@@ -227,6 +232,7 @@ std::string Database::getUserRole(const std::string &id)
 {
 	try
 	{
+		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
 		std::string sql = "SELECT name from roles WHERE id=(SELECT role_id from users WHERE id='" + id + "');";
 
@@ -247,6 +253,7 @@ std::string Database::getHash(const std::string &email)
 {
 	try
 	{
+		pqxx::connection connection(conn);
 		//get hash from users table with the given email
 		pqxx::work worker(connection);
 		std::string sql = "SELECT hash from users WHERE email='" + email + "';";
@@ -270,6 +277,7 @@ std::string Database::getSalt(const std::string &email)
 {
 	try
 	{
+		pqxx::connection connection(conn);
 		//get salt from users table with the given email
 		pqxx::work worker(connection);
 		std::string sql = "SELECT salt from users WHERE email='" + email + "';";
@@ -293,6 +301,7 @@ bool Database::addRole(const std::string &name, bool adminRights)
 {
 	try
 	{
+		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
 		std::string sql = "INSERT INTO roles (name, admin_rights) VALUES ('" + name + "', '" + boolToStr(adminRights) + "');";
 

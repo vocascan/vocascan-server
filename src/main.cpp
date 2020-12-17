@@ -8,17 +8,65 @@
 #include <nlohmann/json.hpp>
 #include <iomanip>
 
-// for convenience
-using json = nlohmann::json;
-
-int main()
+//check if every env variable is available
+bool checkEnvAvailable(const char **env_var, char **env_val)
 {
-    //open server settings and parse them to json object
-    std::ifstream file("../serverSettings.json");
-    json jsonObj = json::parse(file);
+    for (int i = 0; i < 8; i++)
+    {
+        //check if
+        env_val[i] = getenv(env_var[i]);
+        if (env_val[i] == NULL)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+int main(int argc, char **argv, char **envp)
+{
+    nlohmann::json env;
+    /* A list of possible environment variables*/
+    const char *env_var[8] = {"POSTGRES_IP_ADDRESS", "POSTGRES_DB_NAME", "POSTGRES_USERNAME", "POSTGRES_PASSWORD", "POSTGRES_PORT", "SERVER_IP_ADDRESS", "SERVER_PORT", "SERVER_DEBUG"};
+    char *env_val[8];
+
+    if (checkEnvAvailable(env_var, env_val))
+    {
+        for (int i = 0; i < 8; ++i)
+        {
+            if (env_var[i] == "SERVER_DEBUG")
+            {
+                env_val[i] = getenv(env_var[i]);
+                std::string var = env_var[i];
+                bool val = env_val[i];
+                env[var] = val;
+            }
+            else if (env_var[i] == "POSTGRES_PORT" || env_var[i] == "SERVER_PORT")
+            {
+                env_val[i] = getenv(env_var[i]);
+                std::string var = env_var[i];
+                std::string val = env_val[i];
+                int valInt = std::stoi(val);
+                env[var] = valInt;
+            }
+            else
+            {
+                env_val[i] = getenv(env_var[i]);
+                std::string var = env_var[i];
+                std::string val = env_val[i];
+                env[var] = val;
+            }
+        }
+    }
+    else
+    {
+        std::cout << "There are some env variables missing. Using serverSettings.json instead" << std::endl;
+        std::ifstream file("/home/julian/Files/Programmieren/Vocascan/vocascan-server/serverSettings.json");
+        env = nlohmann::json::parse(file);
+    }
 
     //create database object -> start postgres database server
-    Database database(jsonObj["postgresDbName"], jsonObj["postgresUserName"], jsonObj["postgresPassword"], jsonObj["postgresIpAdress"], jsonObj["postgresPort"]);
+    Database database(env["POSTGRES_DB_NAME"], env["POSTGRES_USERNAME"], env["POSTGRES_PASSWORD"], env["POSTGRES_IP_ADDRESS"], env["POSTGRES_PORT"]);
 
     std::cout << R"(
  _    _  _____   ______           _     ______        ______  
@@ -29,52 +77,17 @@ int main()
    \/   \_____/ \______)______(______/ \______)______|_|   |_|
                                                                     
 )";
-    //check if table roles is empty, which should be empty on the first startup of the server
-
-    std::string ipAddress = "";
-    int port = 0;
-
-    if (database.checkTableEmpty("roles"))
-    {
-        //create roles
-        database.addRole("user", false);
-        database.addRole("admin", true);
-        //add user with admin rights
-        std::string username = "";
-        std::string password = "";
-        std::string email = "";
-        std::cout << "Welcome to your personal Vocascan server. First of all let's create an admin user which lets you change all kinds of settings" << std::endl;
-        std::cout << "Username: ";
-        std::cin >> username;
-        std::cout << "Password: ";
-        std::cin >> password;
-        std::cout << "Email: ";
-        std::cin >> email;
-        Registration registration(database);
-        registration.registerUser(username, email, password, true);
-        //define server settings
-
-        std::cout << "Now we come to setting up the server";
-        std::cout << "Ip-adress: ";
-        std::cin >> ipAddress;
-        jsonObj["serverIpAdress"] = ipAddress;
-        std::cout << "Port: ";
-        std::cin >> port;
-        jsonObj["serverPort"] = ipAddress;
-        std::ofstream outputFile("serverSettings.json");
-        outputFile << std::setw(4) << jsonObj << std::endl;
-    }
 
     //Startup page vor server
     std::cout << "-------------------------------" << std::endl
               << "|          | IP-adress | Port |" << std::endl
               << "-------------------------------" << std::endl
-              << "| Database | " << jsonObj["postgresIpAdress"] << " | " << jsonObj["postgresPort"] << " |" << std::endl
+              << "| Database | " << env["POSTGRES_IP_ADDRESS"] << " | " << env["POSTGRES_PORT"] << " |" << std::endl
               << "-------------------------------" << std::endl
-              << "| Server   | " << jsonObj["serverIpAdress"] << " | " << jsonObj["serverPort"] << " |" << std::endl
+              << "| Server   | " << env["SERVER_IP_ADDRESS"] << " | " << env["SERVER_PORT"] << " |" << std::endl
               << "-------------------------------" << std::endl;
 
     //create Server and start it
     RequestManager requestManager(database);
-    requestManager.startServer(jsonObj["serverIpAddress"], jsonObj["serverPort"], jsonObj["serverDebug"]);
+    requestManager.startServer(env["SERVER_IP_ADDRESS"], env["SERVER_PORT"], env["SERVER_DEBUG"]);
 }
