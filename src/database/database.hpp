@@ -14,6 +14,8 @@ class Database
 public:
     Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port);
 
+    bool checkDatabaseAvailable();
+
     bool checkEntityExist(const std::string &name, const std::string &tableName, const std::string &columnName);
     std::string getEntity(std::string select, std::string tableName, std::string columnName, std::string entity);
     //user specific methods

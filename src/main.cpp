@@ -11,7 +11,7 @@
 //check if every env variable is available
 bool checkEnvAvailable(const char **env_var, char **env_val)
 {
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
         //check if
         env_val[i] = getenv(env_var[i]);
@@ -27,12 +27,12 @@ int main(int argc, char **argv, char **envp)
 {
     nlohmann::json env;
     /* A list of possible environment variables*/
-    const char *env_var[8] = {"POSTGRES_IP_ADDRESS", "POSTGRES_DB_NAME", "POSTGRES_USERNAME", "POSTGRES_PASSWORD", "POSTGRES_PORT", "SERVER_IP_ADDRESS", "SERVER_PORT", "SERVER_DEBUG"};
-    char *env_val[8];
+    const char *env_var[9] = {"POSTGRES_IP_ADDRESS", "POSTGRES_DB_NAME", "POSTGRES_USERNAME", "POSTGRES_PASSWORD", "POSTGRES_PORT", "SERVER_IP_ADDRESS", "SERVER_PORT", "SERVER_DEBUG", "SECRET_KEY"};
+    char *env_val[9];
 
     if (checkEnvAvailable(env_var, env_val))
     {
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < 9; ++i)
         {
             if (env_var[i] == "SERVER_DEBUG")
             {
@@ -67,6 +67,11 @@ int main(int argc, char **argv, char **envp)
 
     //create database object -> start postgres database server
     Database database(env["POSTGRES_DB_NAME"], env["POSTGRES_USERNAME"], env["POSTGRES_PASSWORD"], env["POSTGRES_IP_ADDRESS"], env["POSTGRES_PORT"]);
+    //check if database is available
+    if (!database.checkDatabaseAvailable())
+    {
+        return 1;
+    }
 
     std::cout << R"(
  _    _  _____   ______           _     ______        ______  
