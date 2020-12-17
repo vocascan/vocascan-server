@@ -52,18 +52,32 @@ auto RequestManager::create_request_handler()
 				std::cerr << e.what() << std::endl;
 			}
 
-			std::string username = jsonObj["username"];
-			std::string email = jsonObj["email"];
-			std::string password = jsonObj["password"];
+			//check if email already exists
+			if (database.checkEntityExist(jsonObj["email"], "users", "email"))
+			{
+				init_resp(req->create_response(restinio::status_conflict()))
+					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+					.set_body("email already exists")
+					.done();
 
-			registration.registerUser(username, email, password, false);
+				return restinio::request_accepted();
+			}
+			else
+			{
+				//if not already exists store username, email and password(needs to be hashed first) in database
+				std::string username = jsonObj["username"];
+				std::string email = jsonObj["email"];
+				std::string password = jsonObj["password"];
 
-			init_resp(req->create_response())
-				.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-				.set_body("Person Registered")
-				.done();
+				registration.registerUser(username, email, password, false);
 
-			return restinio::request_accepted();
+				init_resp(req->create_response())
+					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
+					.set_body("Person Registered")
+					.done();
+
+				return restinio::request_accepted();
+			}
 		});
 
 	router->http_post(

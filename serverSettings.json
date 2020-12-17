@@ -1,10 +1,11 @@
 {
     "POSTGRES_IP_ADDRESS": "127.0.0.1",
     "POSTGRES_DB_NAME": "vocascan",
-    "POSTGRES_USERNAME": "your_user",
-    "POSTGRES_PASSWORD": "your_user",
+    "POSTGRES_USERNAME": "your_username",
+    "POSTGRES_PASSWORD": "your_username_password",
     "POSTGRES_PORT": 5432,
     "SERVER_IP_ADDRESS": "127.0.0.1",
-    "SERVER_PORT": 9000,
-    "SERVER_DEBUG": true
+    "SERVER_PORT": 13200,
+    "SERVER_DEBUG": true,
+    "SECRET_KEY": "your_secret_key"
 }

@@ -23,6 +23,29 @@ Database::Database(std::string dbName, std::string userName, std::string passwor
 	}
 }
 
+bool Database::checkDatabaseAvailable()
+{
+	try
+	{
+		pqxx::connection connection(conn);
+		//check if connection is good
+		if (connection.is_open())
+		{
+			return true;
+		}
+		else
+		{
+			std::cout << "Can't open database" << std::endl;
+			return false;
+		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}
+
 //convert bool to string
 std::string Database::boolToStr(bool boolean)
 {
@@ -167,6 +190,7 @@ bool Database::createTables()
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
+	return 0;
 }
 
 bool Database::checkTableEmpty(const std::string &tableName)
@@ -313,6 +337,7 @@ bool Database::addRole(const std::string &name, bool adminRights)
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
+	return 0;
 }
 
 /*
