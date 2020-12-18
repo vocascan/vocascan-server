@@ -44,7 +44,7 @@ Please [open an issue](https://github.com/vocascan/vocascan-server/issues/new) f
 For questions or ideas please use [Discussions](https://github.com/vocascan/vocascan-server/discussions)
 
 
+## Contributors
 
-## Author
-
-[Noctera](https://github.com/noctera)
+[<img src="https://avatars3.githubusercontent.com/u/54618409?s=400&v=4" width="50" />](https://github.com/noctera)
+[<img src="https://avatars3.githubusercontent.com/u/60048565?s=400&v=4" width="50" />](https://github.com/luwol03)
