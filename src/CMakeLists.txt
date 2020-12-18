@@ -10,5 +10,6 @@ add_subdirectory(boilerplate)
 add_subdirectory(actionHandlers)
 add_subdirectory(auth)
 add_subdirectory(database)
+add_subdirectory(adminPanel)
 
 
