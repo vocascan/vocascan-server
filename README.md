@@ -47,7 +47,7 @@ For questions or ideas please use [Discussions](https://github.com/vocascan/voca
 ## Contributors
 
 <img src="https://avatars3.githubusercontent.com/u/54618409?s=400&v=4" width="40">
-![Noctera](https://github.com/noctera)
+[Noctera](https://github.com/noctera)
 
 <img src="https://avatars3.githubusercontent.com/u/60048565?s=400&v=4" width="40">
-![luwol03](https://github.com/luwol03)
+[luwol03](https://github.com/luwol03)
