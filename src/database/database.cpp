@@ -4,7 +4,7 @@
 
 Database::Database(std::string dbName, std::string userName, std::string password, std::string hostAddress, int port)
 {
-	conn = "dbname = " + dbName + " user = " + userName + " password=" + password + " hostaddr=" + hostAddress + " port=" + std::to_string(port);
+	conn = "dbname = " + dbName + " user = " + userName + " password=" + password + " host=" + hostAddress + " port=" + std::to_string(port);
 	try
 	{
 		pqxx::connection connection(conn);
