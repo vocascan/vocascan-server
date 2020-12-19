@@ -72,11 +72,18 @@ auto RequestManager::create_request_handler()
 
 				registration.registerUser(username, email, password, false);
 
-				init_resp(req->create_response())
-					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-					.set_body("Person Registered")
-					.done();
+				//get user id to create the jwt token
+				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
+				std::string role = database.getUserRole(userId);
+				std::string jwt = JWT::createJwt(userId, role);
+				//create response body
+				nlohmann::json body = {
+					{"jwt", jwt}};
 
+				init_resp(req->create_response())
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body(body.dump())
+					.done();
 				return restinio::request_accepted();
 			}
 		});
