@@ -159,6 +159,7 @@ auto RequestManager::create_request_handler()
 	router->http_get(
 		"/api/admin",
 		[&](auto req, auto params) {
+			//import html file in variable in order to make it available in the preprocessor
 			const char *html =
 #include "./adminPanel/index.html"
 				;

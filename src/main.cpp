@@ -2,7 +2,9 @@
 #include <pqxx/pqxx>
 #include "database/database.hpp"
 #include "requestManager.hpp"
+#include "boilerplate/user.hpp"
 #include "actionHandlers/registration.hpp"
+#include "auth/encryption.hpp"
 #include <string>
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -71,6 +73,24 @@ int main(int argc, char **argv, char **envp)
     if (!database.checkDatabaseAvailable())
     {
         return 1;
+    }
+
+    //check if database is started for the first time
+    if (database.checkTableEmpty("roles"))
+    {
+        //add standart roles
+        database.addRole("user", false);
+        database.addRole("admin", true);
+        //add admin user:
+        std::string password = Encryption::genSalt(10);
+        Registration registration(database);
+        registration.registerUser("Vocascan", "", password, true);
+
+        std::cout << "---------------------------------------------" << std::endl
+                  << "Created Admin user. Please remember username and password to log in to the admin pannel. Username and Password can be changed there." << std::endl
+                  << "Username: Vocascan" << std::endl
+                  << "Password: " << password << std::endl
+                  << "---------------------------------------------" << std::endl;
     }
 
     std::cout << R"(
