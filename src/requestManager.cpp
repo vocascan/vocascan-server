@@ -5,11 +5,12 @@
 #include <sstream>
 #include <iostream>
 #include "auth/jwt.hpp"
+#define STRINGIFY(x) #x
 
 template <typename RESP>
 RESP init_resp(RESP resp)
 {
-	resp.append_header(restinio::http_field::server, "RESTinio sample server /v.0.2");
+	resp.append_header(restinio::http_field::server, "Vocascan");
 	resp.append_header_date_field();
 	resp.append_header(restinio::http_field::access_control_allow_origin, "*");
 
@@ -157,11 +158,13 @@ auto RequestManager::create_request_handler()
 
 	router->http_get(
 		"/api/admin",
-		[](auto req, auto params) {
+		[&](auto req, auto params) {
+			const char *html =
+#include "./adminPanel/index.html"
+				;
 			init_resp(req->create_response())
 				.append_header(restinio::http_field::content_type, "text/html; charset=utf-8")
-				.set_body(
-					restinio::sendfile("../src/adminPanel/index.html"))
+				.set_body(html)
 				.done();
 
 			return restinio::request_accepted();
