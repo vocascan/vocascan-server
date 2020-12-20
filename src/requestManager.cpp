@@ -137,24 +137,29 @@ auto RequestManager::create_request_handler()
 			}
 		});
 
-	router->http_get("/test", [](auto req, auto params) {
-		const auto qp = restinio::parse_query(req->header().query());
-		std::string username = "";
-		std::string password = "";
+	router->http_post(
+		"/api/createPackage",
+		[&](auto req, auto params) {
+			//get JWT token from request header
+			auto jwtToken = req->header().value_of("Jwt");
+			//check if token is expired
+			if (JWT::checkTokenExpired(std::string(jwtToken)))
+			{
+				//if expired return error message to client
+				init_resp(req->create_response(restinio::status_unauthorized()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("JWT token expired")
+					.done();
+				return restinio::request_accepted();
+			}
+			//bool isAdmin = JWT::getRole("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjE0MjM3ODQsImlhdCI6MTYwODQ2Mzc4NCwiaXNzIjoidm9jYXNjYW4iLCJ1c2VySWQiOiIzNSIsInVzZXJSb2xlIjoidXNlciJ9.p2EQl0oFOrgNC5U3LvPUg0rxWsIflDIItNJqu5hdvnQ");
 
-		std::string option1 = restinio::cast_to<std::string>(qp["option1"]);
-		std::string option2 = restinio::cast_to<std::string>(qp["option2"]);
-
-		nlohmann::json testObj = {
-			{"option1", option1},
-			{"option2", option2}};
-
-		init_resp(req->create_response())
-			.append_header(restinio::http_field::content_type, "application/json")
-			.set_body(testObj.dump())
-			.done();
-		return restinio::request_accepted();
-	});
+			init_resp(req->create_response())
+				.append_header(restinio::http_field::content_type, "application/json")
+				.set_body(jwtToken)
+				.done();
+			return restinio::request_accepted();
+		});
 
 	router->http_get(
 		"/api/admin",
