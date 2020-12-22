@@ -25,8 +25,8 @@ namespace JWT
         {
             auto decoded = jwt::decode(jwt);
             auto verifier = jwt::verify()
-                            .allow_algorithm(jwt::algorithm::hs256{"sjfksdjfsdlkfjsdklfjsdklfjsk35hjk43jh5lkh43kljdklfhsklhrkl324h54ldksfh43"})
-                            .with_issuer("vocascan");
+                                .allow_algorithm(jwt::algorithm::hs256{"sjfksdjfsdlkfjsdklfjsdklfjsk35hjk43jh5lkh43kljdklfhsklhrkl324h54ldksfh43"})
+                                .with_issuer("vocascan");
             verifier.verify(decoded);
         }
         catch (...)
@@ -34,6 +34,15 @@ namespace JWT
             return true;
         }
         return false;
+    }
+
+    inline bool checkIfAdmin(std::string jwt)
+    {
+        auto decoded = jwt::decode(jwt);
+        for (auto &e : decoded.get_payload_claims())
+            if (e.first == "userRole")
+            {
+                        }
     }
 
     inline std::string validateJwt(std::string jwt)

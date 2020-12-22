@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.14)
 cmake_policy(VERSION 3.13)
 cmake_policy(SET CMP0076 NEW)
 
-project(vocascan-server)
+if (NOT DEFINED SERVER_VERSION)
+  set(SERVER_VERSION "0.0.0")
+endif()
+project(vocascan-server VERSION ${SERVER_VERSION})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

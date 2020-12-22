@@ -9,6 +9,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <iomanip>
+#include "version/version.h"
 
 //check if every env variable is available
 bool checkEnvAvailable(const char **env_var, char **env_val)
@@ -107,11 +108,12 @@ int main(int argc, char **argv, char **envp)
     std::cout << "-------------------------------" << std::endl
               << "|          | IP-adress | Port |" << std::endl
               << "-------------------------------" << std::endl
-              << "| Database | " << env["POSTGRES_IP_ADDRESS"] << " | " << env["POSTGRES_PORT"] << " |" << std::endl
+              << "| Database | " << env["POSTGRES_IP_ADDRESS"] << " | " << env["POSTGRES_PORT"] << std::endl
               << "-------------------------------" << std::endl
-              << "| Server   | " << env["SERVER_IP_ADDRESS"] << " | " << env["SERVER_PORT"] << " |" << std::endl
+              << "| Server   | " << env["SERVER_IP_ADDRESS"] << " | " << env["SERVER_PORT"] << std::endl
+              << "-------------------------------" << std::endl
+              << "| Version  |  " << Version::getVersion() << std::endl
               << "-------------------------------" << std::endl;
-
     //create Server and start it
     RequestManager requestManager(database);
     requestManager.startServer(env["SERVER_IP_ADDRESS"], env["SERVER_PORT"], env["SERVER_DEBUG"]);
