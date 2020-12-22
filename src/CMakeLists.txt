@@ -11,5 +11,6 @@ add_subdirectory(actionHandlers)
 add_subdirectory(auth)
 add_subdirectory(database)
 add_subdirectory(adminPanel)
+add_subdirectory(version)
 
 
