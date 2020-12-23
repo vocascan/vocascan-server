@@ -5,7 +5,7 @@ namespace Version
 {
     inline std::string getVersion()
     {
-        return "";
+        return "v0.0.0-unknown";
     }
 } // namespace Version
 

@@ -64,7 +64,7 @@ int main(int argc, char **argv, char **envp)
     else
     {
         std::cout << "There are some env variables missing. Using serverSettings.json instead" << std::endl;
-        std::ifstream file("../serverSettings.json");
+        std::ifstream file("/home/julian/Files/Programmieren/Vocascan/vocascan-server/serverSettings.json");
         env = nlohmann::json::parse(file);
     }
 
