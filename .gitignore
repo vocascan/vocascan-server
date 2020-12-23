@@ -4,3 +4,4 @@ settings.json
 serverSettings.json
 Release/
 serverSettings.json
+docker-compose.yml
