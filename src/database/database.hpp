@@ -45,8 +45,6 @@ private:
 
     bool createTables();
     std::string boolToStr(bool boolean);
-    std::vector<pqxx::connection> connectionPool;
-    pqxx::connection &getConnection();
 };
 
 #endif
