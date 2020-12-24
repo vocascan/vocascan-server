@@ -10,6 +10,8 @@
 #include <nlohmann/json.hpp>
 #include <iomanip>
 #include "version/version.h"
+#include <array>
+#include <vector>
 
 //check if every environment variable is available
 bool checkEnvAvailable(std::array<const char*, 9> env_var)
