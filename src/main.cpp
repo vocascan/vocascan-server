@@ -10,64 +10,67 @@
 #include <nlohmann/json.hpp>
 #include <iomanip>
 #include "version/version.h"
+#include <array>
+#include <vector>
 
-//check if every env variable is available
-bool checkEnvAvailable(const char **env_var, char **env_val)
+//check if every environment variable is available
+bool checkEnvAvailable(std::array<const char*, 9> env_var)
 {
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < env_var.size(); ++i)
     {
-        //check if
-        env_val[i] = getenv(env_var[i]);
-        if (env_val[i] == NULL)
+        //check if environment variable exists
+        if (getenv(env_var.at(i)) == NULL)
         {
             return false;
         }
     }
+
     return true;
 }
 
-int main(int argc, char **argv, char **envp)
+//create json format for every environment varialbe
+nlohmann::json setEnvVariable() 
 {
     nlohmann::json env;
     /* A list of possible environment variables*/
-    const char *env_var[9] = {"POSTGRES_IP_ADDRESS", "POSTGRES_DB_NAME", "POSTGRES_USERNAME", "POSTGRES_PASSWORD", "POSTGRES_PORT", "SERVER_IP_ADDRESS", "SERVER_PORT", "SERVER_DEBUG", "SECRET_KEY"};
-    char *env_val[9];
+    std::array<const char*, 9> env_variable = {"POSTGRES_IP_ADDRESS", "POSTGRES_DB_NAME", "POSTGRES_USERNAME", "POSTGRES_PASSWORD", "POSTGRES_PORT", "SERVER_IP_ADDRESS", "SERVER_PORT", "SERVER_DEBUG", "SECRET_KEY"};
+    std::vector<std::string> env_value;
 
-    if (checkEnvAvailable(env_var, env_val))
+    if (checkEnvAvailable(env_variable))
     {
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < env_variable.size(); ++i)
         {
-            if (env_var[i] == "SERVER_DEBUG")
+            if (env_variable.at(i) == "SERVER_DEBUG")
             {
-                env_val[i] = getenv(env_var[i]);
-                std::string var = env_var[i];
-                bool val = env_val[i];
-                env[var] = val;
+                bool setDebug = getenv(env_variable.at(i));
+                env[env_variable.at(i)] = setDebug; 
             }
-            else if (env_var[i] == "POSTGRES_PORT" || env_var[i] == "SERVER_PORT")
+            else if (env_variable.at(i) == "POSTGRES_PORT" || env_variable.at(i) == "SERVER_PORT")
             {
-                env_val[i] = getenv(env_var[i]);
-                std::string var = env_var[i];
-                std::string val = env_val[i];
-                int valInt = std::stoi(val);
-                env[var] = valInt;
+            
+                int setPort = std::stoi(getenv(env_variable.at(i)));
+                env[env_variable.at(i)] = setPort;
             }
             else
             {
-                env_val[i] = getenv(env_var[i]);
-                std::string var = env_var[i];
-                std::string val = env_val[i];
-                env[var] = val;
+                env[env_variable.at(i)] = getenv(env_variable.at(i));
             }
         }
     }
     else
     {
-        std::cout << "There are some env variables missing. Using serverSettings.json instead" << std::endl;
-        std::ifstream file("/home/julian/Files/Programmieren/Vocascan/vocascan-server/serverSettings.json");
+        std::cout << "There are some env variables missing. Using serverSettings.json instead\n";
+        std::ifstream file("../../serverSettings.json");
         env = nlohmann::json::parse(file);
+        
     }
 
+    return env;
+}
+
+int main(int argc, char **argv, char **envp)
+{
+    nlohmann::json env = setEnvVariable();
     //create database object -> start postgres database server
     Database database(env["POSTGRES_DB_NAME"], env["POSTGRES_USERNAME"], env["POSTGRES_PASSWORD"], env["POSTGRES_IP_ADDRESS"], env["POSTGRES_PORT"]);
     //check if database is available
