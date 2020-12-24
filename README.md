@@ -1,7 +1,7 @@
 # Vocascan-server
 Server for Vocascan
 
-![Github license](https://img.shields.io/github/license/vocascan/Vocascan-server?style=flat-square) ![Github Open Issues](https://img.shields.io/github/issues/vocascan/Vocascan-server?style=flat-square) ![Github Stars](https://img.shields.io/github/stars/vocascan/Vocascan-server?style=flat-square) ![Github forks](https://img.shields.io/github/forks/vocascan/Vocascan-server?style=flat-square) ![Github downloads](https://img.shields.io/github/downloads/vocascan/Vocascan-server/total?label=Downloads)
+![Github license](https://img.shields.io/github/license/vocascan/Vocascan-server?style=flat-square) ![Github Open Issues](https://img.shields.io/github/issues/vocascan/Vocascan-server?style=flat-square) ![Github Stars](https://img.shields.io/github/stars/vocascan/Vocascan-server?style=flat-square) ![Github forks](https://img.shields.io/github/forks/vocascan/Vocascan-server?style=flat-square) ![Github downloads](https://img.shields.io/github/downloads/vocascan/Vocascan-server/total?label=Downloads) ![Docker Image](https://github.com/vocascan/vocascan-server/workflows/Docker%20Image/badge.svg)
 
 ![cover](https://github.com/vocascan/Vocascan-server/blob/main/images/vocascan-server-cover.png)
 
