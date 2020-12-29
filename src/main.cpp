@@ -14,7 +14,7 @@
 #include <vector>
 
 //check if every environment variable is available
-bool checkEnvAvailable(std::array<const char*, 9> env_var)
+bool checkEnvAvailable(std::array<const char *, 9> env_var)
 {
     for (int i = 0; i < env_var.size(); ++i)
     {
@@ -29,11 +29,11 @@ bool checkEnvAvailable(std::array<const char*, 9> env_var)
 }
 
 //create json format for every environment varialbe
-nlohmann::json setEnvVariable() 
+nlohmann::json setEnvVariable()
 {
     nlohmann::json env;
     /* A list of possible environment variables*/
-    std::array<const char*, 9> env_variable = {"POSTGRES_IP_ADDRESS", "POSTGRES_DB_NAME", "POSTGRES_USERNAME", "POSTGRES_PASSWORD", "POSTGRES_PORT", "SERVER_IP_ADDRESS", "SERVER_PORT", "SERVER_DEBUG", "SECRET_KEY"};
+    std::array<const char *, 9> env_variable = {"POSTGRES_IP_ADDRESS", "POSTGRES_DB_NAME", "POSTGRES_USERNAME", "POSTGRES_PASSWORD", "POSTGRES_PORT", "SERVER_IP_ADDRESS", "SERVER_PORT", "SERVER_DEBUG", "SECRET_KEY"};
     std::vector<std::string> env_value;
 
     if (checkEnvAvailable(env_variable))
@@ -43,11 +43,11 @@ nlohmann::json setEnvVariable()
             if (env_variable.at(i) == "SERVER_DEBUG")
             {
                 bool setDebug = getenv(env_variable.at(i));
-                env[env_variable.at(i)] = setDebug; 
+                env[env_variable.at(i)] = setDebug;
             }
             else if (env_variable.at(i) == "POSTGRES_PORT" || env_variable.at(i) == "SERVER_PORT")
             {
-            
+
                 int setPort = std::stoi(getenv(env_variable.at(i)));
                 env[env_variable.at(i)] = setPort;
             }
@@ -62,7 +62,6 @@ nlohmann::json setEnvVariable()
         std::cout << "There are some env variables missing. Using serverSettings.json instead\n";
         std::ifstream file("../../serverSettings.json");
         env = nlohmann::json::parse(file);
-        
     }
 
     return env;

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include "auth/jwt.hpp"
+#include <future>
 #define STRINGIFY(x) #x
 
 template <typename RESP>
@@ -66,11 +67,7 @@ auto RequestManager::create_request_handler()
 			else
 			{
 				//if not already exists store username, email and password(needs to be hashed first) in database
-				std::string username = jsonObj["username"];
-				std::string email = jsonObj["email"];
-				std::string password = jsonObj["password"];
-
-				registration.registerUser(username, email, password, false);
+				auto result = std::async(std::launch::async, &Registration::registerUser, &registration, jsonObj["username"], jsonObj["email"], jsonObj["password"], false);
 
 				//get user id to create the jwt token
 				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
