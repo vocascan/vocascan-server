@@ -36,21 +36,23 @@ namespace JWT
         return false;
     }
 
-    inline bool checkIfAdmin(std::string jwt)
+    inline std::string getUserId(std::string jwt)
     {
         auto decoded = jwt::decode(jwt);
         for (auto &e : decoded.get_payload_claims())
-            if (e.first == "userRole")
+            if (e.first == "userId")
             {
-                        }
+                std::string result = e.second.as_string();
+                return result;
+            }
     }
 
-    inline std::string validateJwt(std::string jwt)
-    {
+    /*inline std::string validateJwt(std::string jwt)
+{
 
-        /*for (auto &e : decoded.get_payload_claims())
-            std::cout << e.first << " = " << e.second << std::endl;*/
-    }
+    for (auto &e : decoded.get_payload_claims())
+            std::cout << e.first << " = " << e.second << std::endl;
+}*/
 
 } // namespace JWT
 
