@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include "auth/jwt.hpp"
+#include <future>
 #define STRINGIFY(x) #x
 
 template <typename RESP>
@@ -38,14 +39,17 @@ auto RequestManager::create_request_handler()
 			return restinio::request_accepted();
 		});
 
+	//--------------------------------------------------------------------------------------//
+	//                                       REGISTER                                       //
+	//--------------------------------------------------------------------------------------//
 	router->http_post(
 		"/api/register",
 		[&](auto req, auto params) {
 			std::string body = req->body();
-			nlohmann::json jsonObj;
+			nlohmann::json jsonBody;
 			try
 			{
-				jsonObj = nlohmann::json::parse(body);
+				jsonBody = nlohmann::json::parse(body);
 			}
 			catch (const std::exception &e)
 			{
@@ -54,7 +58,7 @@ auto RequestManager::create_request_handler()
 			}
 
 			//check if email already exists
-			if (database.checkEntityExist(jsonObj["email"], "users", "email"))
+			if (database.checkEntityExist(jsonBody["email"], "users", "email"))
 			{
 				init_resp(req->create_response(restinio::status_conflict()))
 					.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
@@ -66,14 +70,10 @@ auto RequestManager::create_request_handler()
 			else
 			{
 				//if not already exists store username, email and password(needs to be hashed first) in database
-				std::string username = jsonObj["username"];
-				std::string email = jsonObj["email"];
-				std::string password = jsonObj["password"];
-
-				registration.registerUser(username, email, password, false);
+				auto result = std::async(std::launch::async, &Registration::registerUser, &registration, jsonBody["username"], jsonBody["email"], jsonBody["password"], false);
 
 				//get user id to create the jwt token
-				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
+				std::string userId = database.getEntity("id", "users", "email", jsonBody["email"]);
 				std::string role = database.getUserRole(userId);
 				std::string jwt = JWT::createJwt(userId, role);
 				//create response body
@@ -88,15 +88,19 @@ auto RequestManager::create_request_handler()
 			}
 		});
 
+	//--------------------------------------------------------------------------------------//
+	//                                       SIGN IN                                        //
+	//--------------------------------------------------------------------------------------//
+
 	router->http_post(
 		"/api/signIn",
 		[&](auto req, auto params) {
 			std::string body = req->body();
 			//parse body to jsonObj
-			nlohmann::json jsonObj;
+			nlohmann::json jsonBody;
 			try
 			{
-				jsonObj = nlohmann::json::parse(body);
+				jsonBody = nlohmann::json::parse(body);
 			}
 			catch (const std::exception &e)
 			{
@@ -104,7 +108,7 @@ auto RequestManager::create_request_handler()
 				std::cerr << e.what() << std::endl;
 			}
 			//check if request body and password is valid
-			if (authMiddleware.checkSignIn(jsonObj) == false)
+			if (authMiddleware.checkSignIn(jsonBody) == false)
 			{
 				//Not valid
 				init_resp(req->create_response(restinio::status_forbidden()))
@@ -115,22 +119,11 @@ auto RequestManager::create_request_handler()
 			}
 			else
 			{
-				/*//if valid, check if JWT token expired
-				if (JWT::checkTokenExpired("test"))
-				{
-					init_resp(req->create_response())
-						.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-						.set_body("Token expired")
-						.done();
-					return restinio::request_accepted();
-				}
-				else
-				{*/
 				//get user id to create the jwt token
-				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
+				std::string userId = database.getEntity("id", "users", "email", jsonBody["email"]);
 				std::string role = database.getUserRole(userId);
 				std::string jwt = JWT::createJwt(userId, role);
-				std::string username = database.getEntity("name", "users", "email", jsonObj["email"]);
+				std::string username = database.getEntity("name", "users", "email", jsonBody["email"]);
 				//create response body
 				nlohmann::json body = {
 					{"username", username},
@@ -144,11 +137,16 @@ auto RequestManager::create_request_handler()
 			}
 		});
 
+	//--------------------------------------------------------------------------------------//
+	//                                     CREATE PACKAGE                                   //
+	//--------------------------------------------------------------------------------------//
+
 	router->http_post(
 		"/api/createPackage",
 		[&](auto req, auto params) {
 			//get JWT token from request header
-			auto jwtToken = req->header().value_of("Jwt");
+			std::string jwtToken = std::string(req->header().value_of("Jwt"));
+
 			//check if token is expired
 			if (JWT::checkTokenExpired(std::string(jwtToken)))
 			{
@@ -159,11 +157,45 @@ auto RequestManager::create_request_handler()
 					.done();
 				return restinio::request_accepted();
 			}
-			//bool isAdmin = JWT::getRole("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjE0MjM3ODQsImlhdCI6MTYwODQ2Mzc4NCwiaXNzIjoidm9jYXNjYW4iLCJ1c2VySWQiOiIzNSIsInVzZXJSb2xlIjoidXNlciJ9.p2EQl0oFOrgNC5U3LvPUg0rxWsIflDIItNJqu5hdvnQ");
+			//parse body from request
+			std::string body = req->body();
+			nlohmann::json jsonBody;
+			try
+			{
+				jsonBody = nlohmann::json::parse(body);
+			}
+			catch (const std::exception &e)
+			{
+				auto error = e.what();
+				std::cerr << e.what() << std::endl;
+			}
+			//check if body includes every parameter
+			if (!authMiddleware.checkLngPackageBody(jsonBody))
+			{
+				init_resp(req->create_response(restinio::status_bad_request()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("Parameters in Body missing")
+					.done();
+				return restinio::request_accepted();
+			}
+
+			//check if package is already added
+			bool isExisting = database.checkEntityExist(jsonBody["name"], "language_package", "name");
+			//if duplicate return error code
+			if (isExisting)
+			{
+				init_resp(req->create_response(restinio::status_conflict()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("Duplicate")
+					.done();
+				return restinio::request_accepted();
+			}
+			//create language package
+			bool result = database.createLanguagePackage(LanguagePackage(JWT::getUserId(jwtToken), jsonBody["name"], jsonBody["foreignLanguage"], jsonBody["translatedLanguage"], jsonBody["vocabsPerDay"], jsonBody["rightTranslations"]));
 
 			init_resp(req->create_response())
 				.append_header(restinio::http_field::content_type, "application/json")
-				.set_body(jwtToken)
+				.set_body("Created")
 				.done();
 			return restinio::request_accepted();
 		});
