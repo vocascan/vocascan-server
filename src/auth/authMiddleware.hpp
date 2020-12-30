@@ -12,6 +12,7 @@ class AuthMiddleware
 public:
     AuthMiddleware(Database &db) : database(db) {}
     bool checkSignIn(nlohmann::json body);
+    bool checkLngPackageBody(const nlohmann::json &body);
 
 private:
     Database &database;
