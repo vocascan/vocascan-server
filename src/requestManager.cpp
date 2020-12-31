@@ -115,17 +115,6 @@ auto RequestManager::create_request_handler()
 			}
 			else
 			{
-				/*//if valid, check if JWT token expired
-				if (JWT::checkTokenExpired("test"))
-				{
-					init_resp(req->create_response())
-						.append_header(restinio::http_field::content_type, "text/json; charset=utf-8;")
-						.set_body("Token expired")
-						.done();
-					return restinio::request_accepted();
-				}
-				else
-				{*/
 				//get user id to create the jwt token
 				std::string userId = database.getEntity("id", "users", "email", jsonObj["email"]);
 				std::string role = database.getUserRole(userId);
@@ -159,13 +148,82 @@ auto RequestManager::create_request_handler()
 					.done();
 				return restinio::request_accepted();
 			}
-			//bool isAdmin = JWT::getRole("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjE0MjM3ODQsImlhdCI6MTYwODQ2Mzc4NCwiaXNzIjoidm9jYXNjYW4iLCJ1c2VySWQiOiIzNSIsInVzZXJSb2xlIjoidXNlciJ9.p2EQl0oFOrgNC5U3LvPUg0rxWsIflDIItNJqu5hdvnQ");
 
 			init_resp(req->create_response())
 				.append_header(restinio::http_field::content_type, "application/json")
 				.set_body(jwtToken)
 				.done();
 			return restinio::request_accepted();
+		});
+
+	router->http_post(
+		"/api/createGroup",
+		[&](auto req, auto params) {
+			//get JWT token from request header
+			std::string jwtToken = std::string(req->header().value_of("Jwt"));
+
+			//check if token is expired
+			if (JWT::checkTokenExpired(std::string(jwtToken)))
+			{
+				//if expired return error message to client
+				init_resp(req->create_response(restinio::status_unauthorized()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("JWT token expired")
+					.done();
+				return restinio::request_accepted();
+			}
+			//parse body from request
+			std::string body = req->body();
+			nlohmann::json jsonBody;
+			try
+			{
+				jsonBody = nlohmann::json::parse(body);
+			}
+			catch (const std::exception &e)
+			{
+				auto error = e.what();
+				std::cerr << e.what() << std::endl;
+			}
+			//check if body includes every parameter
+			if (!authMiddleware.checkGroupBody(jsonBody))
+			{
+				init_resp(req->create_response(restinio::status_bad_request()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("Parameters in Body missing")
+					.done();
+				return restinio::request_accepted();
+			}
+
+			//check if package is already added
+			bool isExisting = database.checkEntityExist(jsonBody["name"], "groups", "name");
+			//if duplicate return error code
+			if (isExisting)
+			{
+				init_resp(req->create_response(restinio::status_conflict()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("Duplicate")
+					.done();
+				return restinio::request_accepted();
+			}
+			//create language package
+			bool error = database.addGroup(jsonBody["name"], JWT::getUserId(jwtToken), jsonBody["languagePackage"], jsonBody["active"]);
+
+			if (!error)
+			{
+				init_resp(req->create_response())
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("Created")
+					.done();
+				return restinio::request_accepted();
+			}
+			else
+			{
+				init_resp(req->create_response(restinio::status_internal_server_error()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("Error occured")
+					.done();
+				return restinio::request_accepted();
+			}
 		});
 
 	router->http_get(
