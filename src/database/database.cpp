@@ -366,7 +366,7 @@ bool Database::addGroup(const std::string &name, const std::string userId, const
 	{
 		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
-		std::string sql = "INSERT INTO groups (user_id, language_package_id, name, active) VALUES ('" + userId + "',  select id from language_package where user_id='" + userId + "' and name='" + lngPackage + "', '" + name + "', " + boolToStr(active) + ");";
+		std::string sql = "INSERT INTO groups (user_id, language_package_id, name, active) VALUES ('" + userId + "', (select id from language_package where user_id='" + userId + "' and name='" + lngPackage + "'), '" + name + "', " + boolToStr(active) + ");";
 
 		worker.exec(sql);
 		worker.commit();
