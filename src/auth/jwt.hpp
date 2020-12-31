@@ -46,6 +46,14 @@ namespace JWT
                 return result;
             }
     }
+
+    /*inline std::string validateJwt(std::string jwt)
+{
+
+    for (auto &e : decoded.get_payload_claims())
+            std::cout << e.first << " = " << e.second << std::endl;
+}*/
+
 } // namespace JWT
 
 #endif

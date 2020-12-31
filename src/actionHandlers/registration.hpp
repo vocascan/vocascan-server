@@ -10,7 +10,7 @@ class Registration
 public:
     Registration(Database &db) : database(db) {}
 
-    void registerUser(std::string username, std::string email, std::string password, bool adminRights);
+    bool registerUser(const std::string &username, const std::string &email, const std::string &password, bool adminRights);
 
 private:
     Database &database;

@@ -27,7 +27,6 @@ public:
 
     bool addRole(const std::string &name, bool adminRights);
     bool checkTableEmpty(const std::string &tableName);
-    //bool checkExistingEntity(const std::string &name, const std::string &tableName, const std::string &columnName);
 
     bool createLanguagePackage(LanguagePackage lngPackage);
     bool addGroup(const std::string &name, const std::string userId, const std::string lngPackage, bool active);

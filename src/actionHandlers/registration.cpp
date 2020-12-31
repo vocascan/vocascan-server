@@ -2,7 +2,7 @@
 #include "boilerplate/user.hpp"
 #include "encryption.hpp"
 
-void Registration::registerUser(std::string username, std::string email, std::string password, bool adminRights)
+bool Registration::registerUser(const std::string &username, const std::string &email, const std::string &password, bool adminRights)
 {
     //generate salt
     std::string salt = Encryption::genSalt(30);

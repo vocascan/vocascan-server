@@ -341,13 +341,32 @@ bool Database::addRole(const std::string &name, bool adminRights)
 	return 0;
 }
 
+bool Database::createLanguagePackage(LanguagePackage lngPackage)
+{
+	try
+	{
+		pqxx::connection connection(conn);
+		pqxx::work worker(connection);
+		std::string sql = "INSERT INTO language_package (user_id, name, foreign_word_language, translated_word_language, vocabs_per_day, right_words) VALUES ('" + lngPackage.userId + "', '" + lngPackage.name + "', '" + lngPackage.foreignWordLanguage + "', '" + lngPackage.translatedWordLanguage + "', " + std::to_string(lngPackage.vocabsPerDay) + ", " + std::to_string(lngPackage.rightWords) + ");";
+
+		worker.exec(sql);
+		worker.commit();
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
+	return 0;
+}
+
 bool Database::addGroup(const std::string &name, const std::string userId, const std::string lngPackage, bool active)
 {
 	try
 	{
 		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
-		std::string sql = "INSERT INTO groups (user_id, language_package_id, name, active) VALUES ('" + userId + "',  (select id from language_package where user_id='" + userId + "' and name='" + lngPackage + "'), '" + name + "', " + boolToStr(active) + ");";
+		std::string sql = "INSERT INTO groups (user_id, language_package_id, name, active) VALUES ('" + userId + "',  select id from language_package where user_id='" + userId + "' and name='" + lngPackage + "', '" + name + "', " + boolToStr(active) + ");";
 
 		worker.exec(sql);
 		worker.commit();
