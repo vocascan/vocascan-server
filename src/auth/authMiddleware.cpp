@@ -30,27 +30,29 @@ bool AuthMiddleware::checkSignIn(nlohmann::json body)
     {
         return false;
     }
-    //check if every parameter in createPackage request is included
-    bool AuthMiddleware::checkLngPackageBody(const nlohmann::json &body)
-    {
-        if (body.contains("name") && body.contains("foreignLanguage") && body.contains("translatedLanguage") && body.contains("vocabsPerDay") && body.contains("rightTranslations"))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+}
 
-    bool AuthMiddleware::checkGroupBody(const nlohmann::json &body)
+//check if every parameter in createPackage request is included
+bool AuthMiddleware::checkLngPackageBody(const nlohmann::json &body)
+{
+    if (body.contains("name") && body.contains("foreignLanguage") && body.contains("translatedLanguage") && body.contains("vocabsPerDay") && body.contains("rightTranslations"))
     {
-        if (body.contains("name") && body.contains("languagePackage") && body.contains("active"))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return true;
     }
+    else
+    {
+        return false;
+    }
+}
+
+bool AuthMiddleware::checkGroupBody(const nlohmann::json &body)
+{
+    if (body.contains("name") && body.contains("languagePackage") && body.contains("active"))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
