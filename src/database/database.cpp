@@ -125,7 +125,7 @@ bool Database::createTables()
 			"admin_rights BOOL NOT NULL);"
 
 			"CREATE TABLE IF NOT EXISTS users ("
-			"id SERIAL PRIMARY KEY NOT NULL,"
+			"id TEXT NOT NULL UNIQUE,"
 			"name TEXT NOT NULL,"
 			"email TEXT NOT NULL,"
 			"salt TEXT NOT NULL,"
@@ -135,7 +135,7 @@ bool Database::createTables()
 
 			"CREATE TABLE IF NOT EXISTS language_package ("
 			"id SERIAL PRIMARY KEY NOT NULL,"
-			"user_id INTEGER NOT NULL,"
+			"user_id TEXT NOT NULL,"
 			"name TEXT NOT NULL,"
 			"foreign_word_language TEXT NOT NULL,"
 			"translated_word_language TEXT NOT NULL,"
@@ -145,7 +145,7 @@ bool Database::createTables()
 
 			"CREATE TABLE IF NOT EXISTS drawer ("
 			"id SERIAL PRIMARY KEY NOT NULL,"
-			"user_id INTEGER NOT NULL,"
+			"user_id TEXT NOT NULL,"
 			"name TEXT NOT NULL,"
 			"query_interval	INTEGER NOT NULL,"
 			"language_package_id	INTEGER NOT NULL,"
@@ -154,7 +154,7 @@ bool Database::createTables()
 
 			"CREATE TABLE IF NOT EXISTS groups ("
 			"id SERIAL PRIMARY KEY NOT NULL,"
-			"user_id INTEGER NOT NULL,"
+			"user_id TEXT NOT NULL,"
 			"language_package_id INTEGER NOT NULL,"
 			"name	TEXT NOT NULL,"
 			"active BOOL NOT NULL,"
@@ -163,7 +163,7 @@ bool Database::createTables()
 
 			"CREATE TABLE IF NOT EXISTS foreign_word ("
 			"id SERIAL PRIMARY KEY NOT NULL,"
-			"user_id INTEGER NOT NULL,"
+			"user_id TEXT NOT NULL,"
 			"name	TEXT NOT NULL,"
 			"language_package_id	INTEGER NOT NULL,"
 			"group_id	INTEGER NOT NULL,"
@@ -175,7 +175,7 @@ bool Database::createTables()
 
 			"CREATE TABLE IF NOT EXISTS translated_word ("
 			"id SERIAL PRIMARY KEY NOT NULL,"
-			"user_id INTEGER NOT NULL,"
+			"user_id TEXT NOT NULL,"
 			"foreign_word_id	INTEGER NOT NULL,"
 			"name	TEXT NOT NULL,"
 			"language_package_id	INTEGER NOT NULL,"
@@ -241,7 +241,7 @@ bool Database::registerUser(User user)
 		}
 		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
-		std::string sql = "INSERT INTO users (name, email, salt, hash, role_id) VALUES ('" + user.username + "', '" + user.email + "', '" + user.salt + "', '" + user.hash + "', (select id from roles where name = '" + roleId + "'));";
+		std::string sql = "INSERT INTO users (id, name, email, salt, hash, role_id) VALUES ('" + user.userId + "', '" + user.username + "', '" + user.email + "', '" + user.salt + "', '" + user.hash + "', (select id from roles where name = '" + roleId + "'));";
 
 		worker.exec(sql);
 		worker.commit();
@@ -312,8 +312,8 @@ std::string Database::getSalt(const std::string &email)
 		//iterate through the result and get the key-value pair with the key 'salt'
 		for (auto row : result)
 		{
-			std::string count = row["salt"].c_str();
-			return count;
+
+			return row["salt"].c_str();
 		}
 	}
 	catch (const std::exception &e)
@@ -351,6 +351,36 @@ bool Database::createLanguagePackage(LanguagePackage lngPackage)
 
 		worker.exec(sql);
 		worker.commit();
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
+	return 0;
+}
+
+nlohmann::json Database::getLanguagePackages(std::string userId)
+{
+	try
+	{
+		pqxx::connection connection(conn);
+		pqxx::work worker(connection);
+		std::string sql = "SELECT name from language_package WHERE user_id='" + userId + "';";
+
+		pqxx::result result{worker.exec(sql)};
+		worker.commit();
+
+		nlohmann::json jsonResult;
+		//number for id
+		size_t index = 0;
+		//put result in json object
+		for (auto row : result)
+		{
+			jsonResult.push_back({{"id", index}, {"name", row["name"].c_str()}});
+			++index;
+		}
+		return jsonResult;
 	}
 	catch (const std::exception &e)
 	{

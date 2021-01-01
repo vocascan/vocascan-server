@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <pqxx/pqxx>
+#include <nlohmann/json.hpp>
 #include "../boilerplate/languagePackage.hpp"
 #include "../boilerplate/translatedWord.hpp"
 #include "../boilerplate/foreignWord.hpp"
@@ -29,6 +30,7 @@ public:
     bool checkTableEmpty(const std::string &tableName);
 
     bool createLanguagePackage(LanguagePackage lngPackage);
+    nlohmann::json getLanguagePackages(std::string userId);
     bool addGroup(const std::string &name, const std::string userId, const std::string lngPackage, bool active);
 
 private:
