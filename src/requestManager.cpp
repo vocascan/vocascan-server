@@ -229,7 +229,7 @@ auto RequestManager::create_request_handler()
 				std::cerr << e.what() << std::endl;
 			}
 			//check if body includes every parameter
-			if (!authMiddleware.checkGroupBody(jsonBody))
+			if (!authMiddleware.checkCreateGroupBody(jsonBody))
 			{
 				init_resp(req->create_response(restinio::status_bad_request()))
 					.append_header(restinio::http_field::content_type, "application/json")
@@ -268,6 +268,32 @@ auto RequestManager::create_request_handler()
 					.done();
 				return restinio::request_accepted();
 			}
+		});
+
+	router->http_get(
+		"/api/getPackage",
+		[&](auto req, auto params) {
+			//get JWT token from request header
+			std::string jwtToken = std::string(req->header().value_of("Jwt"));
+
+			//check if token is expired
+			if (JWT::checkTokenExpired(std::string(jwtToken)))
+			{
+				//if expired return error message to client
+				init_resp(req->create_response(restinio::status_unauthorized()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("JWT token expired")
+					.done();
+				return restinio::request_accepted();
+			}
+			//get json object with result
+			nlohmann::json result = database.getLanguagePackages(JWT::getUserId(jwtToken));
+
+			init_resp(req->create_response())
+				.append_header(restinio::http_field::content_type, "application/json")
+				.set_body(result.dump())
+				.done();
+			return restinio::request_accepted();
 		});
 
 	router->http_get(
