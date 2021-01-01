@@ -13,7 +13,8 @@ public:
     AuthMiddleware(Database &db) : database(db) {}
     bool checkSignIn(nlohmann::json body);
     bool checkLngPackageBody(const nlohmann::json &body);
-    bool checkGroupBody(const nlohmann::json &body);
+    bool checkCreateGroupBody(const nlohmann::json &body);
+    bool checkGetGroupBody(const nlohmann::json &body);
 
 private:
     Database &database;

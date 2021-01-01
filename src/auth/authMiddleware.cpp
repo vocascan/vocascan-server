@@ -48,7 +48,7 @@ bool AuthMiddleware::checkLngPackageBody(const nlohmann::json &body)
     }
 }
 
-bool AuthMiddleware::checkGroupBody(const nlohmann::json &body)
+bool AuthMiddleware::checkCreateGroupBody(const nlohmann::json &body)
 {
     if (body.contains("name") && body.contains("languagePackage") && body.contains("active"))
     {
@@ -58,4 +58,9 @@ bool AuthMiddleware::checkGroupBody(const nlohmann::json &body)
     {
         return false;
     }
+}
+
+bool AuthMiddleware::checkGetGroupBody(const nlohmann::json &body)
+{
+    return (body.contains("languagePackage"));
 }
