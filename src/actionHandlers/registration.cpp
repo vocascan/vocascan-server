@@ -9,5 +9,5 @@ bool Registration::registerUser(const std::string &username, const std::string &
     //hash password
     std::string hash = Encryption::hashPassword(password, salt);
 
-    database.registerUser(User(username, email, salt, hash, adminRights));
+    database.registerUser(User(Encryption::genSalt(15), username, email, salt, hash, adminRights));
 }
