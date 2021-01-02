@@ -360,13 +360,13 @@ bool Database::createLanguagePackage(LanguagePackage lngPackage)
 	return 0;
 }
 
-nlohmann::json Database::getLanguagePackages(std::string userId)
+nlohmann::json Database::getLanguagePackages(const std::string &userId)
 {
 	try
 	{
 		pqxx::connection connection(conn);
 		pqxx::work worker(connection);
-		std::string sql = "SELECT name from language_package WHERE user_id='" + userId + "';";
+		std::string sql = "SELECT name from language_package WHERE user_id='" + userId + "' ORDER BY name ASC;";
 
 		pqxx::result result{worker.exec(sql)};
 		worker.commit();
@@ -400,6 +400,36 @@ bool Database::addGroup(const std::string &name, const std::string userId, const
 
 		worker.exec(sql);
 		worker.commit();
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
+	return 0;
+}
+
+nlohmann::json Database::getGroups(const std::string &userId, const std::string &lngPackage)
+{
+	try
+	{
+		pqxx::connection connection(conn);
+		pqxx::work worker(connection);
+		std::string sql = "SELECT name from groups WHERE user_id='" + userId + "' and language_package_id=(SELECT id from language_package where name='" + lngPackage + "') ORDER BY name ASC;";
+
+		pqxx::result result{worker.exec(sql)};
+		worker.commit();
+
+		nlohmann::json jsonResult;
+		//number for id
+		size_t index = 0;
+		//put result in json object
+		for (auto row : result)
+		{
+			jsonResult.push_back({{"id", index}, {"name", row["name"].c_str()}});
+			++index;
+		}
+		return jsonResult;
 	}
 	catch (const std::exception &e)
 	{

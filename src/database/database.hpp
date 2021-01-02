@@ -30,8 +30,9 @@ public:
     bool checkTableEmpty(const std::string &tableName);
 
     bool createLanguagePackage(LanguagePackage lngPackage);
-    nlohmann::json getLanguagePackages(std::string userId);
+    nlohmann::json getLanguagePackages(const std::string &userId);
     bool addGroup(const std::string &name, const std::string userId, const std::string lngPackage, bool active);
+    nlohmann::json getGroups(const std::string &userId, const std::string &lngPackage);
 
 private:
     std::string conn;
