@@ -15,6 +15,7 @@ public:
     bool checkLngPackageBody(const nlohmann::json &body);
     bool checkCreateGroupBody(const nlohmann::json &body);
     bool checkGetGroupBody(const nlohmann::json &body);
+    bool checkCreateDrawerBody(const nlohmann::json &body);
 
 private:
     Database &database;

@@ -34,6 +34,8 @@ public:
     bool addGroup(const std::string &name, const std::string userId, const std::string lngPackage, bool active);
     nlohmann::json getGroups(const std::string &userId, const std::string &lngPackage);
 
+    bool createDrawer(const std::string &userId, const std::string &languagePackage, const std::string &name, int interval);
+
 private:
     std::string conn;
 

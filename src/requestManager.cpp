@@ -142,7 +142,7 @@ auto RequestManager::create_request_handler()
 	//--------------------------------------------------------------------------------------//
 
 	router->http_post(
-		"/api/createPackage",
+		"/api/create/package",
 		[&](auto req, auto params) {
 			//get JWT token from request header
 			std::string jwtToken = std::string(req->header().value_of("Jwt"));
@@ -201,7 +201,7 @@ auto RequestManager::create_request_handler()
 		});
 
 	router->http_post(
-		"/api/createGroup",
+		"/api/create/group",
 		[&](auto req, auto params) {
 			//get JWT token from request header
 			std::string jwtToken = std::string(req->header().value_of("Jwt"));
@@ -341,6 +341,57 @@ auto RequestManager::create_request_handler()
 			init_resp(req->create_response())
 				.append_header(restinio::http_field::content_type, "application/json")
 				.set_body(result.dump())
+				.done();
+			return restinio::request_accepted();
+		});
+
+	router->http_post(
+		"/api/create/drawer",
+		[&](auto req, auto params) {
+			//get JWT token from request header
+			std::string jwtToken = std::string(req->header().value_of("Jwt"));
+
+			//check if token is expired
+			if (JWT::checkTokenExpired(std::string(jwtToken)))
+			{
+				//if expired return error message to client
+				init_resp(req->create_response(restinio::status_unauthorized()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("JWT token expired")
+					.done();
+				return restinio::request_accepted();
+			}
+			//parse body from request
+			std::string body = req->body();
+			nlohmann::json jsonBody;
+			try
+			{
+				jsonBody = nlohmann::json::parse(body);
+			}
+			catch (const std::exception &e)
+			{
+				auto error = e.what();
+				std::cerr << e.what() << std::endl;
+			}
+			//check if body includes every parameter
+			if (!authMiddleware.checkCreateDrawerBody(jsonBody))
+			{
+				init_resp(req->create_response(restinio::status_bad_request()))
+					.append_header(restinio::http_field::content_type, "application/json")
+					.set_body("Parameters in Body missing")
+					.done();
+				return restinio::request_accepted();
+			}
+			//iterate through json object and add drawers
+			for (auto &el : jsonBody["drawers"].items())
+			{
+				bool result = database.createDrawer(JWT::getUserId(jwtToken), jsonBody["languagePackage"], el.value()["name"], el.value()["interval"]);
+			}
+			//create language package
+
+			init_resp(req->create_response())
+				.append_header(restinio::http_field::content_type, "application/json")
+				.set_body("Created")
 				.done();
 			return restinio::request_accepted();
 		});

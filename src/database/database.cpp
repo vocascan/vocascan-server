@@ -146,9 +146,9 @@ bool Database::createTables()
 			"CREATE TABLE IF NOT EXISTS drawer ("
 			"id SERIAL PRIMARY KEY NOT NULL,"
 			"user_id TEXT NOT NULL,"
+			"language_package_id	INTEGER NOT NULL,"
 			"name TEXT NOT NULL,"
 			"query_interval	INTEGER NOT NULL,"
-			"language_package_id	INTEGER NOT NULL,"
 			"FOREIGN KEY(language_package_id) REFERENCES language_package(id),"
 			"FOREIGN KEY(user_id) REFERENCES users(id));"
 
@@ -430,6 +430,25 @@ nlohmann::json Database::getGroups(const std::string &userId, const std::string 
 			++index;
 		}
 		return jsonResult;
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
+	return 0;
+}
+
+bool Database::createDrawer(const std::string &userId, const std::string &lngePackage, const std::string &name, int interval)
+{
+	try
+	{
+		pqxx::connection connection(conn);
+		pqxx::work worker(connection);
+		std::string sql = "INSERT INTO drawer (user_id, language_package_id, name, query_interval) VALUES ('" + userId + "', (SELECT id from language_package where name='" + lngePackage + "'), '" + name + "', '" + std::to_string(interval) + "');";
+
+		worker.exec(sql);
+		worker.commit();
 	}
 	catch (const std::exception &e)
 	{

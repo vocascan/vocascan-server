@@ -64,3 +64,8 @@ bool AuthMiddleware::checkGetGroupBody(const nlohmann::json &body)
 {
     return (body.contains("languagePackage"));
 }
+
+bool AuthMiddleware::checkCreateDrawerBody(const nlohmann::json &body)
+{
+    return (body.contains("drawers") && body.contains("languagePackage"));
+}
