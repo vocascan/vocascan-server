@@ -1,12 +1,39 @@
-  version: "3.0"    
-  services:    
-    db:    
-      ports:    
-        - '5432:5432'    
-      image: postgres    
-      environment:    
-        POSTGRES_USER: 'vocascan'    
-        POSTGRES_PASSWORD: 'vocascan'    
-        POSTGRES_DB: 'vocascan'    
-      volumes:    
-        - './database:/var/lib/postgresql/data'  
+version: "3.8"
+services:
+  vocascan:
+    image: vocascan/vocascan-server
+    restart: always
+    tty: true
+    depends_on:
+      - db
+    environment:
+      POSTGRES_IP_ADDRESS: 'db'
+      POSTGRES_DB_NAME: 'vocascan'
+      POSTGRES_USERNAME: 'vocascan'
+      POSTGRES_PASSWORD: 'vocascan'
+      POSTGRES_PORT: '5432'
+      SERVER_IP_ADDRESS: '0.0.0.0'
+      SERVER_PORT: '8000'
+      SERVER_DEBUG: 'false'
+      SECRET_KEY: ''
+    ports:
+      - '8000:8000'
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: 'vocascan'
+      POSTGRES_PASSWORD: 'vocascan'
+      POSTGRES_DB: 'vocascan'
+    volumes:
+      - './database:/var/lib/postgresql/data'
+  
+    
+      
+        
+      
+      
+        
+          
+           
+      
+         
