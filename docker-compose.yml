@@ -26,3 +26,14 @@ services:
       POSTGRES_DB: 'vocascan'
     volumes:
       - './database:/var/lib/postgresql/data'
+  
+    
+      
+        
+      
+      
+        
+          
+           
+      
+         
