@@ -11,6 +11,7 @@ public:
     Registration(Database &db) : database(db) {}
 
     bool registerUser(const std::string &username, const std::string &email, const std::string &password, bool adminRights);
+    std::string createUUID(const std::string &username, const std::string &email);
 
 private:
     Database &database;
