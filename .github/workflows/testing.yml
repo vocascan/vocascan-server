@@ -1,0 +1,14 @@
+name: Catch2 testing
+on: push
+
+jobs:
+  benchmark:
+    name: Run Catch2 testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        # TODO: Temporary (start)
+      - run: mkdir build && cd build
+      - run: conan install -s compiler.libcxx=libstdc++11 .. --build=missing
+      - run: cd ../ && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -S . -B build && cmake --build build
+      - run: cd build/bin && ./vocasca-server-testing
