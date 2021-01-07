@@ -8,6 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         # TODO: Temporary (start)
+      - run: pip install conan
       - run: mkdir build && cd build
       - run: conan install -s compiler.libcxx=libstdc++11 .. --build=missing
       - run: cd ../ && cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -S . -B build && cmake --build build
