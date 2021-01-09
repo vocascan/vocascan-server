@@ -8,6 +8,7 @@ fmt/7.1.2
 http-parser/2.8.1@bincrafters/stable
 restinio/0.6.9
 stduuid/1.0
+catch2/2.13.4
 
 
 [generators]
