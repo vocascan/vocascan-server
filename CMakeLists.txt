@@ -26,5 +26,16 @@ PRIVATE
 )
 target_link_libraries(vocascan-server ${CONAN_LIBS})
 
+#---------------------------TESTING------------------------------#
+add_executable(vocascan-server-testing)
+set_property(TARGET vocascan-server-testing
+    PROPERTY CXX_STANDARD 17)
+
+target_sources(vocascan-server-testing 
+PRIVATE 
+    ./tests/test.cpp
+)
+target_link_libraries(vocascan-server-testing ${CONAN_LIBS})
+
 
 add_subdirectory(src) 
