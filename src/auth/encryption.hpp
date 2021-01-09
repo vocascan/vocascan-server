@@ -55,7 +55,16 @@ namespace Encryption
 
         argon2i_hash_raw(t_cost, m_cost, para, password, passwordLength, salt, saltLength, storeHash, hashLength);
 
-        std::string output = ((char *)storeHash);
+        std::string output;
+        char buffer[3]; //stores hex value which is converted to string
+        for(int i = 0; i < hashLength; ++i) 
+        {
+            //direct conversion leads to malfomed hash
+            //every value in storeHash is formated to a hex value then to char and at the end to a string
+            sprintf(buffer, "%02x", storeHash[i]);  
+            std::string swap(buffer); //conversion from char to string 
+            output += swap; //add the converted hex value to return value 
+        }
 
         return output;
     }
