@@ -1,0 +1,33 @@
+name: Catch2 Testing
+on: 
+  push:
+    paths-ignore: [ '**.md' ]
+  pull_request:
+    paths-ignore: [ '**.md' ]
+  workflow_dispatch:
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup python
+        uses: actions/setup-python@v2
+
+      - name: install conan
+        run: pip install conan
+
+      - name: install dependencies
+        run: |
+          mkdir build
+          cd ./build
+          conan install .. -s compiler.libcxx=libstdc++11 --build=missing
+  
+      - name: build tests
+        run: cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -S . -B build && cmake --build build
+
+      - name: run tests
+        run: cd build/bin && ./vocascan-server-testing
