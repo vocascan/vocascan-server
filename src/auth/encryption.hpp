@@ -45,7 +45,7 @@ namespace Encryption
 
         //conversions
         uint8_t *salt = (uint8_t *)strdup(t_salt.c_str()); 
-        uint8_t *password = (uint8_t *)strdup(password.c_str());
+        uint8_t *password = (uint8_t *)strdup(t_password.c_str());
         uint8_t passwordLength = strlen((char *)password);
 
 
