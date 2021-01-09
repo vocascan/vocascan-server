@@ -35,7 +35,7 @@ namespace Encryption
     }
 
     //hash password with random generated salt
-    inline std::string hashPassword(std::string password, std::string salt)
+    inline std::string hashPassword(std::string t_password, std::string t_salt)
     {
         int hashLength = 32;
         int saltLength = 16;
@@ -44,7 +44,7 @@ namespace Encryption
         uint8_t storeHash[hashLength];
 
         //conversions
-        uint8_t *salt = (uint8_t *)strdup(salt.c_str()); 
+        uint8_t *salt = (uint8_t *)strdup(t_salt.c_str()); 
         uint8_t *password = (uint8_t *)strdup(password.c_str());
         uint8_t passwordLength = strlen((char *)password);
 
