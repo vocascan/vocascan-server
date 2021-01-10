@@ -300,7 +300,7 @@ auto RequestManager::create_request_handler()
 		"/api/groups",
 		[&](auto req, auto params) {
 			//get JWT token from request header
-			std::string jwtToken = std::string(req->header().value_of("Jwt"));
+			std::string jwtToken = std::string(req->header().value_of("Authorization"));
 
 			//check if token is expired
 			if (JWT::checkTokenExpired(std::string(jwtToken)))
