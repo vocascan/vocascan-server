@@ -70,7 +70,7 @@ auto RequestManager::create_request_handler()
 			else
 			{
 				//if not already exists store username, email and password(needs to be hashed first) in database
-				auto result = std::async(std::launch::async, &Registration::registerUser, &registration, jsonBody["username"], jsonBody["email"], jsonBody["password"], false);
+				bool result = registration.registerUser(jsonBody["username"], jsonBody["email"], jsonBody["password"], false);
 
 				//get user id to create the jwt token
 				std::string userId = database.getEntity("id", "users", "email", jsonBody["email"]);
@@ -274,7 +274,7 @@ auto RequestManager::create_request_handler()
 		"/api/packages",
 		[&](auto req, auto params) {
 			//get JWT token from request header
-			std::string jwtToken = std::string(req->header().value_of("Jwt"));
+			std::string jwtToken = std::string(req->header().value_of("Authorization"));
 
 			//check if token is expired
 			if (JWT::checkTokenExpired(std::string(jwtToken)))
