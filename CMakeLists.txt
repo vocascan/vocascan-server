@@ -33,7 +33,8 @@ set_property(TARGET vocascan-server-testing
 
 target_sources(vocascan-server-testing 
 PRIVATE 
-    ./tests/test.cpp
+    ./tests/tests.cpp
+    #./tests/database-test.cpp
 )
 target_link_libraries(vocascan-server-testing ${CONAN_LIBS})
 
