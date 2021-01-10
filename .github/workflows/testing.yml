@@ -17,6 +17,14 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v2
 
+      - name: setup Postgresql
+        uses: huaxk/postgis-action@v1
+        with:
+          postgresql version: '11' 
+          postgresql password: 'vocascan'
+          postgresql user: 'vocascan'
+          postgresql db: 'vocascan'
+
       - name: install conan
         run: pip install conan
 
