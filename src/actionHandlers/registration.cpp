@@ -14,7 +14,8 @@ bool Registration::registerUser(const std::string &username, const std::string &
 
 std::string Registration::createUUID(const std::string &username, const std::string &email)
 {
-    auto userId = uuids::uuid::from_string(username + email);
-    std::string UUID = uuids::to_string(userId);
+    uuids::uuid_name_generator gen(uuids::uuid::from_string("47183823-2574-4bfd-b411-99ed177d3e43"));
+    uuids::uuid const id = gen(username + email);
+    std::string UUID = uuids::to_string(id);
     return UUID;
 }
