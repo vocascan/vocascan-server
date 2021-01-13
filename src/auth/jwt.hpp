@@ -5,7 +5,7 @@
 
 namespace JWT
 {
-    inline std::string createJwt(const std::string &userId, const std::string &role)
+    inline std::string createJwt(const std::string &userId, const std::string &role, const std::string &secret_key)
     {
         auto token = jwt::create()
                          .set_issuer("vocascan")
@@ -14,7 +14,7 @@ namespace JWT
                          .set_payload_claim("userRole", jwt::claim(std::string(role)))
                          .set_issued_at(std::chrono::system_clock::now())
                          .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours{3600})
-                         .sign(jwt::algorithm::hs256{"sjfksdjfsdlkfjsdklfjsdklfjsk35hjk43jh5lkh43kljdklfhsklhrkl324h54ldksfh43"});
+                         .sign(jwt::algorithm::hs256{secret_key});
 
         return token;
     }

@@ -75,7 +75,7 @@ auto RequestManager::create_request_handler()
 				//get user id to create the jwt token
 				std::string userId = database.getEntity("id", "users", "email", jsonBody["email"]);
 				std::string role = database.getUserRole(userId);
-				std::string jwt = JWT::createJwt(userId, role);
+				std::string jwt = JWT::createJwt(userId, role, secret_key);
 				//create response body
 				nlohmann::json body = {
 					{"jwt", jwt}};

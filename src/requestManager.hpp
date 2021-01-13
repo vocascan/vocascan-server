@@ -7,12 +7,13 @@
 #include <fstream>
 #include "actionHandlers/registration.hpp"
 #include "auth/authMiddleware.hpp"
+#include <nlohmann/json.hpp>
 
 class RequestManager
 {
 
 public:
-    RequestManager(Database &db) : database(db), registration(db), authMiddleware(db)
+    RequestManager(Database &db, std::string &t_secret_key) : secret_key(t_secret_key), database(db), registration(db), authMiddleware(db)
     {
     }
 
@@ -20,6 +21,7 @@ public:
     auto create_request_handler();
 
 private:
+    std::string secret_key;
     Database &database;
     AuthMiddleware authMiddleware;
     Registration registration;

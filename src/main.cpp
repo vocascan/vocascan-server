@@ -117,6 +117,6 @@ int main(int argc, char **argv, char **envp)
               << "| Version  |  " << Version::getVersion() << std::endl
               << "-------------------------------" << std::endl;
     //create Server and start it
-    RequestManager requestManager(database);
+    RequestManager requestManager(database, env["SECRET_KEY"]);
     requestManager.startServer(env["SERVER_IP_ADDRESS"], env["SERVER_PORT"], env["SERVER_DEBUG"]);
 }
