@@ -2,6 +2,7 @@
 #define JWT_H
 #include <string>
 #include <jwt-cpp/jwt.h>
+#include <stdlib.h>
 
 namespace JWT
 {
@@ -14,7 +15,7 @@ namespace JWT
                          .set_payload_claim("userRole", jwt::claim(std::string(role)))
                          .set_issued_at(std::chrono::system_clock::now())
                          .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours{3600})
-                         .sign(jwt::algorithm::hs256{"sjfksdjfsdlkfjsdklfjsdklfjsk35hjk43jh5lkh43kljdklfhsklhrkl324h54ldksfh43"});
+                         .sign(jwt::algorithm::hs256{getev("SECRET_KEY")});
 
         return token;
     }
@@ -25,7 +26,7 @@ namespace JWT
         {
             auto decoded = jwt::decode(jwt);
             auto verifier = jwt::verify()
-                                .allow_algorithm(jwt::algorithm::hs256{"sjfksdjfsdlkfjsdklfjsdklfjsk35hjk43jh5lkh43kljdklfhsklhrkl324h54ldksfh43"})
+                                .allow_algorithm(jwt::algorithm::hs256{getenv("SECRET_KEY")})
                                 .with_issuer("vocascan");
             verifier.verify(decoded);
         }
