@@ -1,8 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const AdminBro = require('admin-bro')
-const AdminBroExpress = require('@admin-bro/express')
-const AdminBroSequelize = require('@admin-bro/sequelize')
 require('dotenv').config()
 var Minio = require('minio')
 
@@ -21,23 +18,6 @@ global.db = require("./database/models");
 const app = express();
 
 const routes = require("./routes/api");
-
-//create admin bro web interface
-AdminBro.registerAdapter(AdminBroSequelize);
-
-const adminBro = new AdminBro({
-    databases: [db],
-    rootPath: '/admin',
-    loginPath: '/admin/login',
-    branding: {
-        companyName: 'Skitchen',
-        softwareBrothers: false,
-    }
-});
-
-const router = AdminBroExpress.buildRouter(adminBro)
-
-app.use(adminBro.options.rootPath, router)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

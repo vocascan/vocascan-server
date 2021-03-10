@@ -16,9 +16,6 @@
     "sequelize-cli": "^6.2.0"
   },
   "dependencies": {
-    "@admin-bro/express": "^3.1.0",
-    "@admin-bro/sequelize": "^1.2.1",
-    "admin-bro": "^3.4.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "concurrently": "^3.5.1",
