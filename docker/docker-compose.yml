@@ -1,0 +1,25 @@
+version: "3.0"
+services:
+  minio:
+    image: "minio/minio"
+    container_name: myminio
+    volumes:
+      - "./minio:/export"
+    ports:
+        - "9000:9000"
+    environment:
+        MINIO_ROOT_USER: minio
+        MINIO_ROOT_PASSWORD: minio123
+    restart: always
+    command: server /export
+
+  db:
+    image: postgres
+    ports:
+      - '6543:5432'
+    environment:
+      POSTGRES_USER: 'skitchen'
+      POSTGRES_PASSWORD: 'skitchen'
+      POSTGRES_DB: 'skitchen'
+    volumes:
+      - './database:/var/lib/postgresql/data'

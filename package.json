@@ -1,0 +1,38 @@
+{
+  "name": "skitchen-server",
+  "version": "1.0.0",
+  "description": "Easily share your recipes",
+  "main": "server.js",
+  "scripts": {
+    "client-install": "cd client && npm install",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client"
+  },
+  "author": "Noctera",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.14.6",
+    "sequelize-cli": "^6.2.0"
+  },
+  "dependencies": {
+    "@admin-bro/express": "^3.1.0",
+    "@admin-bro/sequelize": "^1.2.1",
+    "admin-bro": "^3.4.0",
+    "axios": "^0.21.1",
+    "bcrypt": "^5.0.0",
+    "concurrently": "^3.5.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "express": "^4.16.2",
+    "express-formidable": "^1.2.0",
+    "express-session": "^1.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "minio": "^7.0.18",
+    "pg": "^7.7.1",
+    "pg-hstore": "^2.3.2",
+    "react-is": "^17.0.1",
+    "sequelize": "^4.44.4",
+    "tslib": "^2.1.0"
+  }
+}
