@@ -3,7 +3,11 @@ const { Sequelize } = require('sequelize');
 const { Umzug, SequelizeStorage } = require('umzug');
 require('dotenv').config()
 
-global.sequelize = new Sequelize({
+
+//make global handler for sequelize database
+
+
+const sequelize = new Sequelize({
    username: "vocascan", 
    password: "vocascan", 
    database: "vocascan", 
@@ -13,7 +17,7 @@ global.sequelize = new Sequelize({
   });
 
 const umzug = new Umzug({
-  migrations: { glob: 'migrations/*.js' },
+  migrations: { glob: './database/migrations/*.js' },
   context: sequelize.getQueryInterface(),
   storage: new SequelizeStorage({ sequelize }),
   logger: console,
