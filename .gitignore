@@ -3,4 +3,4 @@ package-lock.json
 /docker/database
 /docker/minio
 .vscode
-
+.env
