@@ -1,19 +1,30 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const { Sequelize } = require('sequelize');
+const { Umzug, SequelizeStorage } = require('umzug');
 require('dotenv').config()
-var Minio = require('minio')
 
+global.sequelize = new Sequelize({
+   username: "vocascan", 
+   password: "vocascan", 
+   database: "vocascan", 
+   port: 7654, 
+   host: "localhost", 
+   dialect: "postgres" 
+  });
 
-//create client for minio files storage server
-global.fileStorage = new Minio.Client({
-    endPoint: '127.0.0.1',
-    port: 9000,
-    useSSL: false,
-    accessKey: 'minio',
-    secretKey: 'minio123'
+const umzug = new Umzug({
+  migrations: { glob: 'migrations/*.js' },
+  context: sequelize.getQueryInterface(),
+  storage: new SequelizeStorage({ sequelize }),
+  logger: console,
 });
 
-global.db = require("./database/models");
+(async () => {
+  // Checks migrations and run them if they are not already applied. To keep
+  // track of the executed migrations, a table (and sequelize model) called SequelizeMeta
+  // will be automatically created (if it doesn't exist already) and parsed.
+  await umzug.up();
+})();
 
 const app = express();
 
