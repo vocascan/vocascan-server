@@ -23,11 +23,24 @@ const umzug = new Umzug({
   logger: console,
 });
 
+const seeder = new Umzug({
+	migrations: {
+		glob: ['./database/seeders/*.js', { cwd: __dirname }],
+	},
+	context: sequelize,
+	storage: new SequelizeStorage({
+		sequelize,
+		modelName: 'seeder_meta',
+	}),
+	logger: console,
+});
+
 (async () => {
   // Checks migrations and run them if they are not already applied. To keep
   // track of the executed migrations, a table (and sequelize model) called SequelizeMeta
   // will be automatically created (if it doesn't exist already) and parsed.
   await umzug.up();
+  await seeder.up();
 })();
 
 const app = express();
