@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-    await queryInterface.createTable('groups', {
+    await queryInterface.createTable('Groups', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -12,7 +12,7 @@ async function up({ context: queryInterface }) {
             type: DataTypes.UUID,
             allowNull: false,
             references: {
-                model: 'users',
+                model: 'Users',
                 key: 'id'
             }
         },
@@ -20,7 +20,7 @@ async function up({ context: queryInterface }) {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'languagePackages',
+                model: 'LanguagePackages',
                 key: 'id'
             }
         },
@@ -44,7 +44,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-    await queryInterface.dropTable('groups');
+    await queryInterface.dropTable('Groups');
 }
 
 module.exports = { up, down };

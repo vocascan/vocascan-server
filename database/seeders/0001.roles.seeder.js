@@ -1,14 +1,14 @@
 let roles = [
-    {name: 'user', admin_rights: 'false', createdAt: new Date(), updatedAt: new Date()},
-    {name: 'admin', admin_rights: 'true', createdAt: new Date(), updatedAt: new Date()},
+    {name: 'user', adminRights: 'false', createdAt: new Date(), updatedAt: new Date()},
+    {name: 'admin', adminRights: 'true', createdAt: new Date(), updatedAt: new Date()},
 ];
 
 async function up({ context: queryInterface }) {
-  await queryInterface.getQueryInterface().bulkInsert('roles', roles);
+  await queryInterface.getQueryInterface().bulkInsert('Roles', roles);
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.getQueryInterface().bulkDelete('roles', { name: roles.map(u => u.name) });
+  await queryInterface.getQueryInterface().bulkDelete('Roles', { name: roles.map(u => u.name) });
 }
 
 module.exports = { up, down };

@@ -7,7 +7,7 @@ module.exports = (sequelize) => {
     {
       id: {
         type: DataTypes.UUID,
-        defaultValue: UUIDV4,
+        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
         primaryKey: true,
       },
@@ -27,13 +27,21 @@ module.exports = (sequelize) => {
       },
       roleId: {
         type: DataTypes.INTEGER,
-        defaultValue: false,
+        defaultValue: 1,
       },
     },
     {
       sequelize,
     }
   );
+
+  User.associate = (db) => {
+    User.hasMany(db.LanguagePackage);
+    User.hasMany(db.Group);
+    User.hasMany(db.Drawer);
+    User.hasMany(db.ForeignWord);
+    User.hasMany(db.TranslatedWord);
+  };
 
   return User;
 };
