@@ -39,6 +39,13 @@ module.exports = (sequelize) => {
         sequelize,
         }
     );
+
+    LanguagePackage.associate = (db) => {
+        LanguagePackage.hasMany(db.Drawer);
+        LanguagePackage.hasMany(db.Group);
+        LanguagePackage.hasMany(db.ForeignWord);
+        LanguagePackage.hasMany(db.TranslatedWord);
+    };
     
     return LanguagePackage;
 };

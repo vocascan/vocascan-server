@@ -36,5 +36,9 @@ module.exports = (sequelize) => {
         }
     );
 
+    ForeignWord.associate = (db) => {
+    ForeignWord.hasMany(db.LanguagePackage);
+  };
+
     return ForeignWord;
 };
