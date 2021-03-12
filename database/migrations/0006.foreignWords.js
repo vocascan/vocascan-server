@@ -1,14 +1,14 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-    await queryInterface.createTable('language_packages', {
+    await queryInterface.createTable('foreignWords', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
+        userId: {
             type: DataTypes.UUID,
             allowNull: false,
             references: {
@@ -16,24 +16,32 @@ async function up({ context: queryInterface }) {
                 key: 'id'
             }
         },
+        languagePackageId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'languagePackages',
+                key: 'id'
+            }
+        },
+        groupId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'groups',
+                key: 'id'
+            }
+        },
+        drawerId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'drawers',
+                key: 'id'
+            }
+        },
         name: {
             type: DataTypes.STRING,
-            allowNull: false,
-        },
-        foreign_word_language: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        translated_word_language: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        vocabs_per_day: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        right_words: {
-            type: DataTypes.INTEGER,
             allowNull: false,
         },
         createdAt: {
@@ -48,7 +56,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-    await queryInterface.dropTable('language_packages');
+    await queryInterface.dropTable('foreign_words');
 }
 
 module.exports = { up, down };

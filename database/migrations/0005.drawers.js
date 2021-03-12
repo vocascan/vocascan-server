@@ -1,14 +1,14 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-    await queryInterface.createTable('groups', {
+    await queryInterface.createTable('drawers', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
+        userId: {
             type: DataTypes.UUID,
             allowNull: false,
             references: {
@@ -16,11 +16,11 @@ async function up({ context: queryInterface }) {
                 key: 'id'
             }
         },
-        language_package_id: {
+        languagePackageId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'language_packages',
+                model: 'languagePackages',
                 key: 'id'
             }
         },
@@ -28,8 +28,8 @@ async function up({ context: queryInterface }) {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        active: {
-            type: DataTypes.BOOLEAN,
+        queryInterval: {
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
         createdAt: {
@@ -44,7 +44,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-    await queryInterface.dropTable('groups');
+    await queryInterface.dropTable('drawers');
 }
 
 module.exports = { up, down };

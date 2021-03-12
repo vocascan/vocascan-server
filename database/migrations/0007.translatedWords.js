@@ -1,36 +1,34 @@
-// MODEL
 const { DataTypes } = require('sequelize');
 
-module.exports = (sequelize) => {
-    const TranslatedWords = sequelize.define(
-    'translated_words',
-    {
+async function up({ context: queryInterface }) {
+    await queryInterface.createTable('translatedWords', {
         id: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
-            type: DataTypes.STRING,
+        userId: {
+            type: DataTypes.UUID,
             allowNull: false,
             references: {
                 model: 'users',
                 key: 'id'
             }
         },
-        foreign_word_id: {
+        foreignWordId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'foreign_words',
+                model: 'foreignWords',
                 key: 'id'
             }
         },
-        language_package_id: {
+        languagePackageId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'language_packages',
+                model: 'languagePackages',
                 key: 'id'
             }
         },
@@ -38,16 +36,19 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-    },
-        {
-        sequelize,
-        }
-    );
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+        },
+  });
+}
 
-    TranslatedWords.associate = (db) => {
-    TranslatedWords.hasMany(db.File);
-    TranslatedWords.hasOne(db.Setting);
-    };
+async function down({ context: queryInterface }) {
+    await queryInterface.dropTable('translated_words');
+}
 
-    return TranslatedWords;
-};
+module.exports = { up, down };

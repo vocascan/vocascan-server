@@ -43,6 +43,7 @@ const seeder = new Umzug({
   await seeder.up();
 })();
 
+
 const app = express();
 
 const routes = require("./routes/api");

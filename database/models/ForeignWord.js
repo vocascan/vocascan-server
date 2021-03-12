@@ -2,36 +2,32 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    const Drawers = sequelize.define(
-    'drawers',
+    const ForeignWord = sequelize.define(
+    'ForeignWord',
     {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
+        userId: {
             type: DataTypes.STRING,
             allowNull: false,
-            references: {
-                model: 'users',
-                key: 'id'
-            }
         },
-        language_package_id: {
+        languagePackageId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {
-                model: 'language_packages',
-                key: 'id'
-            }
+        },
+        groupId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        drawerId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         },
         name: {
             type: DataTypes.STRING,
-            allowNull: false,
-        },
-        query_interval: {
-            type: DataTypes.INTEGER,
             allowNull: false,
         },
     },
@@ -40,10 +36,5 @@ module.exports = (sequelize) => {
         }
     );
 
-    Drawers.associate = (db) => {
-    Drawers.hasMany(db.File);
-    Drawers.hasOne(db.Setting);
-    };
-
-    return Drawers;
+    return ForeignWord;
 };

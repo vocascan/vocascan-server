@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken")
 require('dotenv').config()
 
-const User = require("../../database/models/users.js")
 const { queryAsync, getJWT } = require("../utils")
+
+const { User } = require('../../database');
 
 // Check for Authorization header and add user attribute to request object
 async function ProtectMiddleware(req, res, next) {
@@ -33,7 +34,7 @@ async function ProtectMiddleware(req, res, next) {
     }
 
     // Get user from database
-    const row = await db.users.findAll({
+    const row = await User.findAll({
         where: {
             id: userId
         }

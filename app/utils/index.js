@@ -5,7 +5,7 @@ const moment = require("moment")
 
 // Generate JSON Web Token
 function generateJWT(input) {
-    return jwt.sign(input, process.env.JWT_SECRET)
+    return jwt.sign(input, process.env.SECRET_KEY)
 }
 
 // get JWT Token from request
@@ -21,7 +21,7 @@ async function getId(input) {
     try {
         // Read userId from token
         userId = await new Promise((resolve, reject) => {
-            jwt.verify(input, process.env.JWT_SECRET, (error, decoded) => {
+            jwt.verify(input, process.env.SECRET_KEY, (error, decoded) => {
                 if (error) reject()
                 resolve(decoded.id)
             })

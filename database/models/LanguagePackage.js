@@ -2,39 +2,35 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    const LanguagePackages = sequelize.define(
-    'language_packages',
+    const LanguagePackage = sequelize.define(
+    'LanguagePackage',
     {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
+        userId: {
             type: DataTypes.STRING,
             allowNull: false,
-            references: {
-                model: 'users',
-                key: 'id'
-            }
         },
         name: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        foreign_word_language: {
+        foreignWordLanguage: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        translated_word_language: {
+        translatedWordLanguage: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        vocabs_per_day: {
+        vocabsPerDay: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        right_words: {
+        rightWords: {
             type: DataTypes.INTEGER,
             allowNull: false,
         }
@@ -43,11 +39,6 @@ module.exports = (sequelize) => {
         sequelize,
         }
     );
-
-    LanguagePackages.associate = (db) => {
-    LanguagePackages.hasMany(db.File);
-    LanguagePackages.hasOne(db.Setting);
-    };
-
-    return LanguagePackages;
+    
+    return LanguagePackage;
 };

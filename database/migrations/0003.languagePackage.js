@@ -1,14 +1,14 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-    await queryInterface.createTable('foreign_words', {
+    await queryInterface.createTable('languagePackages', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
+        userId: {
             type: DataTypes.UUID,
             allowNull: false,
             references: {
@@ -16,32 +16,24 @@ async function up({ context: queryInterface }) {
                 key: 'id'
             }
         },
-        language_package_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'language_packages',
-                key: 'id'
-            }
-        },
-        group_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'groups',
-                key: 'id'
-            }
-        },
-        drawer_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'drawers',
-                key: 'id'
-            }
-        },
         name: {
             type: DataTypes.STRING,
+            allowNull: false,
+        },
+        foreignWordLanguage: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        translatedWordLanguage: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        vocabsPerDay: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        rightWords: {
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
         createdAt: {
@@ -56,7 +48,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-    await queryInterface.dropTable('foreign_words');
+    await queryInterface.dropTable('language_packages');
 }
 
 module.exports = { up, down };

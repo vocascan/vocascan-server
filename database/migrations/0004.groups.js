@@ -1,14 +1,14 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-    await queryInterface.createTable('translated_words', {
+    await queryInterface.createTable('groups', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
+        userId: {
             type: DataTypes.UUID,
             allowNull: false,
             references: {
@@ -16,24 +16,20 @@ async function up({ context: queryInterface }) {
                 key: 'id'
             }
         },
-        foreign_word_id: {
+        languagePackageId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'foreign_words',
-                key: 'id'
-            }
-        },
-        language_package_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'language_packages',
+                model: 'languagePackages',
                 key: 'id'
             }
         },
         name: {
             type: DataTypes.STRING,
+            allowNull: false,
+        },
+        active: {
+            type: DataTypes.BOOLEAN,
             allowNull: false,
         },
         createdAt: {
@@ -48,7 +44,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-    await queryInterface.dropTable('translated_words');
+    await queryInterface.dropTable('groups');
 }
 
 module.exports = { up, down };

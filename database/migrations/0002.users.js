@@ -1,19 +1,32 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('roles', {
+  await queryInterface.createTable('users', {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true
     },
-    name: {
+    username: {
       type: DataTypes.STRING,
     },
-    admin_rights: {
-      type: DataTypes.BOOLEAN,
+    email: {
+      type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    roleId: {
+      type: DataTypes.INTEGER,
+      defaultValue: false,
+      references: {
+        model: 'roles',
+        key: 'id'
+      }
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -27,7 +40,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('roles');
+  await queryInterface.dropTable('users');
 }
 
 module.exports = { up, down };

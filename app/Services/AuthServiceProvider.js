@@ -2,8 +2,9 @@ const { v4: uuid } = require("uuid")
 const bcrypt = require("bcrypt")
 const moment = require("moment")
 
-const User = require("../../database/models/users.js")
-const { generateJWT } = require("../utils")
+const { generateJWT } = require("../utils");
+
+const { User } = require('../../database');
 
 // Validate inputs from /register and /login route
 function validateAuth(req, res) {
@@ -23,7 +24,7 @@ async function validateRegister(req, res) {
     }
 
     // Check if email address already exists
-    if (await db.users.count({
+    if (await User.count({
         where: {
             email: req.body.email
         }
@@ -41,49 +42,46 @@ function validateLogin(req, res) {
 }
 
 // Create new user and store into database
-async function createUser({ name, email, password }) {
+async function createUser({ username, email, password }) {
     // Hash password
-    const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS)
+    const hash = await bcrypt.hash(password, +process.env.SALT)
 
     // Create new user
     const userId = uuid()
-    const user = await db.users.create({
+    const resUser = await User.create({
         id: userId,
-        name: name,
+        username: username,
         email: email,
         password: hash,
-        description: '',
-        avatar: ''
-        //created_at: moment().format("YYYY-MM-DD HH:mm:ss")
+        role_id: 1
     })
 
     //delete unnecessary information
-    delete user.dataValues.avatar
-    delete user.dataValues.password
-    delete user.dataValues.updatedAt
-    delete user.dataValues.createdAt
+    delete resUser.dataValues.password
+    delete resUser.dataValues.updatedAt
+    delete resUser.dataValues.createdAt
 
-    return user
+    return resUser
 }
 
 // Log user in
 async function loginUser({ email, password }, res) {
     // Get user with email from database
-    const user = await db.users.find({
+    const resUser = await User.find({
         attributes: ["id", "name", "email", "description", "password"],
         where: {
             email: email
         }
     })
 
-    if(!user) {
+    if(!resUser) {
         res.status(404)
         res.end()
         return
     }
 
     // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isPasswordValid = await bcrypt.compare(password, resUser.password)
 
     if(!isPasswordValid) {
         res.status(401)
@@ -92,8 +90,8 @@ async function loginUser({ email, password }, res) {
     }
     
     //delete password from return string
-    delete user.dataValues.password
-    return user
+    delete resUser.dataValues.password
+    return resUser
 }
 
 // Generate JWT for user

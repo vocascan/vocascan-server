@@ -2,8 +2,8 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Roles = sequelize.define(
-    'roles',
+  const Role = sequelize.define(
+    'Role',
     {
         id: {
             type: DataTypes.INTEGER,
@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             validate: { len: [2, 32] },
         },
-        admin_rights: {
+        adminRights: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
@@ -24,10 +24,5 @@ module.exports = (sequelize) => {
     }
   );
 
-  Roles.associate = (db) => {
-    Roles.hasMany(db.File);
-    Roles.hasOne(db.Setting);
-  };
-
-  return Roles;
+  return Role;
 };

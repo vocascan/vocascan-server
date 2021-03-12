@@ -2,8 +2,8 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Users = sequelize.define(
-    'users',
+  const User = sequelize.define(
+    'User',
     {
       id: {
         type: DataTypes.UUID,
@@ -25,13 +25,9 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      role_id: {
+      roleId: {
         type: DataTypes.INTEGER,
         defaultValue: false,
-        references: {
-          model: 'roles',
-          key: 'id'
-        }
       },
     },
     {
@@ -39,10 +35,5 @@ module.exports = (sequelize) => {
     }
   );
 
-  Users.associate = (db) => {
-    Users.hasMany(db.File);
-    Users.hasOne(db.Setting);
-  };
-
-  return Users;
+  return User;
 };
