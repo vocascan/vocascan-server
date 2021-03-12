@@ -56,11 +56,6 @@ async function createUser({ username, email, password }) {
         role_id: 1
     })
 
-    //delete unnecessary information
-    delete resUser.dataValues.password
-    delete resUser.dataValues.updatedAt
-    delete resUser.dataValues.createdAt
-
     return resUser
 }
 
@@ -94,15 +89,9 @@ async function loginUser({ email, password }, res) {
     return resUser
 }
 
-// Generate JWT for user
-function generateToken(user) {
-    return generateJWT({ id: user.id })
-}
-
 module.exports = {
     createUser,
     loginUser,
     validateRegister,
     validateLogin,
-    generateToken
 }

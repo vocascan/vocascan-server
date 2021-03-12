@@ -1,4 +1,5 @@
 const { createUser, loginUser, validateRegister, validateLogin, generateToken } = require("../Services/AuthServiceProvider.js")
+const { generateJWT } = require("../utils/index.js");
 
 async function register(req, res) {
 
@@ -7,8 +8,7 @@ async function register(req, res) {
     }
 
     const resUser = await createUser(req.body)
-
-    const token = generateToken(user)
+    const token = generateJWT(resUser.id)
 
     res.send({ token, resUser })
     res.end()
