@@ -1,12 +1,12 @@
-const { DataTypes } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
     await queryInterface.createTable('LanguagePackages', {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
+            defaultValue: Sequelize.UUIDV4,
             allowNull: false,
             primaryKey: true,
-            autoIncrement: true
         },
         userId: {
             type: DataTypes.UUID,

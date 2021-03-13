@@ -6,20 +6,21 @@ module.exports = (sequelize) => {
     'TranslatedWord',
     {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            allowNull: false,
             primaryKey: true,
-            autoIncrement: true
         },
         userId: {
             type: DataTypes.STRING,
             allowNull: false,
         },
         foreignWordId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
         },
         languagePackageId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
         },
         name: {

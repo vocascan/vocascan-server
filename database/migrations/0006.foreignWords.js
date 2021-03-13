@@ -1,12 +1,12 @@
-const { DataTypes } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
     await queryInterface.createTable('ForeignWords', {
         id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
+            defaultValue: Sequelize.UUIDV4,
             allowNull: false,
             primaryKey: true,
-            autoIncrement: true
         },
         userId: {
             type: DataTypes.UUID,
@@ -17,7 +17,7 @@ async function up({ context: queryInterface }) {
             }
         },
         languagePackageId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
             references: {
                 model: 'LanguagePackages',
@@ -25,7 +25,7 @@ async function up({ context: queryInterface }) {
             }
         },
         groupId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
             references: {
                 model: 'Groups',
@@ -33,7 +33,7 @@ async function up({ context: queryInterface }) {
             }
         },
         drawerId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
             references: {
                 model: 'Drawers',
