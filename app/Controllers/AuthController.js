@@ -22,7 +22,8 @@ async function login(req, res) {
     const resUser = await loginUser(req.body, res)
 
     if(resUser) {
-        const token = generateToken(resUser)
+        //generate JWT with userId
+        const token = generateJWT(resUser.id)
 
         res.send({ token, resUser })
     }
