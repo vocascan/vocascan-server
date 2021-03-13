@@ -2,7 +2,7 @@ const { v4: uuid } = require("uuid")
 const bcrypt = require("bcrypt")
 const moment = require("moment")
 
-const { generateJWT } = require("../utils");
+const { deleteKeysFromObject } = require("../utils");
 
 const { User } = require('../../database');
 
@@ -46,37 +46,36 @@ async function createUser({ username, email, password }) {
     // Hash password
     const hash = await bcrypt.hash(password, +process.env.SALT)
 
-    // Create new user
-    const userId = uuid()
     const resUser = await User.create({
-        id: userId,
         username: username,
         email: email,
         password: hash,
-        role_id: 1
+        roleId: 1
     })
 
-    return resUser
+    const user = deleteKeysFromObject(["roleId", "password", "createdAt", "updatedAt"], resUser.toJSON());
+
+    return user
 }
 
 // Log user in
 async function loginUser({ email, password }, res) {
     // Get user with email from database
-    const resUser = await User.find({
-        attributes: ["id", "name", "email", "description", "password"],
+    const user = await User.find({
+        attributes: ["id", "username", "email", "password"],
         where: {
             email: email
         }
     })
 
-    if(!resUser) {
+    if(!user) {
         res.status(404)
         res.end()
         return
     }
 
     // Check password
-    const isPasswordValid = await bcrypt.compare(password, resUser.password)
+    const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if(!isPasswordValid) {
         res.status(401)
@@ -85,8 +84,8 @@ async function loginUser({ email, password }, res) {
     }
     
     //delete password from return string
-    delete resUser.dataValues.password
-    return resUser
+    delete user.dataValues.password
+    return user
 }
 
 module.exports = {

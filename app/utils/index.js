@@ -4,6 +4,7 @@ const moment = require("moment")
 
 
 // Generate JSON Web Token
+//param needs user id for payload
 function generateJWT(input) {
     return jwt.sign(input, process.env.SECRET_KEY)
 }
@@ -59,10 +60,30 @@ function quotedList(array) {
     return `(${array.map(element => `'${element}'`).join(",")})`
 }
 
+/**
+ * Filter a object
+ * @param {Object} object object to filter
+ * @param {Function} predicate filter function
+ * @returns {Object} filtered object
+ */
+const filterObject = (object, predicate) => Object.fromEntries(Object.entries(object).filter(predicate));
+
+/**
+ * Delete specific keys from object
+ * @param {Array} keys Array of keys to delete
+ * @param {*} object object to delete specific keys
+ * @returns new object
+ */
+const deleteKeysFromObject = (keys, object) => {
+  return filterObject(object, ([key]) => !keys.includes(key));
+};
+
 module.exports = {
     generateJWT,
     getJWT,
     getId,
     queryAsync,
-    quotedList
+    quotedList,
+    filterObject,
+    deleteKeysFromObject,
 }

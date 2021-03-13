@@ -7,10 +7,10 @@ async function register(req, res) {
         return
     }
 
-    const resUser = await createUser(req.body)
-    const token = generateJWT(resUser.id)
+    const user = await createUser(req.body)
+    const token = generateJWT(user.id)
 
-    res.send({ token, resUser })
+    res.send({ token, user })
     res.end()
 }
 
@@ -19,13 +19,13 @@ async function login(req, res) {
         return
     }
 
-    const resUser = await loginUser(req.body, res)
+    const user = await loginUser(req.body, res)
 
-    if(resUser) {
+    if(user) {
         //generate JWT with userId
-        const token = generateJWT(resUser.id)
+        const token = generateJWT(user.id)
 
-        res.send({ token, resUser })
+        res.send({ token, user })
     }
 }
 
