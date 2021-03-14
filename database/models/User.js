@@ -1,4 +1,3 @@
-// MODEL
 const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
@@ -7,7 +6,7 @@ module.exports = (sequelize) => {
     {
       id: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        defaultValue: UUIDV4,
         allowNull: false,
         primaryKey: true,
       },
@@ -32,10 +31,13 @@ module.exports = (sequelize) => {
     },
     {
       sequelize,
+      tableName: 'users',
     }
   );
 
   User.associate = (db) => {
+    User.belongsTo(db.Role, { foreignKey: 'roleId' });
+
     User.hasMany(db.LanguagePackage);
     User.hasMany(db.Group);
     User.hasMany(db.Drawer);

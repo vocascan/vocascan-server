@@ -1,58 +1,49 @@
-const jwt = require("jsonwebtoken")
-require('dotenv').config()
+const jwt = require('jsonwebtoken');
 
-const { queryAsync, getJWT } = require("../utils")
-
+const { getJWT } = require('../utils');
 const { User } = require('../../database');
 
 // Check for Authorization header and add user attribute to request object
 async function ProtectMiddleware(req, res, next) {
-    // Break if no Authorization header is set
-    if(!req.header("Authorization")) {
-        res.status(401)
-        res.send("Not authorized")
-        return
-    }
+  // Break if no Authorization header is set
+  if (!req.header('Authorization')) {
+    return res.status(401).send('Not authorized');
+  }
 
-    const token = getJWT(req);
+  const token = getJWT(req);
 
-    let userId
-    
-    try {
-        // Read userId from token
-        userId = await new Promise((resolve, reject) => {
-            jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-                if (error) reject()
-                resolve(decoded.id)
-            })
-        })
-    } catch {
-        // Handle broken token
-        res.status(400)
-        res.send("Invalid auth token")
-        return
-    }
+  let userId;
 
-    // Get user from database
-    const row = await User.findAll({
-        where: {
-            id: userId
+  try {
+    // Read userId from token
+    userId = await new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+        if (error) {
+          reject();
         }
-    })
+        resolve(decoded.id);
+      });
+    });
+  } catch (err) {
+    // Handle broken token
+    return res.status(400).send('Invalid auth token');
+  }
 
-    if(!row) {
-        res.status(400)
-        res.send("Invalid auth token")
-        return
-    }
-    
-    // Create user model
-    //const user = new User(row)
+  // Get user from database
+  const user = await User.findOne({
+    where: {
+      id: userId,
+    },
+  });
 
-    // Inject user into request object
-    req.user = row[0]
+  if (!user) {
+    return res.status(400).send('Invalid auth token');
+  }
 
-    next()
+  // Inject user into request object
+  req.user = user;
+
+  next();
 }
 
-module.exports = ProtectMiddleware 
+module.exports = ProtectMiddleware;

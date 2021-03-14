@@ -1,20 +1,24 @@
 const fs = require('fs');
 const path = require('path');
+const chalk = require('chalk');
 const Sequelize = require('sequelize');
+const { Umzug, SequelizeStorage } = require('umzug');
+const { performance } = require('perf_hooks');
 
+const { round } = require('../app/utils');
 const basename = path.basename(__filename);
 
-let db = {};
+const db = {};
 
 // initialize sequelize instance
-let sequelize = new Sequelize({
-   username: "vocascan", 
-   password: "vocascan", 
-   database: "vocascan", 
-   port: 7654, 
-   host: "localhost", 
-   dialect: "postgres" 
-  });
+const sequelize = new Sequelize({
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: process.env.DB_PORT,
+  host: process.env.DB_HOST,
+  dialect: 'postgres',
+});
 
 // get all models
 fs.readdirSync(path.resolve('database', 'models'))
@@ -41,5 +45,123 @@ Object.keys(db).forEach((modelName) => {
 // define db object
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+db.migrations = {
+  // umzug instance for migrations
+  migrations: (() => {
+    const migrations = new Umzug({
+      migrations: {
+        glob: './database/migrations/*.js',
+      },
+      context: db.sequelize.getQueryInterface(),
+      storage: new SequelizeStorage({
+        sequelize: db.sequelize,
+        modelName: '.migrations',
+        timestamps: true,
+      }),
+    });
+
+    let startMigrationTime = 0;
+
+    migrations.on('migrating', ({ name }) => {
+      console.log(chalk.green(`- start ${name.slice(0, -3)}`));
+      startMigrationTime = performance.now();
+    });
+
+    migrations.on('migrated', () => {
+      console.log(
+        chalk.green(
+          `- migrated successfully ${chalk.cyan(
+            `(${round(performance.now() - startMigrationTime, 3)}ms)`
+          )}`
+        )
+      );
+    });
+
+    return migrations;
+  })(),
+
+  // apply migrations
+  up: ({ migrations: { migrations } }) => {
+    const startTime = performance.now();
+
+    console.info(chalk.yellow('Migrating DB...'));
+
+    return migrations
+      .up()
+      .then(() => {
+        console.log(
+          chalk.green(
+            `DB migrating complete in ${chalk.cyan(
+              `(${round(performance.now() - startTime, 3)}ms)`
+            )}`
+          )
+        );
+      })
+      .catch((err) => {
+        console.log(chalk.red('An Error occurred while seeding'));
+        throw err;
+      });
+  },
+};
+
+db.seeders = {
+  // umzug instance for seeders
+  seeders: (() => {
+    const seeders = new Umzug({
+      migrations: {
+        glob: './database/seeders/*.js',
+      },
+      context: db.sequelize.getQueryInterface(),
+      storage: new SequelizeStorage({
+        sequelize: db.sequelize,
+        modelName: '.seeders',
+        timestamps: true,
+      }),
+    });
+
+    let startSeedingTime = 0;
+
+    seeders.on('migrating', ({ name }) => {
+      console.log(chalk.green(`- start ${name.slice(0, -3)}`));
+      startSeedingTime = performance.now();
+    });
+
+    seeders.on('migrated', () => {
+      console.log(
+        chalk.green(
+          `- seeded successfully ${chalk.cyan(
+            `(${round(performance.now() - startSeedingTime, 3)}ms)`
+          )}`
+        )
+      );
+    });
+
+    return seeders;
+  })(),
+
+  // apply seeders
+  up: ({ seeders: { seeders } }) => {
+    const startTime = performance.now();
+
+    console.info(chalk.yellow('Seeding DB...'));
+
+    return seeders
+      .up()
+      .then(() => {
+        console.log(
+          chalk.green(
+            `DB seeding complete in ${chalk.cyan(
+              `(${round(performance.now() - startTime, 3)}ms)`
+            )}`
+          )
+        );
+      })
+      .catch((err) => {
+        console.log(chalk.red('An Error occurred while seeding'));
+        throw err;
+      });
+  },
+};
 
 module.exports = db;

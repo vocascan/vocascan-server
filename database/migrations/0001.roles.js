@@ -1,12 +1,12 @@
-const { Sequelize, DataTypes, UUID, UUIDV4 } = require('sequelize');
+const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('Roles', {
+  await queryInterface.createTable('roles', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     name: {
       type: DataTypes.STRING,
@@ -27,7 +27,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('Roles');
+  await queryInterface.dropTable('roles');
 }
 
 module.exports = { up, down };

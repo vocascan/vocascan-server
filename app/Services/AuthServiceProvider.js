@@ -1,96 +1,93 @@
-const { v4: uuid } = require("uuid")
-const bcrypt = require("bcrypt")
-const moment = require("moment")
+const bcrypt = require('bcrypt');
 
-const { deleteKeysFromObject } = require("../utils");
-
+const { deleteKeysFromObject } = require('../utils');
 const { User } = require('../../database');
 
 // Validate inputs from /register and /login route
 function validateAuth(req, res) {
-    if(!req.body.email || !req.body.password) {
-        res.status(400)
-        res.end()
-        return false
-    }
+  if (!req.body.email || !req.body.password) {
+    res.status(400).end();
+    return false;
+  }
 
-    return true
+  return true;
 }
 
 // Validate inputs from /register route
 async function validateRegister(req, res) {
-    if (!validateAuth(req, res)) {
-        return false
-    }
+  if (!validateAuth(req, res)) {
+    return false;
+  }
 
-    // Check if email address already exists
-    if (await User.count({
-        where: {
-            email: req.body.email
-        }
-    })) {
-        res.status(409)
-        res.end()
-        return false
-    }
+  // Check if email address already exists
+  if (
+    await User.count({
+      where: {
+        email: req.body.email,
+      },
+    })
+  ) {
+    res.status(409).end();
+    return false;
+  }
 
-    return true
+  return true;
 }
 
 function validateLogin(req, res) {
-    return validateAuth(req, res)
+  return validateAuth(req, res);
 }
 
 // Create new user and store into database
 async function createUser({ username, email, password }) {
-    // Hash password
-    const hash = await bcrypt.hash(password, +process.env.SALT)
+  // Hash password
+  const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
 
-    const resUser = await User.create({
-        username: username,
-        email: email,
-        password: hash,
-        roleId: 1
-    })
+  const user = await User.create({
+    username,
+    email,
+    password: hash,
+    roleId: 1,
+  });
 
-    const user = deleteKeysFromObject(["roleId", "password", "createdAt", "updatedAt"], resUser.toJSON());
-
-    return user
+  return deleteKeysFromObject(
+    ['roleId', 'password', 'createdAt', 'updatedAt'],
+    user.toJSON()
+  );
 }
 
 // Log user in
 async function loginUser({ email, password }, res) {
-    // Get user with email from database
-    const user = await User.find({
-        attributes: ["id", "username", "email", "password"],
-        where: {
-            email: email
-        }
-    })
+  // Get user with email from database
+  const user = await User.findOne({
+    attributes: ['id', 'username', 'email', 'password'],
+    where: {
+      email,
+    },
+  });
 
-    if(!user) {
-        res.status(404)
-        res.end()
-        return
-    }
+  if (!user) {
+    res.status(404).end();
+    return false;
+  }
 
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+  // Check password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if(!isPasswordValid) {
-        res.status(401)
-        res.end()
-        return
-    }
-    
-    //delete password from return string
-    delete user.dataValues.password
-    return user
+  if (!isPasswordValid) {
+    res.status(401).end();
+    return false;
+  }
+
+  return deleteKeysFromObject(
+    ['roleId', 'password', 'createdAt', 'updatedAt'],
+    user.toJSON()
+  );
 }
 
 module.exports = {
-    createUser,
-    loginUser,
-    validateRegister,
-    validateLogin,
-}
+  createUser,
+  loginUser,
+  validateRegister,
+  validateLogin,
+};
