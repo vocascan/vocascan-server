@@ -24,8 +24,6 @@ Promise.resolve()
   // start server
   .then(() => {
     app.listen(process.env.PORT, () => {
-      console.info(
-        chalk.yellow(`Server is running on port ${process.env.PORT}.`)
-      );
+      console.info(chalk.yellow(`Server is running on port ${process.env.PORT}.`));
     });
   });

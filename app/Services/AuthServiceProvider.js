@@ -50,10 +50,7 @@ async function createUser({ username, email, password }) {
     roleId: 1,
   });
 
-  return deleteKeysFromObject(
-    ['roleId', 'password', 'createdAt', 'updatedAt'],
-    user.toJSON()
-  );
+  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
 // Log user in
@@ -79,10 +76,7 @@ async function loginUser({ email, password }, res) {
     return false;
   }
 
-  return deleteKeysFromObject(
-    ['roleId', 'password', 'createdAt', 'updatedAt'],
-    user.toJSON()
-  );
+  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
 module.exports = {

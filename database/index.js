@@ -24,9 +24,7 @@ const sequelize = new Sequelize({
 fs.readdirSync(path.resolve('database', 'models'))
   // filter by models
   .filter((file) => {
-    return (
-      file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js'
-    );
+    return file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js';
   })
   // import model
   .forEach((file) => {
@@ -70,11 +68,7 @@ db.migrations = {
 
     migrations.on('migrated', () => {
       console.log(
-        chalk.green(
-          `- migrated successfully ${chalk.cyan(
-            `(${round(performance.now() - startMigrationTime, 3)}ms)`
-          )}`
-        )
+        chalk.green(`- migrated successfully ${chalk.cyan(`(${round(performance.now() - startMigrationTime, 3)}ms)`)}`)
       );
     });
 
@@ -91,11 +85,7 @@ db.migrations = {
       .up()
       .then(() => {
         console.log(
-          chalk.green(
-            `DB migrating complete in ${chalk.cyan(
-              `(${round(performance.now() - startTime, 3)}ms)`
-            )}`
-          )
+          chalk.green(`DB migrating complete in ${chalk.cyan(`(${round(performance.now() - startTime, 3)}ms)`)}`)
         );
       })
       .catch((err) => {
@@ -129,11 +119,7 @@ db.seeders = {
 
     seeders.on('migrated', () => {
       console.log(
-        chalk.green(
-          `- seeded successfully ${chalk.cyan(
-            `(${round(performance.now() - startSeedingTime, 3)}ms)`
-          )}`
-        )
+        chalk.green(`- seeded successfully ${chalk.cyan(`(${round(performance.now() - startSeedingTime, 3)}ms)`)}`)
       );
     });
 
@@ -150,11 +136,7 @@ db.seeders = {
       .up()
       .then(() => {
         console.log(
-          chalk.green(
-            `DB seeding complete in ${chalk.cyan(
-              `(${round(performance.now() - startTime, 3)}ms)`
-            )}`
-          )
+          chalk.green(`DB seeding complete in ${chalk.cyan(`(${round(performance.now() - startTime, 3)}ms)`)}`)
         );
       })
       .catch((err) => {

@@ -28,8 +28,7 @@ function getJWT(req) {
  * @param {Function} predicate filter function
  * @returns {Object} filtered object
  */
-const filterObject = (object, predicate) =>
-  Object.fromEntries(Object.entries(object).filter(predicate));
+const filterObject = (object, predicate) => Object.fromEntries(Object.entries(object).filter(predicate));
 
 /**
  * Delete specific keys from object

@@ -7,6 +7,17 @@
     "no-console": "off",
     "strict": "off",
     "no-plusplus": "off",
-    "no-process-exit": "off"
+    "no-process-exit": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreComments": true,
+        "ignoreTrailingComments": true,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
+      }
+    ]
   }
 }
