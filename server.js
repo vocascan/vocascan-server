@@ -1,44 +1,29 @@
+require('dotenv').config();
+
 const express = require('express');
-const { Sequelize } = require('sequelize');
-const { Umzug, SequelizeStorage } = require('umzug');
-require('dotenv').config()
+const chalk = require('chalk');
 
-global.sequelize = new Sequelize({
-   username: "vocascan", 
-   password: "vocascan", 
-   database: "vocascan", 
-   port: 7654, 
-   host: "localhost", 
-   dialect: "postgres" 
-  });
-
-const umzug = new Umzug({
-  migrations: { glob: 'migrations/*.js' },
-  context: sequelize.getQueryInterface(),
-  storage: new SequelizeStorage({ sequelize }),
-  logger: console,
-});
-
-(async () => {
-  // Checks migrations and run them if they are not already applied. To keep
-  // track of the executed migrations, a table (and sequelize model) called SequelizeMeta
-  // will be automatically created (if it doesn't exist already) and parsed.
-  await umzug.up();
-})();
+const routes = require('./routes');
+const db = require('./database');
 
 const app = express();
 
-const routes = require("./routes/api");
+// middleware
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+// routes
+app.use('/', routes);
 
-app.use(express.json())
-// Use Routes
-app.use("/", routes)
+Promise.resolve()
+  // Checks migrations and run them if they are not already applied. To keep
+  // track of the executed migrations, a table (and sequelize model) called SequelizeMeta
+  // will be automatically created (if it doesn't exist already) and parsed.
+  .then(() => db.migrations.up(db))
+  .then(() => db.seeders.up(db))
 
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, "192.168.178.58", console.log(`Server started on port ${PORT}`));
+  // start server
+  .then(() => {
+    app.listen(process.env.PORT, () => {
+      console.info(chalk.yellow(`Server is running on port ${process.env.PORT}.`));
+    });
+  });

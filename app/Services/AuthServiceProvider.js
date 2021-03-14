@@ -1,110 +1,87 @@
-const { v4: uuid } = require("uuid")
-const bcrypt = require("bcrypt")
-const moment = require("moment")
+const bcrypt = require('bcrypt');
 
-const User = require("../../database/models/users.js")
-const { generateJWT } = require("../utils")
+const { deleteKeysFromObject } = require('../utils');
+const { User } = require('../../database');
 
 // Validate inputs from /register and /login route
 function validateAuth(req, res) {
-    if(!req.body.email || !req.body.password) {
-        res.status(400)
-        res.end()
-        return false
-    }
+  if (!req.body.email || !req.body.password) {
+    res.status(400).end();
+    return false;
+  }
 
-    return true
+  return true;
 }
 
 // Validate inputs from /register route
 async function validateRegister(req, res) {
-    if (!validateAuth(req, res)) {
-        return false
-    }
+  if (!validateAuth(req, res)) {
+    return false;
+  }
 
-    // Check if email address already exists
-    if (await db.users.count({
-        where: {
-            email: req.body.email
-        }
-    })) {
-        res.status(409)
-        res.end()
-        return false
-    }
+  // Check if email address already exists
+  if (
+    await User.count({
+      where: {
+        email: req.body.email,
+      },
+    })
+  ) {
+    res.status(409).end();
+    return false;
+  }
 
-    return true
+  return true;
 }
 
 function validateLogin(req, res) {
-    return validateAuth(req, res)
+  return validateAuth(req, res);
 }
 
 // Create new user and store into database
-async function createUser({ name, email, password }) {
-    // Hash password
-    const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS)
+async function createUser({ username, email, password }) {
+  // Hash password
+  const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
 
-    // Create new user
-    const userId = uuid()
-    const user = await db.users.create({
-        id: userId,
-        name: name,
-        email: email,
-        password: hash,
-        description: '',
-        avatar: ''
-        //created_at: moment().format("YYYY-MM-DD HH:mm:ss")
-    })
+  const user = await User.create({
+    username,
+    email,
+    password: hash,
+    roleId: 1,
+  });
 
-    //delete unnecessary information
-    delete user.dataValues.avatar
-    delete user.dataValues.password
-    delete user.dataValues.updatedAt
-    delete user.dataValues.createdAt
-
-    return user
+  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
 // Log user in
 async function loginUser({ email, password }, res) {
-    // Get user with email from database
-    const user = await db.users.find({
-        attributes: ["id", "name", "email", "description", "password"],
-        where: {
-            email: email
-        }
-    })
+  // Get user with email from database
+  const user = await User.findOne({
+    attributes: ['id', 'username', 'email', 'password'],
+    where: {
+      email,
+    },
+  });
 
-    if(!user) {
-        res.status(404)
-        res.end()
-        return
-    }
+  if (!user) {
+    res.status(404).end();
+    return false;
+  }
 
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+  // Check password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if(!isPasswordValid) {
-        res.status(401)
-        res.end()
-        return
-    }
-    
-    //delete password from return string
-    delete user.dataValues.password
-    return user
-}
+  if (!isPasswordValid) {
+    res.status(401).end();
+    return false;
+  }
 
-// Generate JWT for user
-function generateToken(user) {
-    return generateJWT({ id: user.id })
+  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
 module.exports = {
-    createUser,
-    loginUser,
-    validateRegister,
-    validateLogin,
-    generateToken
-}
+  createUser,
+  loginUser,
+  validateRegister,
+  validateLogin,
+};
