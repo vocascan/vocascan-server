@@ -1,10 +1,9 @@
-const {Sequelize, DataTypes, UUIDV4 } = require('sequelize');
+const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('Users', {
+  await queryInterface.createTable('users', {
     id: {
       type: DataTypes.UUID,
-      defaultValue: Sequelize.UUIDV4,
       allowNull: false,
       primaryKey: true,
     },
@@ -24,9 +23,9 @@ async function up({ context: queryInterface }) {
       type: DataTypes.INTEGER,
       defaultValue: 1,
       references: {
-        model: 'Roles',
-        key: 'id'
-      }
+        model: 'roles',
+        key: 'id',
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -40,7 +39,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('Users');
+  await queryInterface.dropTable('users');
 }
 
 module.exports = { up, down };

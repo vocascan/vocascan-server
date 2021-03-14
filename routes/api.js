@@ -1,15 +1,16 @@
+const express = require('express');
 
-const express = require("express")
+// MIDDLEWARE
+const ProtectMiddleware = require('../app/Middleware/ProtectMiddleware');
 
-const ProtectMiddleware = require("../app/Middleware/ProtectMiddleware.js")
+// CONTROLLER
+const AuthController = require('../app/Controllers/AuthController.js');
 
-const AuthController = require("../app/Controllers/AuthController.js")
+const router = express.Router();
 
-const router = express.Router()
+// AUTH
+router.post('/auth/register', AuthController.register);
+router.post('/auth/login', AuthController.login);
+router.get('/auth', ProtectMiddleware, AuthController.profile);
 
-router.post("/auth/register", AuthController.register)
-router.post("/auth/login", AuthController.login)
-
-
-
-module.exports = router
+module.exports = router;
