@@ -15,11 +15,25 @@ function generateJWT(input) {
  * @param {Express.Request} req request object
  * @returns {String} Bearer token
  */
-function getJWT(req) {
+function parseTokenUserId(req) {
   // Get token from Authorization header
   const token = req.header('Authorization').split(' ')[1];
 
-  return token;
+  const userId = '';
+  try {
+    // Read userId from token
+    userId = new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+        if (error) reject();
+        resolve(decoded.id);
+      });
+    });
+  } catch {
+    console.log('Error parsing id from JWT');
+    return '';
+  }
+
+  return userId;
 }
 
 /**
@@ -28,22 +42,7 @@ function getJWT(req) {
  * @returns {String} user id
  */
 function getId(input) {
-    try {
-        // Read userId from token
-        userId = new Promise((resolve, reject) => {
-            jwt.verify(input, process.env.JWT_SECRET, (error, decoded) => {
-                if (error) reject()
-                resolve(decoded.id)
-            })
-        })
-    } catch {
-        // Handle broken token
-        res.status(400)
-        res.send("Invalid auth token")
-        return
-    }
-
-    return userId;
+  
 }
 
 /**
@@ -74,8 +73,7 @@ const round = (x, dp = 2) => Math.round(x * 10 ** dp) / 10 ** dp;
 
 module.exports = {
   generateJWT,
-  getJWT,
-  getId,
+  parseTokenUserId,
   filterObject,
   deleteKeysFromObject,
   round,
