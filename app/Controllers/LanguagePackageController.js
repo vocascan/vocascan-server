@@ -1,22 +1,16 @@
-const { createLanguagePackage } = require('../Services/LanguagePackageProvider.js');
-const {getJWT, getId} = require('../utils/index.js');
+const { createLanguagePackage } = require('../Services/LanguagePackageServiceProvider.js');
+const { parseTokenUserId } = require('../utils/index.js');
 
 async function addLanguagePackage(req, res) {
-    
-    //get JWT from request
-    const token = getJWT(req, res);
+  // get userId from request
+  const userId = await parseTokenUserId(req);
 
-    //parse id from request and convert it to uuid
-    const userId = await getId(token);
+  // create language Package
+  const languagePackage = await createLanguagePackage(req.body, userId);
 
-    //create language Package
-    const languagePackage = await createLanguagePackage(req.body, userId);
-
-    res.send(languagePackage);
-    
+  res.send(languagePackage);
 }
 
-
 module.exports = {
-    addLanguagePackage
+  addLanguagePackage,
 };

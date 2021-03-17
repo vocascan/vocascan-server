@@ -1,8 +1,10 @@
 const { LanguagePackage } = require('../../database');
 
 // create language package
-async function createLanguagePackage({ name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords }, userId) {
-
+async function createLanguagePackage(
+  { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
+  userId
+) {
   const languagePackage = await LanguagePackage.create({
     userId: userId,
     name: name,
@@ -16,5 +18,5 @@ async function createLanguagePackage({ name, foreignWordLanguage, translatedWord
 }
 
 module.exports = {
-  createLanguagePackage
+  createLanguagePackage,
 };
