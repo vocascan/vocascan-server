@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-const { getJWT } = require('../utils');
+const { parseTokenUserId } = require('../utils');
 const { User } = require('../../database');
+
 
 // Check for Authorization header and add user attribute to request object
 async function ProtectMiddleware(req, res, next) {
@@ -10,20 +11,11 @@ async function ProtectMiddleware(req, res, next) {
     return res.status(401).send('Not authorized');
   }
 
-  const token = getJWT(req);
-
   let userId;
 
   try {
     // Read userId from token
-    userId = await new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-        if (error) {
-          reject();
-        }
-        resolve(decoded.id);
-      });
-    });
+    userId = await parseTokenUserId(req);
   } catch (err) {
     // Handle broken token
     return res.status(400).send('Invalid auth token');

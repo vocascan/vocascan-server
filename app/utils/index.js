@@ -19,19 +19,13 @@ function parseTokenUserId(req) {
   // Get token from Authorization header
   const token = req.header('Authorization').split(' ')[1];
 
-  const userId = '';
-  try {
-    // Read userId from token
-    userId = new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-        if (error) reject();
-        resolve(decoded.id);
-      });
+  // Read userId from token
+  const userId = new Promise((resolve, reject) => {
+    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+      if (error) reject();
+      resolve(decoded.id);
     });
-  } catch {
-    console.log('Error parsing id from JWT');
-    return '';
-  }
+  });
 
   return userId;
 }
