@@ -23,6 +23,30 @@ function getJWT(req) {
 }
 
 /**
+ * get id from token
+ * @param {*} input jwt payload
+ * @returns {String} user id
+ */
+function getId(input) {
+    try {
+        // Read userId from token
+        userId = new Promise((resolve, reject) => {
+            jwt.verify(input, process.env.JWT_SECRET, (error, decoded) => {
+                if (error) reject()
+                resolve(decoded.id)
+            })
+        })
+    } catch {
+        // Handle broken token
+        res.status(400)
+        res.send("Invalid auth token")
+        return
+    }
+
+    return userId;
+}
+
+/**
  * Filter a object
  * @param {Object} object object to filter
  * @param {Function} predicate filter function
@@ -51,6 +75,7 @@ const round = (x, dp = 2) => Math.round(x * 10 ** dp) / 10 ** dp;
 module.exports = {
   generateJWT,
   getJWT,
+  getId,
   filterObject,
   deleteKeysFromObject,
   round,
