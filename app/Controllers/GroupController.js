@@ -1,4 +1,4 @@
-const {createGroup} = require('../Services/GroupServiceProvider.js');
+const {createGroup, getGroups} = require('../Services/GroupServiceProvider.js');
 const { parseTokenUserId } = require('../utils/index.js');
 
 async function addGroup(req, res) {
@@ -14,7 +14,21 @@ async function addGroup(req, res) {
   res.send(group);
 }
 
+async function sendGroups(req, res) {
+  // get userId from request
+  const userId = await parseTokenUserId(req);
+
+  //get language package id from params
+  const languagePackageId = req.params.languagePackageId;
+
+  // create language Package
+  const groups = await getGroups(userId, languagePackageId, res);
+
+  res.send(groups);
+}
+
 module.exports = {
   addGroup,
+  sendGroups
 };
 
