@@ -19,6 +19,7 @@ router.post('/languagePackage/create', ProtectMiddleware, LanguagePackageControl
 router.get('/languagePackages', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
 
 router.post('/:languagePackageId/group/create', ProtectMiddleware, GroupController.addGroup);
+router.get('/:languagePackageId/groups', ProtectMiddleware, GroupController.sendGroups);
 
 
 module.exports = router;

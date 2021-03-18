@@ -12,6 +12,26 @@ async function createGroup({ name, active }, userId, languagePackageId ) {
   return group;
 }
 
+// get groups
+async function getGroups(userId, languagePackageId, res) {
+   // Get user with email from database
+  const groups = await Group.findAll({
+    attributes: ['id', 'name', 'active'],
+    where: {
+      userId: userId,
+      languagePackageId: languagePackageId
+    },
+  });
+
+  if (!groups) {
+    res.status(404).end();
+    return false;
+  }
+
+  return groups;
+}
+
 module.exports = {
-  createGroup
+  createGroup,
+  getGroups
 };
