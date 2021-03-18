@@ -31,15 +31,6 @@ function parseTokenUserId(req) {
 }
 
 /**
- * get id from token
- * @param {*} input jwt payload
- * @returns {String} user id
- */
-function getId(input) {
-  
-}
-
-/**
  * Filter a object
  * @param {Object} object object to filter
  * @param {Function} predicate filter function

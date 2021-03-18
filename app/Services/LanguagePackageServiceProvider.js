@@ -19,11 +19,11 @@ async function createLanguagePackage(
 
 // get language package
 async function getLanguagePackages(userId, res) {
-   // Get user with email from database
+  // Get user with email from database
   const languagePackages = await LanguagePackage.findAll({
     attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
-      userId: userId
+      userId: userId,
     },
   });
 
@@ -37,5 +37,5 @@ async function getLanguagePackages(userId, res) {
 
 module.exports = {
   createLanguagePackage,
-  getLanguagePackages
+  getLanguagePackages,
 };

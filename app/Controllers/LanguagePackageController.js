@@ -1,4 +1,4 @@
-const { createLanguagePackage,  getLanguagePackages } = require('../Services/LanguagePackageServiceProvider.js');
+const { createLanguagePackage, getLanguagePackages } = require('../Services/LanguagePackageServiceProvider.js');
 const { parseTokenUserId } = require('../utils/index.js');
 
 async function addLanguagePackage(req, res) {
@@ -23,5 +23,5 @@ async function sendLanguagePackages(req, res) {
 
 module.exports = {
   addLanguagePackage,
-  sendLanguagePackages
+  sendLanguagePackages,
 };

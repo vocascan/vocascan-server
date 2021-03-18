@@ -1,8 +1,5 @@
-const jwt = require('jsonwebtoken');
-
 const { parseTokenUserId } = require('../utils');
 const { User } = require('../../database');
-
 
 // Check for Authorization header and add user attribute to request object
 async function ProtectMiddleware(req, res, next) {

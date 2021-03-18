@@ -1,12 +1,12 @@
 const { Group } = require('../../database');
 
 // create language package
-async function createGroup({ name, active }, userId, languagePackageId ) {
+async function createGroup({ name, active }, userId, languagePackageId) {
   const group = await Group.create({
     userId: userId,
     languagePackageId: languagePackageId,
     name: name,
-    active: active
+    active: active,
   });
 
   return group;
@@ -14,12 +14,12 @@ async function createGroup({ name, active }, userId, languagePackageId ) {
 
 // get groups
 async function getGroups(userId, languagePackageId, res) {
-   // Get user with email from database
+  // Get user with email from database
   const groups = await Group.findAll({
     attributes: ['id', 'name', 'active'],
     where: {
       userId: userId,
-      languagePackageId: languagePackageId
+      languagePackageId: languagePackageId,
     },
   });
 
@@ -33,5 +33,5 @@ async function getGroups(userId, languagePackageId, res) {
 
 module.exports = {
   createGroup,
-  getGroups
+  getGroups,
 };
