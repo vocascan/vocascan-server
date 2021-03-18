@@ -16,7 +16,9 @@ router.post('/auth/login', AuthController.login);
 router.get('/auth', ProtectMiddleware, AuthController.profile);
 
 router.post('/languagePackage/create', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
+router.get('/languagePackages', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
 
 router.post('/:languagePackageId/group/create', ProtectMiddleware, GroupController.addGroup);
+
 
 module.exports = router;
