@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      foreignWordId: {
+      vocabularyCardId: {
         type: DataTypes.UUID,
         allowNull: false,
       },
@@ -29,7 +29,7 @@ module.exports = (sequelize) => {
     },
     {
       sequelize,
-      tableName: 'Translation',
+      tableName: 'translation',
     }
   );
 

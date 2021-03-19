@@ -15,7 +15,7 @@ async function up({ context: queryInterface }) {
         key: 'id',
       },
     },
-    foreignWordId: {
+    vocabularyCardId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {

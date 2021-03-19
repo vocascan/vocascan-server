@@ -41,8 +41,8 @@ module.exports = (sequelize) => {
     User.hasMany(db.LanguagePackage);
     User.hasMany(db.Group);
     User.hasMany(db.Drawer);
-    User.hasMany(db.ForeignWord);
-    User.hasMany(db.TranslatedWord);
+    User.hasMany(db.VocabularyCard);
+    User.hasMany(db.Translation);
   };
 
   return User;

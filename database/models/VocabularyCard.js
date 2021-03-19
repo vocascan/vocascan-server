@@ -33,11 +33,12 @@ module.exports = (sequelize) => {
     },
     {
       sequelize,
-      tableName: 'foreignWords',
+      tableName: 'vocabularyCard',
     }
   );
 
   VocabularyCard.associate = (db) => {
+    VocabularyCard.hasMany(db.Translation)
   };
 
   return VocabularyCard;
