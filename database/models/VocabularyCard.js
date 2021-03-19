@@ -1,8 +1,8 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const TranslatedWord = sequelize.define(
-    'TranslatedWord',
+  const VocabularyCard = sequelize.define(
+    'VocabularyCard',
     {
       id: {
         type: DataTypes.UUID,
@@ -11,14 +11,18 @@ module.exports = (sequelize) => {
         primaryKey: true,
       },
       userId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      foreignWordId: {
         type: DataTypes.UUID,
         allowNull: false,
       },
       languagePackageId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      groupId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      drawerId: {
         type: DataTypes.UUID,
         allowNull: false,
       },
@@ -29,9 +33,12 @@ module.exports = (sequelize) => {
     },
     {
       sequelize,
-      tableName: 'translatedWords',
+      tableName: 'foreignWords',
     }
   );
 
-  return TranslatedWord;
+  VocabularyCard.associate = (db) => {
+  };
+
+  return VocabularyCard;
 };
