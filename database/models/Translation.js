@@ -29,7 +29,7 @@ module.exports = (sequelize) => {
     },
     {
       sequelize,
-      tableName: 'translation',
+      tableName: 'translations',
     }
   );
 
