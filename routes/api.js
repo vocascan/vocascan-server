@@ -7,6 +7,7 @@ const ProtectMiddleware = require('../app/Middleware/ProtectMiddleware');
 const AuthController = require('../app/Controllers/AuthController.js');
 const LanguagePackageController = require('../app/Controllers/LanguagePackageController.js');
 const GroupController = require('../app/Controllers/GroupController.js');
+const VocabularyController = require('../app/Controllers/VocabularyController.js');
 
 const router = express.Router();
 
@@ -20,5 +21,7 @@ router.get('/languagePackages', ProtectMiddleware, LanguagePackageController.sen
 
 router.post('/:languagePackageId/group/create', ProtectMiddleware, GroupController.addGroup);
 router.get('/:languagePackageId/groups', ProtectMiddleware, GroupController.sendGroups);
+
+router.post('/vocabulary/create', ProtectMiddleware, VocabularyController.addVocabularyCard);
 
 module.exports = router;
