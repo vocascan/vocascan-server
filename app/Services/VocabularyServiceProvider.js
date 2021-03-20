@@ -12,7 +12,7 @@ async function createVocabularyCard({ languagePackageId, groupId, name }, userId
     },
   });
 
-  //create date the day before yesterday so it will appear in the inbox for querying
+  // create date the day before yesterday so it will appear in the inbox for querying
   let date = new Date();
   var yesterday = date.setDate(date.getDate() - 1);
 

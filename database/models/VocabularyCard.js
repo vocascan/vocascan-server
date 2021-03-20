@@ -33,7 +33,7 @@ module.exports = (sequelize) => {
       lastQuery: {
         type: DataTypes.DATE,
         allowNull: false,
-      }
+      },
     },
     {
       sequelize,
