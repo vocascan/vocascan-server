@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const { deleteKeysFromObject } = require('../utils');
 const { User } = require('../../database');
@@ -20,10 +21,12 @@ async function validateRegister(req, res) {
   }
 
   // Check if email address already exists
+  let emailHash = crypto.createHash('sha256').update(req.body.email).digest('base64');
+
   if (
     await User.count({
       where: {
-        email: req.body.email,
+        email: emailHash,
       },
     })
   ) {
@@ -42,24 +45,27 @@ function validateLogin(req, res) {
 async function createUser({ username, email, password }) {
   // Hash password
   const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
+  let emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
   const user = await User.create({
     username,
-    email,
+    email: emailHash,
     password: hash,
     roleId: 1,
   });
 
-  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
 // Log user in
 async function loginUser({ email, password }, res) {
   // Get user with email from database
+  let emailHash = crypto.createHash('sha256').update(email).digest('base64');
+
   const user = await User.findOne({
-    attributes: ['id', 'username', 'email', 'password'],
+    attributes: ['id', 'username', 'password'],
     where: {
-      email,
+      email: emailHash,
     },
   });
 
