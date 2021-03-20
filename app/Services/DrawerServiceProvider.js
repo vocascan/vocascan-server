@@ -1,4 +1,3 @@
-const { query } = require('express');
 const { Drawer } = require('../../database');
 
 // create language package
@@ -7,12 +6,11 @@ async function createDrawer(languagePackageId, name, queryInterval, userId) {
     userId: userId,
     languagePackageId: languagePackageId,
     name: name,
-    queryInterval: queryInterval
+    queryInterval: queryInterval,
   });
 
   return drawer;
 }
-
 
 module.exports = {
   createDrawer,

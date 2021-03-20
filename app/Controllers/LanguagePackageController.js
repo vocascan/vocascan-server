@@ -1,5 +1,5 @@
 const { createLanguagePackage, getLanguagePackages } = require('../Services/LanguagePackageServiceProvider.js');
-const { createDrawer} = require('../Services/DrawerServiceProvider.js');
+const { createDrawer } = require('../Services/DrawerServiceProvider.js');
 const { parseTokenUserId } = require('../utils/index.js');
 
 async function addLanguagePackage(req, res) {
@@ -9,22 +9,22 @@ async function addLanguagePackage(req, res) {
   // create language Package
   const languagePackage = await createLanguagePackage(req.body, userId);
 
-  //create drawers for language package
+  // create drawers for language package
   const drawers = [
-    {name: "1", queryInterval: 1},
-    {name: "2", queryInterval: 2},
-    {name: "3", queryInterval: 3},
-    {name: "4", queryInterval: 5},
-    {name: "5", queryInterval: 10},
-    {name: "6", queryInterval: 30},
-    {name: "7", queryInterval: 60},
-    {name: "8", queryInterval: 90}
-  ]
+    { name: '1', queryInterval: 1 },
+    { name: '2', queryInterval: 2 },
+    { name: '3', queryInterval: 3 },
+    { name: '4', queryInterval: 5 },
+    { name: '5', queryInterval: 10 },
+    { name: '6', queryInterval: 30 },
+    { name: '7', queryInterval: 60 },
+    { name: '8', queryInterval: 90 },
+  ];
 
-  //iterate over drawers and store them in the database
-  for (let drawer of drawers) {
-    createDrawer(languagePackage.id, drawer.name, drawer.queryInterval, userId);
-  }
+  // iterate over drawers and store them in the database
+  Object.keys(drawers).forEach((key) => {
+    createDrawer(languagePackage.id, drawers[key].name, drawers[key].queryInterval, userId);
+  });
 
   res.send(languagePackage);
 }
