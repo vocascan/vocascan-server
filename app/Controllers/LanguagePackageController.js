@@ -1,5 +1,6 @@
 const { createLanguagePackage, getLanguagePackages } = require('../Services/LanguagePackageServiceProvider.js');
 const { createDrawer } = require('../Services/DrawerServiceProvider.js');
+const { getUnresolvedVocabulary } = require('../Services/QueryServiceProvider.js');
 const { parseTokenUserId } = require('../utils/index.js');
 
 async function addLanguagePackage(req, res) {
@@ -35,6 +36,16 @@ async function sendLanguagePackages(req, res) {
 
   // create language Package
   const languagePackages = await getLanguagePackages(userId, res);
+
+  await Promise.all(
+    Object.keys(languagePackages).map(async (key) => {
+      languagePackages[key].dataValues.unresolvedQuerys = await getUnresolvedVocabulary(
+        languagePackages[key].id,
+        userId
+      );
+      return languagePackages[key].toJSON();
+    })
+  );
 
   res.send(languagePackages);
 }
