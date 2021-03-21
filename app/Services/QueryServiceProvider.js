@@ -27,7 +27,7 @@ async function getUnresolvedVocabulary(languagePackageId, userId) {
       const result = await VocabularyCard.count({
         where: {
           drawerId: drawers[key].id,
-          lastQuery: { lt: queryDate.toISOString().slice(0, 19).replace(/-/g, '-').replace('T', ' ') },
+          lastQuery: { lt: queryDate },
         },
       });
       number += Number(result);
