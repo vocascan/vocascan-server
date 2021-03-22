@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "test": "npm run lint",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "swagger": "swagger-ui-watcher -p 3200 ./docs/api/swagger.json"
   },
   "author": "Noctera",
   "license": "MIT",
@@ -22,7 +23,8 @@
     "eslint-plugin-prettier": "^3.3.1",
     "nodemon": "^1.14.6",
     "prettier": "^2.2.1",
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "swagger-ui-watcher": "^2.1.11"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
@@ -33,6 +35,7 @@
     "pg": "^7.7.1",
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.44.4",
+    "swagger-ui-express": "^4.1.6",
     "umzug": "^3.0.0-beta.15"
   },
   "engines": {
