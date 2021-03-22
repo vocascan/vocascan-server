@@ -8,6 +8,7 @@ const AuthController = require('../app/Controllers/AuthController.js');
 const LanguagePackageController = require('../app/Controllers/LanguagePackageController.js');
 const GroupController = require('../app/Controllers/GroupController.js');
 const VocabularyController = require('../app/Controllers/VocabularyController.js');
+const DocsController = require('../app/Controllers/DocsController');
 
 const router = express.Router();
 
@@ -23,5 +24,9 @@ router.post('/:languagePackageId/group/create', ProtectMiddleware, GroupControll
 router.get('/:languagePackageId/groups', ProtectMiddleware, GroupController.sendGroups);
 
 router.post('/vocabulary/create', ProtectMiddleware, VocabularyController.addVocabularyCard);
+
+// Docs
+router.get('/swagger.json', DocsController.document);
+router.use('/swagger', DocsController.swagger);
 
 module.exports = router;
