@@ -50,43 +50,40 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
 
   let vocabs = [];
 
+  for (let key = 0; key < drawers.length; ++key) {
+    let vocabularyLimit = limit;
+    // subtract size of vocabs returned to update the limit
+    vocabularyLimit -= vocabs.length;
+    // create date and add days from query Interval
+    let queryDate = new Date();
+    // subtract query interval from actual date
+    queryDate.setDate(queryDate.getDate() - drawers[key].queryInterval);
+
+    // compare query date with with last query
+    // if queryDate is less than lastQuery: still time
+    // if queryDate more than lastQuery: waiting time is over
+    const vocabularies = await VocabularyCard.findAll({
+      limit: vocabularyLimit,
+      attributes: ['id', 'name'],
+      where: {
+        drawerId: drawers[key].id,
+        lastQuery: { lt: queryDate },
+      },
+    });
+
+    vocabs.push(...vocabularies);
+  }
+
+  // add translations to every vocabulary card
   await Promise.all(
-    Object.keys(drawers).map(async (key) => {
-      let vocabularyLimit = limit;
-      // subtract size of vocabs returned to update the limit
-      vocabularyLimit -= vocabs.length;
-      // create date and add days from query Interval
-      let queryDate = new Date();
-      // subtract query interval from actual date
-      queryDate.setDate(queryDate.getDate() - drawers[key].queryInterval);
-
-      // compare query date with with last query
-      // if queryDate is less than lastQuery: still time
-      // if queryDate more than lastQuery: waiting time is over
-
-      const vocabularies = await VocabularyCard.findAll({
-        limit: vocabularyLimit,
-        attributes: ['id', 'name'],
+    Object.keys(vocabs).map(async (num) => {
+      vocabs[num].dataValues.translations = await Translation.findAll({
+        attributes: ['name'],
         where: {
-          drawerId: drawers[key].id,
-          lastQuery: { lt: queryDate },
+          vocabularyCardId: vocabs[num].id,
         },
       });
-
-      // add translations to every vocabulary card
-      await Promise.all(
-        Object.keys(vocabularies).map(async (num) => {
-          vocabularies[num].dataValues.translations = await Translation.findAll({
-            attributes: ['name'],
-            where: {
-              vocabularyCardId: vocabularies[num].id,
-            },
-          });
-          return vocabularies[num].toJSON();
-        })
-      );
-
-      vocabs.push(...vocabularies);
+      return vocabs[num].toJSON();
     })
   );
 
