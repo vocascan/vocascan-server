@@ -1,0 +1,249 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "vocascan",
+    "description": "A highly configurable vocabulary trainer.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "description": "localhost",
+      "url": "http://localhost:5000/api"
+    }
+  ],
+  "paths": {
+    "/swagger.json": {
+      "get": {
+        "summary": "Returns this RAW swagger.json file",
+        "tags": ["miscellaneous"],
+        "operationId": "getSwaggerFile",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SwaggerFile"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register new user",
+        "tags": ["auth"],
+        "operationId": "userRegister",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserRegister"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserRegister"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": ["auth"],
+        "operationId": "userLogin",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserLogin"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserLogin"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/auth": {
+      "get": {
+        "summary": "Get own profile",
+        "tags": ["auth"],
+        "operationId": "getUserProfile",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/User"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "description": "User",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      }
+    },
+    "parameters": {},
+    "requestBodies": {
+      "UserRegister": {
+        "description": "Register User details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Register User details",
+              "type": "object",
+              "required": ["email", "password"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password"
+                },
+                "username": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "UserLogin": {
+        "description": "Login User details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Login User details",
+              "type": "object",
+              "required": ["email", "password"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "UserRegister": {
+        "description": "Register User details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": { "$ref": "#/components/schemas/User" },
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UserLogin": {
+        "description": "Login User details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "User": {
+        "description": "User details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "SwaggerFile": {
+        "description": "Swagger file",
+        "content": {
+          "application/json": {}
+        }
+      },
+      "204": {
+        "description": "APIEmpty is an empty response"
+      },
+      "400": {
+        "description": "APIClientError is a error format response"
+      },
+      "401": {
+        "description": "APIUnauthorizedError is a not authorized error response"
+      },
+      "403": {
+        "description": "APIForbiddenError is a forbidden error response"
+      },
+      "404": {
+        "description": "APINotFound is a not found error response"
+      },
+      "409": {
+        "description": "APIConflictError is a already exists error"
+      },
+      "500": {
+        "description": "APIInternalServerError is a internal server error"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

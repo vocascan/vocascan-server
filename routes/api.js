@@ -9,7 +9,7 @@ const LanguagePackageController = require('../app/Controllers/LanguagePackageCon
 const GroupController = require('../app/Controllers/GroupController.js');
 const VocabularyController = require('../app/Controllers/VocabularyController.js');
 const QueryController = require('../app/Controllers/QueryController.js');
-const { Query } = require('pg');
+const DocsController = require('../app/Controllers/DocsController');
 
 const router = express.Router();
 
@@ -26,6 +26,10 @@ router.get('/:languagePackageId/groups', ProtectMiddleware, GroupController.send
 
 router.post('/vocabulary/create', ProtectMiddleware, VocabularyController.addVocabularyCard);
 
+// Query
 router.get('/:languagePackageId/query/start', ProtectMiddleware, QueryController.sendQueryVocabulary);
+// Docs
+router.get('/swagger.json', DocsController.document);
+router.use('/swagger', DocsController.swagger);
 
 module.exports = router;
