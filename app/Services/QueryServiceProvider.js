@@ -78,18 +78,14 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
 
   // add translations to every vocabulary card
   await Promise.all(
-    Object.keys(vocabs).map(async (num) => {
-      vocabs[num].dataValues.translations = await Translation.findAll({
+    vocabs.map(async (vocab) => {
+      await vocab.getTranslations({
         attributes: ['name'],
-        where: {
-          vocabularyCardId: vocabs[num].id,
-        },
       });
-      return vocabs[num].toJSON();
     })
   );
 
-  return vocabs;
+  return vocabs.map((vocab) => vocab.toJSON());
 }
 
 module.exports = {
