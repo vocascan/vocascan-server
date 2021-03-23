@@ -6,8 +6,8 @@ async function getUnresolvedVocabulary(languagePackageId, userId) {
   const drawers = await Drawer.findAll({
     attributes: ['id', 'name', 'queryInterval'],
     where: {
-      userId: userId,
-      languagePackageId: languagePackageId,
+      userId,
+      languagePackageId,
     },
   });
 
@@ -43,21 +43,22 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
   const drawers = await Drawer.findAll({
     attributes: ['id', 'name', 'queryInterval'],
     where: {
-      userId: userId,
-      languagePackageId: languagePackageId,
+      userId,
+      languagePackageId,
     },
   });
 
-  let vocabs = [];
+  const vocabs = [];
 
-  for (let key = 0; key < drawers.length; ++key) {
+  /* eslint-disable no-await-in-loop */
+  for (const drawer of Object.values(drawers)) {
     let vocabularyLimit = limit;
     // subtract size of vocabs returned to update the limit
     vocabularyLimit -= vocabs.length;
     // create date and add days from query Interval
     let queryDate = new Date();
     // subtract query interval from actual date
-    queryDate.setDate(queryDate.getDate() - drawers[key].queryInterval);
+    queryDate.setDate(queryDate.getDate() - drawer.queryInterval);
 
     // compare query date with with last query
     // if queryDate is less than lastQuery: still time
@@ -66,13 +67,14 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       limit: vocabularyLimit,
       attributes: ['id', 'name'],
       where: {
-        drawerId: drawers[key].id,
+        drawerId: drawer.id,
         lastQuery: { lt: queryDate },
       },
     });
 
     vocabs.push(...vocabularies);
   }
+  /* eslint-enable no-await-in-loop */
 
   // add translations to every vocabulary card
   await Promise.all(
