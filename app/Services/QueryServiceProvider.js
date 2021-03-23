@@ -105,18 +105,15 @@ async function handleCorrectQuery(userId, vocabularyId) {
   // push vocabulary card one drawer up
   // get drawer id from name
 
-  const newDrawerName = String(Number(vocabularyCard.Drawer.name) + 1);
-
   const drawer = await Drawer.find({
     attributes: ['id'],
     where: {
       userId,
-      name: newDrawerName,
+      name: String(Number(vocabularyCard.Drawer.name) + 1),
     },
   });
   if (!drawer) {
     // if no output there is no next drawer => stop
-    console.log('Already in the last drawer');
     return;
   }
 
@@ -128,7 +125,36 @@ async function handleCorrectQuery(userId, vocabularyId) {
 }
 
 // function to handle wrong query
-async function handleWrongQuery(userId, vocabularyId) {}
+async function handleWrongQuery(userId, vocabularyId) {
+  // if query was solved wrong, push vocabulary card in drawer one
+  const vocabularyCard = await VocabularyCard.find({
+    include: [
+      {
+        model: Drawer,
+        attributes: ['name'],
+      },
+    ],
+    attributes: ['id', 'name', 'drawerId'],
+    where: {
+      userId,
+      id: vocabularyId,
+    },
+  });
+
+  const drawer = await Drawer.find({
+    attributes: ['id'],
+    where: {
+      userId,
+      name: '1',
+    },
+  });
+
+  // update drawerId for vocabulary card
+  vocabularyCard.drawerId = drawer.id;
+
+  // save to db
+  await vocabularyCard.save();
+}
 
 module.exports = {
   getUnresolvedVocabulary,
