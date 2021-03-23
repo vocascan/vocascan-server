@@ -33,5 +33,12 @@ module.exports = (sequelize) => {
     }
   );
 
+  Drawer.associate = (db) => {
+    Drawer.belongsTo(db.User, { foreignKey: 'userId' });
+    Drawer.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+
+    Drawer.hasMany(db.VocabularyCard, { foreignKey: 'drawerId' });
+  };
+
   return Drawer;
 };

@@ -52,11 +52,11 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
 
   /* eslint-disable no-await-in-loop */
   for (const drawer of Object.values(drawers)) {
-    let vocabularyLimit = limit;
     // subtract size of vocabs returned to update the limit
-    vocabularyLimit -= vocabs.length;
+    const vocabularyLimit = limit - vocabs.length;
+
     // create date and add days from query Interval
-    let queryDate = new Date();
+    const queryDate = new Date();
     // subtract query interval from actual date
     queryDate.setDate(queryDate.getDate() - drawer.queryInterval);
 
@@ -64,6 +64,12 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
     // if queryDate is less than lastQuery: still time
     // if queryDate more than lastQuery: waiting time is over
     const vocabularies = await VocabularyCard.findAll({
+      include: [
+        {
+          model: Translation,
+          attributes: ['name'],
+        },
+      ],
       limit: vocabularyLimit,
       attributes: ['id', 'name'],
       where: {
@@ -75,15 +81,6 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
     vocabs.push(...vocabularies);
   }
   /* eslint-enable no-await-in-loop */
-
-  // add translations to every vocabulary card
-  await Promise.all(
-    vocabs.map(async (vocab) => {
-      await vocab.getTranslations({
-        attributes: ['name'],
-      });
-    })
-  );
 
   return vocabs.map((vocab) => vocab.toJSON());
 }

@@ -33,5 +33,12 @@ module.exports = (sequelize) => {
     }
   );
 
+  Group.associate = (db) => {
+    Group.belongsTo(db.User, { foreignKey: 'userId' });
+    Group.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+
+    Group.hasMany(db.VocabularyCard, { foreignKey: 'groupId' });
+  };
+
   return Group;
 };

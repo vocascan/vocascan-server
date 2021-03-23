@@ -42,6 +42,11 @@ module.exports = (sequelize) => {
   );
 
   VocabularyCard.associate = (db) => {
+    VocabularyCard.belongsTo(db.User, { foreignKey: 'userId' });
+    VocabularyCard.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+    VocabularyCard.belongsTo(db.Group, { foreignKey: 'groupId' });
+    VocabularyCard.belongsTo(db.Drawer, { foreignKey: 'drawerId' });
+
     VocabularyCard.hasMany(db.Translation, { foreignKey: 'vocabularyCardId' });
   };
 
