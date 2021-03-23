@@ -28,6 +28,7 @@ router.post('/vocabulary/create', ProtectMiddleware, VocabularyController.addVoc
 
 // Query
 router.get('/:languagePackageId/query/start', ProtectMiddleware, QueryController.sendQueryVocabulary);
+
 // Docs
 router.get('/swagger.json', DocsController.document);
 router.use('/swagger', DocsController.swagger);
