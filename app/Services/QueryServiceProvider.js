@@ -85,7 +85,54 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
   return vocabs.map((vocab) => vocab.toJSON());
 }
 
+// function to handle correct query
+async function handleCorrectQuery(userId, vocabularyId) {
+  // fetch selected vocabulary card
+  const vocabularyCard = await VocabularyCard.find({
+    include: [
+      {
+        model: Drawer,
+        attributes: ['name'],
+      },
+    ],
+    attributes: ['id', 'name', 'drawerId'],
+    where: {
+      userId,
+      id: vocabularyId,
+    },
+  });
+
+  // push vocabulary card one drawer up
+  // get drawer id from name
+
+  const newDrawerName = String(Number(vocabularyCard.Drawer.name) + 1);
+
+  const drawer = await Drawer.find({
+    attributes: ['id'],
+    where: {
+      userId,
+      name: newDrawerName,
+    },
+  });
+  if (!drawer) {
+    // if no output there is no next drawer => stop
+    console.log('Already in the last drawer');
+    return;
+  }
+
+  // update drawerId for vocabulary card
+  vocabularyCard.drawerId = drawer.id;
+
+  // save to db
+  await vocabularyCard.save();
+}
+
+// function to handle wrong query
+async function handleWrongQuery(userId, vocabularyId) {}
+
 module.exports = {
   getUnresolvedVocabulary,
   getQueryVocabulary,
+  handleCorrectQuery,
+  handleWrongQuery,
 };
