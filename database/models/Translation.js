@@ -33,5 +33,9 @@ module.exports = (sequelize) => {
     }
   );
 
+  Translation.associate = (db) => {
+    Translation.belongsTo(db.VocabularyCard);
+  };
+
   return Translation;
 };

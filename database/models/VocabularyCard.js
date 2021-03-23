@@ -42,7 +42,7 @@ module.exports = (sequelize) => {
   );
 
   VocabularyCard.associate = (db) => {
-    VocabularyCard.hasMany(db.Translation);
+    VocabularyCard.hasMany(db.Translation, { foreignKey: 'vocabularyCardId' });
   };
 
   return VocabularyCard;
