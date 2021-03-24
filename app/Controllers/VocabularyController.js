@@ -1,16 +1,18 @@
 const { createVocabularyCard, createTranslations } = require('../Services/VocabularyServiceProvider.js');
-const { parseTokenUserId } = require('../utils/index.js');
 
 async function addVocabularyCard(req, res) {
   // get userId from request
-  const userId = await parseTokenUserId(req);
+  const { id } = await req.user;
+
+  // check if user wants to train vocabulary card directly
+  var activate = req.query.activate === 'true';
 
   // create vocabulary card
-  const vocabularyCard = await createVocabularyCard(req.body, userId);
+  const vocabularyCard = await createVocabularyCard(req.body, id, activate);
 
   // parse vocabulary card id from response and create translations
   Object.keys(req.body.translations).forEach((key) => {
-    createTranslations(userId, req.body.languagePackageId, vocabularyCard.id, req.body.translations[key].name);
+    createTranslations(id, req.body.languagePackageId, vocabularyCard.id, req.body.translations[key].name);
   });
 
   res.send('Vocabulary added');
