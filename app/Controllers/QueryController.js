@@ -21,10 +21,10 @@ async function checkVocabulary(req, res) {
   // check if vocabulary card got answered right
   if (answer === true) {
     handleCorrectQuery(id, vocabularyId);
-    res.statusCode(204).send();
+    res.statusCode(204).end();
   } else {
     handleWrongQuery(id, vocabularyId);
-    res.statusCode(204).send();
+    res.statusCode(204).end();
   }
 }
 
