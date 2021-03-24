@@ -31,7 +31,7 @@ async function sendUnactivatedVocabulary(req, res) {
 async function checkVocabulary(req, res) {
   // get userId from request
   const { id } = req.user;
-  const { vocabularyId } = req.params;
+  const vocabularyId = req.params.id;
   const { answer } = req.body;
 
   // check if vocabulary card got answered right

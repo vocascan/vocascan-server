@@ -5,7 +5,7 @@ async function addGroup(req, res) {
   const { id } = await req.user;
 
   // get language package id from params
-  const languagePackageId = req.params.languagePackageId;
+  const languagePackageId = req.params.id;
 
   // create language Package
   const group = await createGroup(req.body, id, languagePackageId);
@@ -18,7 +18,7 @@ async function sendGroups(req, res) {
   const { id } = await req.user;
 
   // get language package id from params
-  const languagePackageId = req.params.languagePackageId;
+  const languagePackageId = req.params.id;
 
   // create language Package
   const groups = await getGroups(id, languagePackageId, res);

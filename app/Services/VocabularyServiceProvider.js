@@ -2,7 +2,7 @@ const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
 
 // create language package
-async function createVocabularyCard({ languagePackageId, groupId, name }, userId, activate) {
+async function createVocabularyCard({ languagePackageId, groupId }, name, userId, activate) {
   // if activate = false store vocabulary card in drawer 0 directly
   if (!activate) {
     const drawer = await Drawer.findOne({
