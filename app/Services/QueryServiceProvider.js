@@ -1,5 +1,6 @@
 const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils/index.js');
+const { Sequelize } = require('sequelize');
 
 // return the number of unresolved vocabulary
 async function getUnresolvedVocabulary(languagePackageId, userId) {
@@ -85,6 +86,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
           required: true,
         },
       ],
+      order: Sequelize.literal('random()'),
       limit: vocabularyLimit,
       attributes: ['id', 'name'],
       where: {
