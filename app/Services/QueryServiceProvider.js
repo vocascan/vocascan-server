@@ -1,4 +1,5 @@
-const { Drawer, VocabularyCard, Translation } = require('../../database');
+const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
+const { deleteKeysFromObject } = require('../utils/index.js');
 
 // return the number of unresolved vocabulary
 async function getUnresolvedVocabulary(languagePackageId, userId) {
@@ -25,12 +26,20 @@ async function getUnresolvedVocabulary(languagePackageId, userId) {
       // if queryDate more than lastQuery: waiting time is over
 
       const result = await VocabularyCard.count({
+        include: [
+          {
+            model: Group,
+            attributes: ['active'],
+          },
+        ],
         where: {
           drawerId: drawers[key].id,
           lastQuery: { lt: queryDate },
+          '$Group.active$': true,
         },
       });
       number += Number(result);
+      console.log(result);
     })
   );
 
@@ -68,6 +77,12 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
         {
           model: Translation,
           attributes: ['name'],
+          required: true,
+        },
+        {
+          model: Group,
+          attributes: ['active'],
+          required: true,
         },
       ],
       limit: vocabularyLimit,
@@ -75,6 +90,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       where: {
         drawerId: drawer.id,
         lastQuery: { lt: queryDate },
+        '$Group.active$': true,
       },
     });
 
@@ -82,7 +98,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
   }
   /* eslint-enable no-await-in-loop */
 
-  return vocabs.map((vocab) => vocab.toJSON());
+  return vocabs.map((vocab) => deleteKeysFromObject(['Group'], vocab.toJSON()));
 }
 
 // function to handle correct query
