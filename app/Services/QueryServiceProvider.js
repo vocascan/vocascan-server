@@ -110,7 +110,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
     include: [
       {
         model: Drawer,
-        attributes: ['name'],
+        attributes: ['stage'],
       },
     ],
     attributes: ['id', 'name', 'drawerId'],
@@ -127,7 +127,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
     attributes: ['id'],
     where: {
       userId,
-      name: vocabularyCard.Drawer.name + 1,
+      stage: vocabularyCard.Drawer.name + 1,
     },
   });
   if (!drawer) {
@@ -146,7 +146,7 @@ async function handleWrongQuery(userId, vocabularyId) {
     include: [
       {
         model: Drawer,
-        attributes: ['name'],
+        attributes: ['stage'],
       },
     ],
     attributes: ['id', 'name', 'drawerId'],
@@ -160,7 +160,7 @@ async function handleWrongQuery(userId, vocabularyId) {
     attributes: ['id'],
     where: {
       userId,
-      name: 1,
+      stage: 1,
     },
   });
 

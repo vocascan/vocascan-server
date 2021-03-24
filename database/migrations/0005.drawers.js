@@ -23,7 +23,7 @@ async function up({ context: queryInterface }) {
         key: 'id',
       },
     },
-    name: {
+    stage: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

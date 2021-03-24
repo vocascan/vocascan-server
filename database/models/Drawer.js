@@ -18,7 +18,7 @@ module.exports = (sequelize) => {
         type: DataTypes.UUID,
         allowNull: false,
       },
-      name: {
+      stage: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
