@@ -5,7 +5,7 @@ async function addVocabularyCard(req, res) {
   const { id } = await req.user;
 
   // check if user wants to train vocabulary card directly
-  var activate = req.query.activate === 'true';
+  const activate = req.query.activate === 'true';
 
   // create vocabulary card
   const vocabularyCard = await createVocabularyCard(req.body, id, activate);
@@ -15,7 +15,7 @@ async function addVocabularyCard(req, res) {
     createTranslations(id, req.body.languagePackageId, vocabularyCard.id, req.body.translations[key].name);
   });
 
-  res.send('Vocabulary added');
+  res.sendStatus(204);
 }
 
 module.exports = {
