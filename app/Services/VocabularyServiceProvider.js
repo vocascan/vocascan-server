@@ -39,7 +39,7 @@ async function createVocabularyCard({ languagePackageId, groupId, name }, userId
 
   // create date the day before yesterday so it will appear in the inbox for querying
   let date = new Date();
-  let yesterday = date.setDate(date.getDate() - 1);
+  const yesterday = date.setDate(date.getDate() - 1);
 
   const vocabularyCard = await VocabularyCard.create({
     userId: userId,
