@@ -21,8 +21,8 @@ router.get('/auth', ProtectMiddleware, AuthController.profile);
 router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
 router.get('/languagePackage', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
 
-router.post('/languagePackage/:id/group', ProtectMiddleware, GroupController.addGroup);
-router.get('/:languagePackage/:id/group', ProtectMiddleware, GroupController.sendGroups);
+router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
+router.get('/:languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
 
 // Vocabulary
 router.post(
@@ -38,7 +38,7 @@ router.get(
   ProtectMiddleware,
   QueryController.sendUnactivatedVocabulary
 );
-router.post('/vocabulary/:id', ProtectMiddleware, QueryController.checkVocabulary);
+router.post('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
 
 // Docs
 router.get('/swagger.json', DocsController.document);
