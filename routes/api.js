@@ -24,10 +24,12 @@ router.get('/languagePackages', ProtectMiddleware, LanguagePackageController.sen
 router.post('/:languagePackageId/group/create', ProtectMiddleware, GroupController.addGroup);
 router.get('/:languagePackageId/groups', ProtectMiddleware, GroupController.sendGroups);
 
+// Vocabulary
 router.post('/vocabulary/create', ProtectMiddleware, VocabularyController.addVocabularyCard);
 
 // Query
 router.get('/:languagePackageId/query/start', ProtectMiddleware, QueryController.sendQueryVocabulary);
+router.get('/:languagePackageId/query/unactivated/start', ProtectMiddleware, QueryController.sendUnactivatedVocabulary);
 router.post('/query/:vocabularyId/check', ProtectMiddleware, QueryController.checkVocabulary);
 
 // Docs

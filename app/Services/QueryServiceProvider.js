@@ -1,15 +1,18 @@
 const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils/index.js');
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 
 // return the number of unresolved vocabulary
-async function getUnresolvedVocabulary(languagePackageId, userId) {
+async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
   // Get drawers belonging to languagePackage
   const drawers = await Drawer.findAll({
-    attributes: ['id', 'name', 'queryInterval'],
+    attributes: ['id', 'stage', 'queryInterval'],
     where: {
       userId,
       languagePackageId,
+      stage: {
+        [Op.ne]: 0,
+      },
     },
   });
 
@@ -35,26 +38,51 @@ async function getUnresolvedVocabulary(languagePackageId, userId) {
         ],
         where: {
           drawerId: drawers[key].id,
-          lastQuery: { lt: queryDate },
+          lastQuery: { [Op.lt]: queryDate },
           '$Group.active$': true,
+          active: true,
         },
       });
       number += Number(result);
-      console.log(result);
     })
   );
 
   return number;
 }
 
-// return the number of unresolved vocabulary
+// return the number of unactivated vocabulary
+async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
+  // Get number of vocabularies belonging to languagePackage
+  const number = await await VocabularyCard.count({
+    include: [
+      {
+        model: Drawer,
+        attributes: ['stage'],
+        required: true,
+      },
+    ],
+    where: {
+      languagePackageId,
+      userId,
+      '$Drawer.stage$': 0,
+      active: true,
+    },
+  });
+
+  return number;
+}
+
+// return the unresolved vocabulary
 async function getQueryVocabulary(languagePackageId, userId, limit) {
   // Get drawers belonging to languagePackage
   const drawers = await Drawer.findAll({
-    attributes: ['id', 'name', 'queryInterval'],
+    attributes: ['id', 'stage', 'queryInterval'],
     where: {
       userId,
       languagePackageId,
+      stage: {
+        [Op.ne]: 0,
+      },
     },
   });
 
@@ -93,6 +121,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
         drawerId: drawer.id,
         lastQuery: { lt: queryDate },
         '$Group.active$': true,
+        active: true,
       },
     });
 
@@ -101,6 +130,43 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
   /* eslint-enable no-await-in-loop */
 
   return vocabs.map((vocab) => deleteKeysFromObject(['Group'], vocab.toJSON()));
+}
+
+// return the unactivated vocabulary
+async function getUnactivatedVocabulary(languagePackageId, userId) {
+  // Get drawers id
+  const drawer = await Drawer.findOne({
+    attributes: ['id'],
+    where: {
+      userId,
+      languagePackageId,
+      stage: 0,
+    },
+  });
+
+  // return every vocabulary in drawer 0
+  const vocabularies = await VocabularyCard.findAll({
+    include: [
+      {
+        model: Translation,
+        attributes: ['name'],
+        required: true,
+      },
+      {
+        model: Group,
+        attributes: ['active'],
+        required: true,
+      },
+    ],
+    order: Sequelize.literal('random()'),
+    attributes: ['id', 'name'],
+    where: {
+      drawerId: drawer.id,
+      '$Group.active$': true,
+      active: true,
+    },
+  });
+  return vocabularies.map((vocab) => deleteKeysFromObject(['Group'], vocab.toJSON()));
 }
 
 // function to handle correct query
@@ -121,13 +187,13 @@ async function handleCorrectQuery(userId, vocabularyId) {
   });
 
   // push vocabulary card one drawer up
-  // get drawer id from name
+  // get drawer id from stage
 
   const drawer = await Drawer.findOne({
     attributes: ['id'],
     where: {
       userId,
-      stage: vocabularyCard.Drawer.name + 1,
+      stage: vocabularyCard.Drawer.stage + 1,
     },
   });
   if (!drawer) {
@@ -136,6 +202,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
   }
 
   // update drawerId for vocabulary card
+  vocabularyCard.lastQuery = new Date();
   await vocabularyCard.setDrawer(drawer);
 }
 
@@ -165,12 +232,15 @@ async function handleWrongQuery(userId, vocabularyId) {
   });
 
   // update drawerId for vocabulary card
+  vocabularyCard.lastQuery = new Date();
   await vocabularyCard.setDrawer(drawer);
 }
 
 module.exports = {
-  getUnresolvedVocabulary,
+  getNumberOfUnresolvedVocabulary,
+  getNumberOfUnactivatedVocabulary,
   getQueryVocabulary,
+  getUnactivatedVocabulary,
   handleCorrectQuery,
   handleWrongQuery,
 };

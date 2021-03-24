@@ -1,12 +1,12 @@
 const { Drawer } = require('../../database');
 
 // create language package
-async function createDrawer(languagePackageId, name, queryInterval, userId) {
+async function createDrawer(languagePackageId, stage, queryInterval, userId) {
   const drawer = await Drawer.create({
-    userId: userId,
-    languagePackageId: languagePackageId,
-    name: name,
-    queryInterval: queryInterval,
+    userId,
+    languagePackageId,
+    stage,
+    queryInterval,
   });
 
   return drawer;
