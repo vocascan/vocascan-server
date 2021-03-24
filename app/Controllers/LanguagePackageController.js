@@ -14,9 +14,11 @@ async function addLanguagePackage(req, res) {
   const languagePackage = await createLanguagePackage(req.body, id);
 
   // iterate over drawers and store them in the database
-  drawers.forEach((drawer) => {
-    createDrawer(languagePackage.id, drawer.stage, drawer.queryInterval, id);
-  });
+  await Promise.all(
+    drawers.map(async (drawer) => {
+      await createDrawer(languagePackage.id, drawer.stage, drawer.queryInterval, id);
+    })
+  );
 
   res.send(languagePackage);
 }
