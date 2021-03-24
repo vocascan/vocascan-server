@@ -61,7 +61,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
   const vocabs = [];
 
   /* eslint-disable no-await-in-loop */
-  for (const drawer of Object.values(drawers)) {
+  for (const drawer of drawers) {
     // subtract size of vocabs returned to update the limit
     const vocabularyLimit = limit - vocabs.length;
 
@@ -106,7 +106,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
 // function to handle correct query
 async function handleCorrectQuery(userId, vocabularyId) {
   // fetch selected vocabulary card
-  const vocabularyCard = await VocabularyCard.find({
+  const vocabularyCard = await VocabularyCard.findOne({
     include: [
       {
         model: Drawer,
@@ -123,7 +123,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
   // push vocabulary card one drawer up
   // get drawer id from name
 
-  const drawer = await Drawer.find({
+  const drawer = await Drawer.findOne({
     attributes: ['id'],
     where: {
       userId,
@@ -136,16 +136,13 @@ async function handleCorrectQuery(userId, vocabularyId) {
   }
 
   // update drawerId for vocabulary card
-  vocabularyCard.drawerId = drawer.id;
-
-  // save to db
-  await vocabularyCard.save();
+  await vocabularyCard.setDrawer(drawer);
 }
 
 // function to handle wrong query
 async function handleWrongQuery(userId, vocabularyId) {
   // if query was solved wrong, push vocabulary card in drawer one
-  const vocabularyCard = await VocabularyCard.find({
+  const vocabularyCard = await VocabularyCard.findOne({
     include: [
       {
         model: Drawer,
@@ -159,7 +156,7 @@ async function handleWrongQuery(userId, vocabularyId) {
     },
   });
 
-  const drawer = await Drawer.find({
+  const drawer = await Drawer.findOne({
     attributes: ['id'],
     where: {
       userId,
@@ -168,10 +165,7 @@ async function handleWrongQuery(userId, vocabularyId) {
   });
 
   // update drawerId for vocabulary card
-  vocabularyCard.drawerId = drawer.id;
-
-  // save to db
-  await vocabularyCard.save();
+  await vocabularyCard.setDrawer(drawer);
 }
 
 module.exports = {
