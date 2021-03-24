@@ -24,7 +24,7 @@ async function up({ context: queryInterface }) {
       },
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     queryInterval: {

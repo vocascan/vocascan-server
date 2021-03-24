@@ -127,7 +127,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
     attributes: ['id'],
     where: {
       userId,
-      name: String(Number(vocabularyCard.Drawer.name) + 1),
+      name: vocabularyCard.Drawer.name + 1,
     },
   });
   if (!drawer) {
@@ -160,7 +160,7 @@ async function handleWrongQuery(userId, vocabularyId) {
     attributes: ['id'],
     where: {
       userId,
-      name: '1',
+      name: 1,
     },
   });
 
