@@ -1,12 +1,22 @@
-FROM node:12.18.1
-ENV NODE_ENV=production
+FROM node:14-alpine
 
+RUN apk add --no-cache --update curl bash
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "./"]
+ARG NODE_ENV=development
+ARG PORT=3000
+ENV PORT=$PORT
 
-RUN npm install --production
+COPY package* ./
+# Install the npm packages
+RUN npm install && npm update
 
 COPY . .
 
-CMD [ "node", "server.js" ]
+# Run the image as a non-root user
+RUN adduser -D vocascan
+USER vocascan
+
+EXPOSE $PORT
+
+CMD ["npm", "run", "start"]
