@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
     Drawer.belongsTo(db.User, { foreignKey: 'userId' });
     Drawer.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
 
-    Drawer.hasMany(db.VocabularyCard, { foreignKey: 'drawerId' });
+    Drawer.hasMany(db.VocabularyCard, { foreignKey: 'drawerId', onDelete: 'cascade', hooks: true });
   };
 
   return Drawer;

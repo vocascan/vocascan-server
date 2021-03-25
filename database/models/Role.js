@@ -26,7 +26,7 @@ module.exports = (sequelize) => {
   );
 
   Role.associate = (db) => {
-    Role.hasMany(db.User, { foreignKey: 'roleId' });
+    Role.hasMany(db.User, { foreignKey: 'roleId', onDelete: 'cascade', hooks: true });
   };
 
   return Role;
