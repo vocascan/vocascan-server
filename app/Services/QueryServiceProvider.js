@@ -119,7 +119,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       attributes: ['id', 'name'],
       where: {
         drawerId: drawer.id,
-        lastQuery: { lt: queryDate },
+        lastQuery: { [Op.lt]: queryDate },
         '$Group.active$': true,
         active: true,
       },
@@ -150,7 +150,6 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
       {
         model: Translation,
         attributes: ['name'],
-        required: true,
       },
       {
         model: Group,
@@ -203,7 +202,9 @@ async function handleCorrectQuery(userId, vocabularyId) {
 
   // update drawerId for vocabulary card
   vocabularyCard.lastQuery = new Date();
-  await vocabularyCard.setDrawer(drawer);
+  vocabularyCard.drawer = drawer;
+
+  await vocabularyCard.save();
 }
 
 // function to handle wrong query
@@ -233,7 +234,9 @@ async function handleWrongQuery(userId, vocabularyId) {
 
   // update drawerId for vocabulary card
   vocabularyCard.lastQuery = new Date();
-  await vocabularyCard.setDrawer(drawer);
+  vocabularyCard.drawer = drawer;
+
+  await vocabularyCard.save();
 }
 
 module.exports = {
