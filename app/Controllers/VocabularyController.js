@@ -1,8 +1,12 @@
-const { createVocabularyCard, createTranslations } = require('../Services/VocabularyServiceProvider.js');
+const {
+  createVocabularyCard,
+  createTranslations,
+  destroyVocabularyCard,
+} = require('../Services/VocabularyServiceProvider.js');
 
 async function addVocabularyCard(req, res) {
   // get userId from request
-  const userId = await req.user.id;
+  const { id } = await req.user;
   const { name, translations } = await req.body;
   const { languagePackageId } = await req.params;
 
@@ -10,18 +14,29 @@ async function addVocabularyCard(req, res) {
   const activate = req.query.activate === 'true';
 
   // create vocabulary card
-  const vocabularyCard = await createVocabularyCard(req.params, name, userId, activate);
+  const vocabularyCard = await createVocabularyCard(req.params, name, id, activate);
 
   // parse vocabulary card id from response and create translations
   await Promise.all(
     translations.map(async (translation) => {
-      await createTranslations(userId, languagePackageId, vocabularyCard.id, translation.name);
+      await createTranslations(id, languagePackageId, vocabularyCard.id, translation.name);
     })
   );
 
   res.sendStatus(204);
 }
 
+async function deleteVocabularyCard(req, res) {
+  // get userId from request
+  const userId = await req.user.id;
+  const { vocabularyId } = await req.params;
+
+  destroyVocabularyCard(userId, vocabularyId);
+
+  res.sendStatus(200);
+}
+
 module.exports = {
   addVocabularyCard,
+  deleteVocabularyCard,
 };

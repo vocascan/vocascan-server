@@ -18,9 +18,11 @@ router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
 router.get('/auth', ProtectMiddleware, AuthController.profile);
 
+// Language package
 router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
 router.get('/languagePackage', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
 
+// Group
 router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
 router.get('/:languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
 
@@ -30,6 +32,7 @@ router.post(
   ProtectMiddleware,
   VocabularyController.addVocabularyCard
 );
+router.delete('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.deleteVocabularyCard);
 
 // Query
 router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);

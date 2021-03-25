@@ -55,10 +55,10 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
 }
 
 // create language package
-async function createTranslations(userId, languagePackageId, vocabularyCardId, name) {
+async function createTranslations(userId, languagePackageId, vocabularyId, name) {
   const translation = await Translation.create({
     userId: userId,
-    vocabularyCardId: vocabularyCardId,
+    vocabularyCardId: vocabularyId,
     languagePackageId: languagePackageId,
     name: name,
   });
@@ -66,7 +66,19 @@ async function createTranslations(userId, languagePackageId, vocabularyCardId, n
   return translation;
 }
 
+async function destroyVocabularyCard(userId, vocabularyId) {
+  const vocabulary = await VocabularyCard.findOne({
+    where: {
+      id: vocabularyId,
+      userId,
+    },
+  });
+
+  await vocabulary.destroy();
+}
+
 module.exports = {
   createVocabularyCard,
   createTranslations,
+  destroyVocabularyCard,
 };
