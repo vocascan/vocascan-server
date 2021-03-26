@@ -21,6 +21,11 @@ router.get('/auth', ProtectMiddleware, AuthController.profile);
 // Language package
 router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
 router.get('/languagePackage', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
+router.delete(
+  '/languagePackage/:languagePackageId',
+  ProtectMiddleware,
+  LanguagePackageController.deleteLanguagePackage
+);
 
 // Group
 router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);

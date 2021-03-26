@@ -1,4 +1,8 @@
-const { createLanguagePackage, getLanguagePackages } = require('../Services/LanguagePackageServiceProvider.js');
+const {
+  createLanguagePackage,
+  getLanguagePackages,
+  destroyLanguagePackage,
+} = require('../Services/LanguagePackageServiceProvider.js');
 const { createDrawer } = require('../Services/DrawerServiceProvider.js');
 const { drawers } = require('../utils/constants.js');
 const { getGroups } = require('../Services/GroupServiceProvider.js');
@@ -63,7 +67,18 @@ async function sendLanguagePackages(req, res) {
   res.send(formatted);
 }
 
+async function deleteLanguagePackage(req, res) {
+  // get userId from request
+  const userId = req.user.id;
+  const { languagePackageId } = req.params;
+
+  destroyLanguagePackage(userId, languagePackageId);
+
+  res.sendStatus(200);
+}
+
 module.exports = {
   addLanguagePackage,
   sendLanguagePackages,
+  deleteLanguagePackage,
 };

@@ -35,7 +35,19 @@ async function getLanguagePackages(userId, res) {
   return languagePackages;
 }
 
+async function destroyLanguagePackage(userId, languagePackageId) {
+  const languagePackage = await LanguagePackage.findOne({
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
+
+  await languagePackage.destroy();
+}
+
 module.exports = {
   createLanguagePackage,
   getLanguagePackages,
+  destroyLanguagePackage,
 };
