@@ -2,7 +2,7 @@ const { createGroup, getGroups } = require('../Services/GroupServiceProvider.js'
 
 async function addGroup(req, res) {
   // get userId from request
-  const { id } = await req.user;
+  const { id } = req.user;
 
   // get language package id from params
   const { languagePackageId } = req.params;
@@ -15,7 +15,7 @@ async function addGroup(req, res) {
 
 async function sendGroups(req, res) {
   // get userId from request
-  const { id } = await req.user;
+  const { id } = req.user;
 
   // get language package id from params
   const { languagePackageId } = req.params;

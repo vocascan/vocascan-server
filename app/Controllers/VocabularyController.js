@@ -6,9 +6,9 @@ const {
 
 async function addVocabularyCard(req, res) {
   // get userId from request
-  const { id } = await req.user;
-  const { name, translations } = await req.body;
-  const { languagePackageId } = await req.params;
+  const { id } = req.user;
+  const { name, translations } = req.body;
+  const { languagePackageId } = req.params;
 
   // check if user wants to train vocabulary card directly
   const activate = req.query.activate === 'true';
@@ -28,8 +28,8 @@ async function addVocabularyCard(req, res) {
 
 async function deleteVocabularyCard(req, res) {
   // get userId from request
-  const userId = await req.user.id;
-  const { vocabularyId } = await req.params;
+  const userId = req.user.id;
+  const { vocabularyId } = req.params;
 
   destroyVocabularyCard(userId, vocabularyId);
 

@@ -9,7 +9,7 @@ const {
 
 async function addLanguagePackage(req, res) {
   // get userId from request
-  const { id } = await req.user;
+  const { id } = req.user;
 
   // create language Package
   const languagePackage = await createLanguagePackage(req.body, id);
@@ -26,8 +26,8 @@ async function addLanguagePackage(req, res) {
 
 async function sendLanguagePackages(req, res) {
   // get userId from request
-  const { id } = await req.user;
-  const { groups } = (await req.query) || false;
+  const { id } = req.user;
+  const { groups } = req.query || false;
 
   // get language Package
   const languagePackages = await getLanguagePackages(id, res);
