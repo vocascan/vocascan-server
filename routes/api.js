@@ -25,6 +25,7 @@ router.get('/languagePackage', ProtectMiddleware, LanguagePackageController.send
 // Group
 router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
 router.get('/:languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
+router.delete('/group/:groupId', ProtectMiddleware, GroupController.deleteGroup);
 
 // Vocabulary
 router.post(
