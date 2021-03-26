@@ -85,9 +85,20 @@ async function loginUser({ email, password }, res) {
   return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
+async function destroyUser(userId) {
+  const user = await User.findOne({
+    where: {
+      id: userId,
+    },
+  });
+
+  await user.destroy();
+}
+
 module.exports = {
   createUser,
   loginUser,
   validateRegister,
   validateLogin,
+  destroyUser,
 };

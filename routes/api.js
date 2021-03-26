@@ -16,7 +16,8 @@ const router = express.Router();
 // AUTH
 router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
-router.get('/auth', ProtectMiddleware, AuthController.profile);
+router.get('/user', ProtectMiddleware, AuthController.profile);
+router.delete('/user', ProtectMiddleware, AuthController.deleteUser);
 
 // Language package
 router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
