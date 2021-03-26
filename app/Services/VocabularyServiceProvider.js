@@ -77,8 +77,27 @@ async function destroyVocabularyCard(userId, vocabularyId) {
   await vocabulary.destroy();
 }
 
+async function getGroupVocabulary(userId, groupId) {
+  const vocabulary = await VocabularyCard.findAll({
+    include: [
+      {
+        model: Translation,
+        attributes: ['name'],
+      },
+    ],
+    attributes: ['name'],
+    where: {
+      userId,
+      groupId,
+    },
+  });
+
+  return vocabulary;
+}
+
 module.exports = {
   createVocabularyCard,
   createTranslations,
   destroyVocabularyCard,
+  getGroupVocabulary,
 };

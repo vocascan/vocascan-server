@@ -2,6 +2,7 @@ const {
   createVocabularyCard,
   createTranslations,
   destroyVocabularyCard,
+  getGroupVocabulary,
 } = require('../Services/VocabularyServiceProvider.js');
 
 async function addVocabularyCard(req, res) {
@@ -36,7 +37,18 @@ async function deleteVocabularyCard(req, res) {
   res.sendStatus(200);
 }
 
+async function sendGroupVocabulary(req, res) {
+  // get userId from request
+  const userId = req.user.id;
+  const { groupId } = req.params;
+
+  const vocabulary = await getGroupVocabulary(userId, groupId);
+
+  res.send(vocabulary);
+}
+
 module.exports = {
   addVocabularyCard,
   deleteVocabularyCard,
+  sendGroupVocabulary,
 };
