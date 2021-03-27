@@ -1,7 +1,7 @@
 {
-  "name": "skitchen-server",
+  "name": "vocascan-server",
   "version": "1.0.0",
-  "description": "Easily share your recipes",
+  "description": "A highly configurable vocabulary trainer",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,7 +9,8 @@
     "test": "npm run lint",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "swagger": "swagger-ui-watcher -p 3200 ./docs/api/swagger.json"
+    "swagger": "swagger-ui-watcher -p 3200 ./docs/api/swagger.json",
+    "postinstall": "node -e \"process.exit(process.env.npm_config_sqlite === 'true')\" || npm i --no-save --no-package-lock sqlite3"
   },
   "author": "Noctera",
   "license": "MIT",
@@ -17,11 +18,11 @@
     "eslint": "^5.16.0 || ^6.8.0 || ^7.2.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-node": "^4.1.0",
-    "eslint-config-prettier": "^7.2.0",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "nodemon": "^1.14.6",
+    "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
     "sequelize-cli": "^6.2.0",
     "swagger-ui-watcher": "^2.1.11"
@@ -32,9 +33,11 @@
     "dotenv": "^8.1.0",
     "express": "^4.16.2",
     "jsonwebtoken": "^8.5.1",
+    "mariadb": "^2.5.3",
+    "mysql2": "^2.2.5",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.44.4",
+    "sequelize": "^6.6.2",
     "swagger-ui-express": "^4.1.6",
     "umzug": "^3.0.0-beta.15"
   },
