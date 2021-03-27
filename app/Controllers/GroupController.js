@@ -1,4 +1,4 @@
-const { createGroup, getGroups, destroyGroup } = require('../Services/GroupServiceProvider.js');
+const { createGroup, getGroups, destroyGroup, updateGroup } = require('../Services/GroupServiceProvider.js');
 
 async function addGroup(req, res) {
   // get userId from request
@@ -28,16 +28,27 @@ async function sendGroups(req, res) {
 
 async function deleteGroup(req, res) {
   // get userId from request
-  const userId = req.user.id;
+  const { id } = req.user;
   const { groupId } = req.params;
 
-  destroyGroup(userId, groupId);
+  destroyGroup(id, groupId);
 
   res.sendStatus(200);
+}
+
+async function modifyGroup(req, res) {
+  // get userId from request
+  const { id } = req.user;
+  const { groupId } = req.params;
+
+  const group = await updateGroup(req.body, id, groupId);
+
+  res.send(group);
 }
 
 module.exports = {
   addGroup,
   sendGroups,
   deleteGroup,
+  modifyGroup,
 };

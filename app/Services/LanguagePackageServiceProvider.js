@@ -46,8 +46,32 @@ async function destroyLanguagePackage(userId, languagePackageId) {
   await languagePackage.destroy();
 }
 
+async function updateLanguagePackage(
+  { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
+  userId,
+  languagePackageId
+) {
+  const languagePackage = await LanguagePackage.findOne({
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
+
+  languagePackage.name = name;
+  languagePackage.foreignWordLanguage = foreignWordLanguage;
+  languagePackage.translatedWordLanguage = translatedWordLanguage;
+  languagePackage.vocabsPerDay = vocabsPerDay;
+  languagePackage.rightWords = rightWords;
+
+  languagePackage.save();
+
+  return languagePackage;
+}
+
 module.exports = {
   createLanguagePackage,
   getLanguagePackages,
   destroyLanguagePackage,
+  updateLanguagePackage,
 };

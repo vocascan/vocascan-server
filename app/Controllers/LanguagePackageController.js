@@ -2,6 +2,7 @@ const {
   createLanguagePackage,
   getLanguagePackages,
   destroyLanguagePackage,
+  updateLanguagePackage,
 } = require('../Services/LanguagePackageServiceProvider.js');
 const { createDrawer } = require('../Services/DrawerServiceProvider.js');
 const { drawers } = require('../utils/constants.js');
@@ -69,16 +70,27 @@ async function sendLanguagePackages(req, res) {
 
 async function deleteLanguagePackage(req, res) {
   // get userId from request
-  const userId = req.user.id;
+  const { id } = req.user;
   const { languagePackageId } = req.params;
 
-  destroyLanguagePackage(userId, languagePackageId);
+  destroyLanguagePackage(id, languagePackageId);
 
   res.sendStatus(200);
+}
+
+async function modifyLanguagePackage(req, res) {
+  // get userId from request
+  const { id } = req.user;
+  const { languagePackageId } = req.params;
+
+  const languagePackage = await updateLanguagePackage(req.body, id, languagePackageId);
+
+  res.send(languagePackage);
 }
 
 module.exports = {
   addLanguagePackage,
   sendLanguagePackages,
   deleteLanguagePackage,
+  modifyLanguagePackage,
 };
