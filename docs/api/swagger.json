@@ -3,7 +3,7 @@
   "info": {
     "title": "vocascan",
     "description": "A highly configurable vocabulary trainer.",
-    "version": "1.0.0"
+    "version": "v0.1-alpha"
   },
   "servers": [
     {
@@ -25,7 +25,7 @@
         }
       }
     },
-    "/auth/register": {
+    "/api/user/register": {
       "post": {
         "summary": "Register new user",
         "tags": ["auth"],
@@ -44,7 +44,7 @@
         }
       }
     },
-    "/auth/login": {
+    "/api/user/login": {
       "post": {
         "summary": "Login user",
         "tags": ["auth"],
@@ -69,7 +69,7 @@
         }
       }
     },
-    "/auth": {
+    "/api/user": {
       "get": {
         "summary": "Get own profile",
         "tags": ["auth"],
@@ -83,6 +83,332 @@
           },
           "401": {
             "$ref": "#/components/responses/401"
+          }
+        }
+      },
+
+      "delete": {
+        "summary": "Delete user",
+        "tags": ["delete"],
+        "operationId": "deleteUser",
+        "security": [],
+        "description": "Nothing needed. UserId gets parsed from JWT",
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/languagePackage": {
+      "post": {
+        "summary": "Create language package for user",
+        "tags": ["create"],
+        "operationId": "createLanguagePackage",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateLanguagePackage"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CreateLanguagePackage"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+
+      "get": {
+        "summary": "Get vocabulary for query",
+        "tags": ["GET"],
+        "operationId": "getLanguagePackage",
+        "security": [],
+        "parameters": [
+          {"$ref": "#/components/parameters/authorization"}
+
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetLanguagePackage"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/languagePackage/{languagePackageId}/group": {
+      "post": {
+        "summary": "Create group for language pacakge",
+        "tags": ["create"],
+        "operationId": "createGroup",
+        "security": [],
+        "parameters": [
+          {"$ref": "#/components/parameters/languagePackageId"}
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateGroup"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CreateGroup"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+
+      "get": {
+        "summary": "Get groups belonging to language package",
+        "tags": ["GET"],
+        "operationId": "getGroups",
+        "security": [],
+        "parameters": [
+          {"$ref": "#/components/parameters/authorization"},
+          {"$ref": "#/components/parameters/languagePackageId"}
+
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetGroups"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/languagePackage/{languagePackageId}/group/{groupId}/vocabulary": {
+      "post": {
+        "summary": "Create vocabulary card",
+        "tags": ["create"],
+        "operationId": "createVocabulary",
+        "security": [],
+        "parameters": [
+          {"$ref": "#/components/parameters/languagePackageId"},
+          {"$ref": "#/components/parameters/groupId"}
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateVocabulary"
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/group/{groupId}/vocabulary": {
+      "get": {
+        "summary": "Get all vocabulary belonging to specific group",
+        "tags": ["GET"],
+        "operationId": "getGroupVocabulary",
+        "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/groupId"}],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetGroupVocabulary"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/languagePackage/{languagePackageId}/query": {
+      "get": {
+        "summary": "Get vocabulary where timer from last query expired. Only as many words are returned as specified in the limit.",
+        "tags": ["QUERY"],
+        "operationId": "startQuery",
+        "security": [],
+        "parameters": [
+          {"$ref": "#/components/parameters/languagePackageId"},
+          {"$ref": "#/components/parameters/limit"}
+
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/startQuery"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/languagePackage/{languagePackageId}/query/staged": {
+      "get": {
+        "summary": "Get all vocabulary that that have been added, but have not been activated yet.",
+        "tags": ["QUERY"],
+        "operationId": "startQueryStaged",
+        "security": [],
+        "parameters": [
+          {"$ref": "#/components/parameters/languagePackageId"}
+
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/startQuery"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/vocabulary/{vocabularyId}": {
+      "delete": {
+        "summary": "Delete vocabulary card",
+        "tags": ["delete"],
+        "operationId": "deleteVocabulary",
+        "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/vocabularyId"}],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "post": {
+        "summary": "Handles your result. moves vocabulary in the drawers depending on whether they were answered correctly or incorrectly",
+        "tags": ["VALIDATION"],
+        "operationId": "checkVocabulary",
+        "security": [],
+        "parameters": [
+          {"$ref": "#/components/parameters/vocabularyId"}
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CheckVocabulary"
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/group/{groupId}": {
+      "delete": {
+        "summary": "Delete group",
+        "tags": ["delete"],
+        "operationId": "deleteGroup",
+        "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/groupId"}],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/languagePackage/{languagePackageId}": {
+      "delete": {
+        "summary": "Delete language package",
+        "tags": ["delete"],
+        "operationId": "deleteLanguagePackage",
+        "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/languagePackageId"}],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
           }
         }
       }
@@ -101,15 +427,134 @@
           "username": {
             "type": "string",
             "nullable": true
-          },
-          "email": {
+          }
+        }
+      },
+      "LanguagePackage": {
+        "description": "LanguagePackage",
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string",
-            "format": "email"
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "foreignWordLanguage": {
+            "type": "string",
+            "format": "password"
+          },
+          "translatedWordLanguage": {
+            "type": "string",
+            "format": "password"
+          },
+          "vocabsPerDay": {
+            "type": "integer",
+            "format": "password"
+          },
+          "rightWords": {
+            "type": "integer",
+            "format": "password"
+          }
+        }
+      },
+      "Group": {
+        "description": "Group",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "active": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "Vocabulary": {
+        "description": "Vocabulary",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Translations": {
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+                
+            }
           }
         }
       }
     },
-    "parameters": {},
+    "parameters": {
+      "languagePackageId": {
+        "in": "path",
+        "name": "languagePackageId",
+        "description": "Id from language package",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "groupId": {
+        "in": "path",
+        "name": "groupId",
+        "description": "Id from group",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "vocabularyId": {
+        "in": "path",
+        "name": "vocabularyId",
+        "description": "Id from vocabulary card",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "limit": {
+        "in": "query",
+        "name": "limit",
+        "description": "Limit defines the number of returned vocabulary from a request",
+        "required": true,
+        "schema": {
+          "type": "number"
+        }
+      },
+      "authorization": {
+        "in": "header",
+        "name": "Authorization",
+        "description": "Put JWT in Authorization header in order to validate request",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "bearer"
+        }
+
+      }
+    },
     "requestBodies": {
       "UserRegister": {
         "description": "Register User details",
@@ -158,6 +603,105 @@
             }
           }
         }
+      },
+      "CheckVocabulary": {
+        "description": "Type in you result of the vocabulary card. True will move your card one drawer up. False will move it in drawer 1",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "result details",
+              "type": "object",
+              "required": ["answer"],
+              "properties": {
+                "answer": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateLanguagePackage": {
+        "description": "Create language package details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create language package details",
+              "type": "object",
+              "required": ["name", "foreignWordLanguage", "translatedWordLanguage", "vocabsPerDay", "rightWords"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "foreignWordLanguage": {
+                  "type": "string",
+                  "format": "password"
+                },
+                "translatedWordLanguage": {
+                  "type": "string",
+                  "format": "password"
+                },
+                "vocabsPerDay": {
+                  "type": "integer",
+                  "format": "password"
+                },
+                "rightWords": {
+                  "type": "integer",
+                  "format": "password"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateGroup": {
+        "description": "Create group details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create group details",
+              "type": "object",
+              "required": ["name", "active"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "boolean",
+                  "format": "password"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateVocabulary": {
+        "description": "add foreign word and translations",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create vocabulary details",
+              "type": "object",
+              "required": ["name", "active"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "translations": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+                
+              }
+            }
+          }
+        }
       }
     },
     "responses": {
@@ -190,6 +734,102 @@
                 "token": {
                   "type": "string"
                 }
+              }
+            }
+          }
+        }
+      },
+      "CreateLanguagePackage": {
+        "description": "Create language package response",
+        "content": {
+          "application/json": {
+            "schema": {
+                "$ref": "#/components/schemas/LanguagePackage"
+            }
+          }
+        }
+      },
+      "CreateGroup": {
+        "description": "Create group for language package",
+        "content": {
+          "application/json": {
+            "schema": {
+                "$ref": "#/components/schemas/Group"
+            }
+          }
+        }
+      },
+      "GetLanguagePackage": {
+        "description": "Returns infos about languagePackage",
+        "content": {
+          "application/json": {
+            "schema": {
+            "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "foreignWordLanguage": {
+                  "type": "string"
+                },
+                "translatedWordLanguage": {
+                  "type": "string"
+                },
+                "vocabsPerDay": {
+                  "type": "number"
+                },
+                "rightWords": {
+                  "type": "number"
+                },
+                "unresolvedVocabularies": {
+                  "type": "number"
+                },
+                "unactivatedVocabularies": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetGroups": {
+        "description": "Returns info about Groups belonging to a language package",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Group"
+              }
+            }
+          }
+        }
+      },
+      "GetGroupVocabulary": {
+        "description": "Returns info about all Vocabulary belonging to a group",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Vocabulary"
+              }
+            }
+          }
+        }
+      },
+      "startQuery": {
+        "description": "returns vocabulary with limit",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Vocabulary"
               }
             }
           }
