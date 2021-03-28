@@ -27,11 +27,13 @@ router.delete(
   ProtectMiddleware,
   LanguagePackageController.deleteLanguagePackage
 );
+router.put('/languagePackage/:languagePackageId', ProtectMiddleware, LanguagePackageController.modifyLanguagePackage);
 
 // Group
 router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
 router.get('/:languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
 router.delete('/group/:groupId', ProtectMiddleware, GroupController.deleteGroup);
+router.put('/group/:groupId', ProtectMiddleware, GroupController.modifyGroup);
 
 // Vocabulary
 router.post(
@@ -41,6 +43,7 @@ router.post(
 );
 router.delete('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.deleteVocabularyCard);
 router.get('/group/:groupId/vocabulary', ProtectMiddleware, VocabularyController.sendGroupVocabulary);
+router.put('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.modifyVocabulary);
 
 // Query
 router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);

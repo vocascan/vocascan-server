@@ -3,6 +3,7 @@ const {
   createTranslations,
   destroyVocabularyCard,
   getGroupVocabulary,
+  updateVocabulary,
 } = require('../Services/VocabularyServiceProvider.js');
 
 async function addVocabularyCard(req, res) {
@@ -29,20 +30,30 @@ async function addVocabularyCard(req, res) {
 
 async function deleteVocabularyCard(req, res) {
   // get userId from request
-  const userId = req.user.id;
+  const { id } = req.user;
   const { vocabularyId } = req.params;
 
-  destroyVocabularyCard(userId, vocabularyId);
+  destroyVocabularyCard(id, vocabularyId);
 
   res.sendStatus(200);
 }
 
 async function sendGroupVocabulary(req, res) {
   // get userId from request
-  const userId = req.user.id;
+  const { id } = req.user;
   const { groupId } = req.params;
 
-  const vocabulary = await getGroupVocabulary(userId, groupId);
+  const vocabulary = await getGroupVocabulary(id, groupId);
+
+  res.send(vocabulary);
+}
+
+async function modifyVocabulary(req, res) {
+  // get userId from request
+  const { id } = req.user;
+  const { vocabularyId } = req.params;
+
+  const vocabulary = await updateVocabulary(req.body, id, vocabularyId);
 
   res.send(vocabulary);
 }
@@ -51,4 +62,5 @@ module.exports = {
   addVocabularyCard,
   deleteVocabularyCard,
   sendGroupVocabulary,
+  modifyVocabulary,
 };
