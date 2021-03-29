@@ -12,34 +12,34 @@ const {
 
 async function addLanguagePackage(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
 
   // create language Package
-  const languagePackage = await createLanguagePackage(req.body, id);
+  const languagePackage = await createLanguagePackage(req.body, userId);
 
   // store drawers for language package in database
 
-  await createDrawers(drawers, languagePackage.id, id);
+  await createDrawers(drawers, languagePackage.id, userId);
 
   res.send(languagePackage);
 }
 
 async function sendLanguagePackages(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const groups = req.query.groups || false;
 
   // get language Package
-  const languagePackages = await getLanguagePackages(id, groups, res);
+  const languagePackages = await getLanguagePackages(userId, groups, res);
 
   let formatted;
   // if groups is true, return groups to every language package
   formatted = await Promise.all(
     languagePackages.map(async (languagePackage) => ({
-      unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, id),
+      unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
 
       // add number of unactivated vocabularies
-      unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, id),
+      unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
 
       ...languagePackage.toJSON(),
     }))

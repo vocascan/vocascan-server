@@ -7,7 +7,7 @@ const {
 
 async function addVocabularyCard(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { name, translations } = req.body;
   const { languagePackageId } = req.params;
 
@@ -15,10 +15,10 @@ async function addVocabularyCard(req, res) {
   const activate = req.query.activate === 'true';
 
   // create vocabulary card
-  const vocabularyCard = await createVocabularyCard(req.params, name, id, activate);
+  const vocabularyCard = await createVocabularyCard(req.params, name, userId, activate);
 
   // parse vocabulary card id from response and create translations
-  await createTranslations(translations, id, languagePackageId, vocabularyCard.id);
+  await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
 
   res.sendStatus(204);
 }
