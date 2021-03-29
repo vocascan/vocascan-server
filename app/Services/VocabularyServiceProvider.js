@@ -55,15 +55,17 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
 }
 
 // create language package
-async function createTranslations(userId, languagePackageId, vocabularyCardId, name) {
-  const translation = await Translation.create({
-    userId: userId,
-    vocabularyCardId: vocabularyCardId,
-    languagePackageId: languagePackageId,
-    name: name,
-  });
-
-  return translation;
+async function createTranslations(translations, userId, languagePackageId, vocabularyId) {
+  await Promise.all(
+    translations.map(async (translation) => {
+      await Translation.create({
+        userId: userId,
+        vocabularyCardId: vocabularyId,
+        languagePackageId: languagePackageId,
+        name: translation.name,
+      });
+    })
+  );
 }
 
 module.exports = {

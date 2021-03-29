@@ -1,5 +1,5 @@
 const { createLanguagePackage, getLanguagePackages } = require('../Services/LanguagePackageServiceProvider.js');
-const { createDrawer } = require('../Services/DrawerServiceProvider.js');
+const { createDrawers } = require('../Services/DrawerServiceProvider.js');
 const { drawers } = require('../utils/constants.js');
 const {
   getNumberOfUnresolvedVocabulary,
@@ -13,12 +13,9 @@ async function addLanguagePackage(req, res) {
   // create language Package
   const languagePackage = await createLanguagePackage(req.body, id);
 
-  // iterate over drawers and store them in the database
-  await Promise.all(
-    drawers.map(async (drawer) => {
-      await createDrawer(languagePackage.id, drawer.stage, drawer.queryInterval, id);
-    })
-  );
+  // store drawers for language package in database
+
+  await createDrawers(drawers, languagePackage.id, id);
 
   res.send(languagePackage);
 }

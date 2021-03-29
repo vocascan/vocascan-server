@@ -22,7 +22,7 @@ router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.add
 router.get('/languagePackage', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
 
 router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
-router.get('/:languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
+router.get('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
 
 // Vocabulary
 router.post(
@@ -33,12 +33,8 @@ router.post(
 
 // Query
 router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);
-router.get(
-  '/languagePackage/:languagePackageId/query/staged',
-  ProtectMiddleware,
-  QueryController.sendUnactivatedVocabulary
-);
-router.post('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
+
+router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
 
 // Docs
 router.get('/swagger.json', DocsController.document);
