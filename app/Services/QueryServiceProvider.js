@@ -178,7 +178,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
         attributes: ['stage'],
       },
     ],
-    attributes: ['id', 'name', 'drawerId'],
+    attributes: ['id', 'name', 'drawerId', 'languagePackageId'],
     where: {
       userId,
       id: vocabularyId,
@@ -192,6 +192,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
     attributes: ['id'],
     where: {
       userId,
+      languagePackageId: vocabularyCard.languagePackageId,
       stage: vocabularyCard.Drawer.stage + 1,
     },
   });
@@ -202,7 +203,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
 
   // update drawerId for vocabulary card
   vocabularyCard.lastQuery = new Date();
-  vocabularyCard.drawer = drawer;
+  vocabularyCard.drawerId = drawer.id;
 
   await vocabularyCard.save();
 }
@@ -217,7 +218,7 @@ async function handleWrongQuery(userId, vocabularyId) {
         attributes: ['stage'],
       },
     ],
-    attributes: ['id', 'name', 'drawerId'],
+    attributes: ['id', 'name', 'drawerId', 'languagePackageId'],
     where: {
       userId,
       id: vocabularyId,
@@ -228,13 +229,14 @@ async function handleWrongQuery(userId, vocabularyId) {
     attributes: ['id'],
     where: {
       userId,
+      languagePackageId: vocabularyCard.languagePackageId,
       stage: 1,
     },
   });
 
   // update drawerId for vocabulary card
   vocabularyCard.lastQuery = new Date();
-  vocabularyCard.drawer = drawer;
+  vocabularyCard.drawerId = drawer.id;
 
   await vocabularyCard.save();
 }

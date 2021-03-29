@@ -31,7 +31,7 @@ router.put('/languagePackage/:languagePackageId', ProtectMiddleware, LanguagePac
 
 // Group
 router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
-router.get('/:languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
+router.get('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
 router.delete('/group/:groupId', ProtectMiddleware, GroupController.deleteGroup);
 router.put('/group/:groupId', ProtectMiddleware, GroupController.modifyGroup);
 
@@ -47,12 +47,8 @@ router.put('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.
 
 // Query
 router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);
-router.get(
-  '/languagePackage/:languagePackageId/query/staged',
-  ProtectMiddleware,
-  QueryController.sendUnactivatedVocabulary
-);
-router.post('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
+
+router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
 
 // Docs
 router.get('/swagger.json', DocsController.document);

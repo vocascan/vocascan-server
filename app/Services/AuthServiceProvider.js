@@ -86,6 +86,7 @@ async function loginUser({ email, password }, res) {
 }
 
 async function destroyUser(userId) {
+  // get user from database
   const user = await User.findOne({
     where: {
       id: userId,

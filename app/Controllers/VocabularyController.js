@@ -8,7 +8,7 @@ const {
 
 async function addVocabularyCard(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { name, translations } = req.body;
   const { languagePackageId } = req.params;
 
@@ -16,16 +16,12 @@ async function addVocabularyCard(req, res) {
   const activate = req.query.activate === 'true';
 
   // create vocabulary card
-  const vocabularyCard = await createVocabularyCard(req.params, name, id, activate);
+  const vocabularyCard = await createVocabularyCard(req.params, name, userId, activate);
 
   // parse vocabulary card id from response and create translations
-  await Promise.all(
-    translations.map(async (translation) => {
-      await createTranslations(id, languagePackageId, vocabularyCard.id, translation.name);
-    })
-  );
+  await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
 
-  res.sendStatus(204);
+  res.status(204).end();
 }
 
 async function deleteVocabularyCard(req, res) {
@@ -33,9 +29,9 @@ async function deleteVocabularyCard(req, res) {
   const { id } = req.user;
   const { vocabularyId } = req.params;
 
-  destroyVocabularyCard(id, vocabularyId);
+  await destroyVocabularyCard(userId, vocabularyId);
 
-  res.sendStatus(200);
+  res.status(204).end();
 }
 
 async function sendGroupVocabulary(req, res) {
