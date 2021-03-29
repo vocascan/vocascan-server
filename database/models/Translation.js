@@ -33,5 +33,11 @@ module.exports = (sequelize) => {
     }
   );
 
+  Translation.associate = (db) => {
+    Translation.belongsTo(db.User, { foreignKey: 'userId' });
+    Translation.belongsTo(db.VocabularyCard, { foreignKey: 'vocabularyCardId' });
+    Translation.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+  };
+
   return Translation;
 };

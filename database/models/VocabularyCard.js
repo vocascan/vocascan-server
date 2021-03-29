@@ -34,6 +34,10 @@ module.exports = (sequelize) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
+      active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
     },
     {
       sequelize,
@@ -42,7 +46,12 @@ module.exports = (sequelize) => {
   );
 
   VocabularyCard.associate = (db) => {
-    VocabularyCard.hasMany(db.Translation);
+    VocabularyCard.belongsTo(db.User, { foreignKey: 'userId' });
+    VocabularyCard.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+    VocabularyCard.belongsTo(db.Group, { foreignKey: 'groupId' });
+    VocabularyCard.belongsTo(db.Drawer, { foreignKey: 'drawerId' });
+
+    VocabularyCard.hasMany(db.Translation, { foreignKey: 'vocabularyCardId' });
   };
 
   return VocabularyCard;

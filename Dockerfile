@@ -1,12 +1,15 @@
-FROM node:12.18.1
-ENV NODE_ENV=production
+FROM node:14-alpine
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY package* ./
 
-RUN npm install --production
+RUN npm i
 
 COPY . .
 
-CMD [ "node", "server.js" ]
+# Run the image as a non-root user
+RUN adduser -D vocascan
+USER vocascan
+
+CMD ["npm", "run", "start"]

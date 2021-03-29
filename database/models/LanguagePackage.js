@@ -42,10 +42,12 @@ module.exports = (sequelize) => {
   );
 
   LanguagePackage.associate = (db) => {
-    LanguagePackage.hasMany(db.Drawer);
-    LanguagePackage.hasMany(db.Group);
-    LanguagePackage.hasMany(db.VocabularyCard);
-    LanguagePackage.hasMany(db.Translation);
+    LanguagePackage.belongsTo(db.User, { foreignKey: 'userId' });
+
+    LanguagePackage.hasMany(db.Drawer, { foreignKey: 'languagePackageId' });
+    LanguagePackage.hasMany(db.Group, { foreignKey: 'languagePackageId' });
+    LanguagePackage.hasMany(db.VocabularyCard, { foreignKey: 'languagePackageId' });
+    LanguagePackage.hasMany(db.Translation, { foreignKey: 'languagePackageId' });
   };
 
   return LanguagePackage;

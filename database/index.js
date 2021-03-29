@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
-const Sequelize = require('sequelize');
+const { Sequelize } = require('sequelize');
 const { Umzug, SequelizeStorage } = require('umzug');
 const { performance } = require('perf_hooks');
 
@@ -18,6 +18,7 @@ const sequelize = new Sequelize({
   port: process.env.DB_PORT,
   host: process.env.DB_HOST,
   dialect: 'postgres',
+  operatorsAliases: false,
 });
 
 // get all models
@@ -56,6 +57,7 @@ db.migrations = {
         sequelize: db.sequelize,
         modelName: '.migrations',
         timestamps: true,
+        operatorsAliases: false,
       }),
     });
 
@@ -107,6 +109,7 @@ db.seeders = {
         sequelize: db.sequelize,
         modelName: '.seeders',
         timestamps: true,
+        operatorsAliases: false,
       }),
     });
 

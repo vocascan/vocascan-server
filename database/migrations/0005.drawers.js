@@ -23,8 +23,8 @@ async function up({ context: queryInterface }) {
         key: 'id',
       },
     },
-    name: {
-      type: DataTypes.STRING,
+    stage: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     queryInterval: {

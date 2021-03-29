@@ -8,6 +8,7 @@
     "strict": "off",
     "no-plusplus": "off",
     "no-process-exit": "off",
+    "no-restricted-syntax": "off",
     "max-len": [
       "error",
       {
