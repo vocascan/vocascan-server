@@ -33,7 +33,7 @@ async function deleteGroup(req, res) {
 
   await destroyGroup(userId, groupId);
 
-  res.sendStatus(200);
+  res.status(204).end();
 }
 
 module.exports = {

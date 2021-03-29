@@ -55,7 +55,7 @@ async function deleteLanguagePackage(req, res) {
 
   await destroyLanguagePackage(userId, languagePackageId);
 
-  res.sendStatus(204);
+  res.status(204).end();
 }
 
 module.exports = {

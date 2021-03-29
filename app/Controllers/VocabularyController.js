@@ -20,7 +20,7 @@ async function addVocabularyCard(req, res) {
   // parse vocabulary card id from response and create translations
   await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
 
-  res.sendStatus(204);
+  res.status(204).end();
 }
 
 async function deleteVocabularyCard(req, res) {
@@ -30,7 +30,7 @@ async function deleteVocabularyCard(req, res) {
 
   await destroyVocabularyCard(userId, vocabularyId);
 
-  res.sendStatus(204);
+  res.status(204).end();
 }
 
 async function sendGroupVocabulary(req, res) {
