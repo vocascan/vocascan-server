@@ -32,9 +32,8 @@ async function sendLanguagePackages(req, res) {
   // get language Package
   const languagePackages = await getLanguagePackages(userId, groups, res);
 
-  let formatted;
   // if groups is true, return groups to every language package
-  formatted = await Promise.all(
+  const formatted = await Promise.all(
     languagePackages.map(async (languagePackage) => ({
       unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
 
