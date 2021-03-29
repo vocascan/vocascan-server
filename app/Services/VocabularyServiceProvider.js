@@ -54,7 +54,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
   return vocabularyCard;
 }
 
-// create language package
+// create translations
 async function createTranslations(translations, userId, languagePackageId, vocabularyId) {
   await Promise.all(
     translations.map(async (translation) => {
@@ -68,7 +68,38 @@ async function createTranslations(translations, userId, languagePackageId, vocab
   );
 }
 
+async function destroyVocabularyCard(userId, vocabularyId) {
+  const vocabulary = await VocabularyCard.findOne({
+    where: {
+      id: vocabularyId,
+      userId,
+    },
+  });
+
+  await vocabulary.destroy();
+}
+
+async function getGroupVocabulary(userId, groupId) {
+  const vocabulary = await VocabularyCard.findAll({
+    include: [
+      {
+        model: Translation,
+        attributes: ['name'],
+      },
+    ],
+    attributes: ['name'],
+    where: {
+      userId,
+      groupId,
+    },
+  });
+
+  return vocabulary;
+}
+
 module.exports = {
   createVocabularyCard,
   createTranslations,
+  destroyVocabularyCard,
+  getGroupVocabulary,
 };

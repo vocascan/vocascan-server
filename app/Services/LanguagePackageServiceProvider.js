@@ -1,4 +1,4 @@
-const { LanguagePackage } = require('../../database');
+const { LanguagePackage, Group } = require('../../database');
 
 // create language package
 async function createLanguagePackage(
@@ -18,9 +18,10 @@ async function createLanguagePackage(
 }
 
 // get language package
-async function getLanguagePackages(userId, res) {
+async function getLanguagePackages(userId, groups, res) {
   // Get user with email from database
   const languagePackages = await LanguagePackage.findAll({
+    include: groups ? [{ model: Group, attributes: ['id', 'name', 'active'] }] : [],
     attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
       userId: userId,
@@ -35,7 +36,19 @@ async function getLanguagePackages(userId, res) {
   return languagePackages;
 }
 
+async function destroyLanguagePackage(userId, languagePackageId) {
+  const languagePackage = await LanguagePackage.findOne({
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
+
+  await languagePackage.destroy();
+}
+
 module.exports = {
   createLanguagePackage,
   getLanguagePackages,
+  destroyLanguagePackage,
 };

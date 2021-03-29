@@ -37,11 +37,11 @@ module.exports = (sequelize) => {
   User.associate = (db) => {
     User.belongsTo(db.Role, { foreignKey: 'roleId' });
 
-    User.hasMany(db.Drawer, { foreignKey: 'userId' });
-    User.hasMany(db.Group, { foreignKey: 'userId' });
-    User.hasMany(db.LanguagePackage, { foreignKey: 'userId' });
-    User.hasMany(db.Translation, { foreignKey: 'userId' });
-    User.hasMany(db.VocabularyCard, { foreignKey: 'userId' });
+    User.hasMany(db.Drawer, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.Group, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.LanguagePackage, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.Translation, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.VocabularyCard, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
   };
 
   return User;

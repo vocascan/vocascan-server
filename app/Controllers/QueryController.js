@@ -7,7 +7,7 @@ const {
 
 async function sendQueryVocabulary(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { languagePackageId } = req.params;
   const { limit } = { limit: '0', ...req.query };
   const { staged } = { staged: false, ...req.query };
@@ -17,9 +17,9 @@ async function sendQueryVocabulary(req, res) {
   let vocabulary;
   // if staged = true return the staged vocabulary
   if (isStaged) {
-    vocabulary = await getUnactivatedVocabulary(languagePackageId, id);
+    vocabulary = await getUnactivatedVocabulary(languagePackageId, userId);
   } else {
-    vocabulary = await getQueryVocabulary(languagePackageId, id, limit);
+    vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
   }
 
   res.send(vocabulary);
@@ -27,19 +27,19 @@ async function sendQueryVocabulary(req, res) {
 
 async function checkVocabulary(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { vocabularyId } = req.params;
-  const { answer } = req.query;
+  const answer = req.query.answer;
   // convert to bool
   const isAnswerRight = answer === 'true';
 
   // check if vocabulary card got answered right
   if (isAnswerRight) {
-    await handleCorrectQuery(id, vocabularyId);
-    res.sendStatus(204);
+    await handleCorrectQuery(userId, vocabularyId);
+    res.status(204).end();
   } else {
-    await handleWrongQuery(id, vocabularyId);
-    res.sendStatus(204);
+    await handleWrongQuery(userId, vocabularyId);
+    res.status(204).end();
   }
 }
 

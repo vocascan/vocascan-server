@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
     Group.belongsTo(db.User, { foreignKey: 'userId' });
     Group.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
 
-    Group.hasMany(db.VocabularyCard, { foreignKey: 'groupId' });
+    Group.hasMany(db.VocabularyCard, { foreignKey: 'groupId', onDelete: 'cascade', hooks: true });
   };
 
   return Group;

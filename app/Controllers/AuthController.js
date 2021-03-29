@@ -1,4 +1,10 @@
-const { createUser, loginUser, validateRegister, validateLogin } = require('../Services/AuthServiceProvider');
+const {
+  createUser,
+  loginUser,
+  validateRegister,
+  validateLogin,
+  destroyUser,
+} = require('../Services/AuthServiceProvider');
 const { generateJWT, deleteKeysFromObject } = require('../utils');
 
 async function register(req, res) {
@@ -31,8 +37,18 @@ async function profile(req, res) {
   res.send(deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], req.user.toJSON()));
 }
 
+async function deleteUser(req, res) {
+  // get userId from request
+  const userId = req.user.id;
+
+  await destroyUser(userId);
+
+  res.status(204).end();
+}
+
 module.exports = {
   register,
   login,
   profile,
+  deleteUser,
 };

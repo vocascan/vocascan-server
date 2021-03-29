@@ -31,7 +31,19 @@ async function getGroups(userId, languagePackageId, res) {
   return groups;
 }
 
+async function destroyGroup(userId, groupId) {
+  const group = await Group.findOne({
+    where: {
+      id: groupId,
+      userId,
+    },
+  });
+
+  await group.destroy();
+}
+
 module.exports = {
   createGroup,
   getGroups,
+  destroyGroup,
 };
