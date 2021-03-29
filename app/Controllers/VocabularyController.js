@@ -28,9 +28,9 @@ async function deleteVocabularyCard(req, res) {
   const userId = req.user.id;
   const { vocabularyId } = req.params;
 
-  destroyVocabularyCard(userId, vocabularyId);
+  await destroyVocabularyCard(userId, vocabularyId);
 
-  res.sendStatus(200);
+  res.sendStatus(204);
 }
 
 async function sendGroupVocabulary(req, res) {

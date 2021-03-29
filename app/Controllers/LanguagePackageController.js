@@ -5,7 +5,6 @@ const {
 } = require('../Services/LanguagePackageServiceProvider.js');
 const { createDrawers } = require('../Services/DrawerServiceProvider.js');
 const { drawers } = require('../utils/constants.js');
-const { getGroups } = require('../Services/GroupServiceProvider.js');
 const {
   getNumberOfUnresolvedVocabulary,
   getNumberOfUnactivatedVocabulary,
@@ -54,9 +53,9 @@ async function deleteLanguagePackage(req, res) {
   const userId = req.user.id;
   const { languagePackageId } = req.params;
 
-  destroyLanguagePackage(userId, languagePackageId);
+  await destroyLanguagePackage(userId, languagePackageId);
 
-  res.sendStatus(200);
+  res.sendStatus(204);
 }
 
 module.exports = {
