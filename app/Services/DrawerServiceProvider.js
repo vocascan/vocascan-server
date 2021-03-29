@@ -12,6 +12,15 @@ async function createDrawer(languagePackageId, stage, queryInterval, userId) {
   return drawer;
 }
 
+async function createDrawers(drawers, languagePackageId, userId) {
+  await Promise.all(
+    drawers.map(async (drawer) => {
+      await createDrawer(languagePackageId, drawer.stage, drawer.queryInterval, userId);
+    })
+  );
+}
+
 module.exports = {
   createDrawer,
+  createDrawers,
 };

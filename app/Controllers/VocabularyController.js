@@ -18,11 +18,7 @@ async function addVocabularyCard(req, res) {
   const vocabularyCard = await createVocabularyCard(req.params, name, id, activate);
 
   // parse vocabulary card id from response and create translations
-  await Promise.all(
-    translations.map(async (translation) => {
-      await createTranslations(id, languagePackageId, vocabularyCard.id, translation.name);
-    })
-  );
+  await createTranslations(translations, id, languagePackageId, vocabularyCard.id);
 
   res.sendStatus(204);
 }
