@@ -40,9 +40,9 @@ async function profile(req, res) {
 async function deleteUser(req, res) {
   // get userId from request
   const userId = req.user.id;
+  const { password } = { password: '', ...req.query };
 
-  await destroyUser(userId);
-
+  await destroyUser(userId, password, res);
   res.sendStatus(204);
 }
 

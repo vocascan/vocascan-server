@@ -85,14 +85,25 @@ async function loginUser({ email, password }, res) {
   return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
-async function destroyUser(userId) {
+async function destroyUser(userId, password, res) {
+  // get user from database
   const user = await User.findOne({
+    attributes: ['id', 'username', 'password'],
     where: {
       id: userId,
     },
   });
 
+  // Check password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    res.status(401).end();
+    return false;
+  }
+
   await user.destroy();
+  return false;
 }
 
 module.exports = {
