@@ -41,9 +41,9 @@ async function deleteUser(req, res) {
   // get userId from request
   const userId = req.user.id;
 
-  destroyUser(userId);
+  await destroyUser(userId);
 
-  res.sendStatus(200);
+  res.sendStatus(204);
 }
 
 module.exports = {

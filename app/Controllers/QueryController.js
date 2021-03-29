@@ -29,7 +29,7 @@ async function checkVocabulary(req, res) {
   // get userId from request
   const { id } = req.user;
   const { vocabularyId } = req.params;
-  const { answer } = req.query;
+  const answer = req.query.answer;
   // convert to bool
   const isAnswerRight = answer === 'true';
 

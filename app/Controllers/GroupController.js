@@ -31,7 +31,7 @@ async function deleteGroup(req, res) {
   const userId = req.user.id;
   const { groupId } = req.params;
 
-  destroyGroup(userId, groupId);
+  await destroyGroup(userId, groupId);
 
   res.sendStatus(200);
 }
