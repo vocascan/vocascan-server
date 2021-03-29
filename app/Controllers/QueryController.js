@@ -35,10 +35,10 @@ async function checkVocabulary(req, res) {
 
   // check if vocabulary card got answered right
   if (isAnswerRight) {
-    handleCorrectQuery(id, vocabularyId);
+    await handleCorrectQuery(id, vocabularyId);
     res.sendStatus(204);
   } else {
-    handleWrongQuery(id, vocabularyId);
+    await handleWrongQuery(id, vocabularyId);
     res.sendStatus(204);
   }
 }
