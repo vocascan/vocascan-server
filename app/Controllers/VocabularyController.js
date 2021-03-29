@@ -26,7 +26,7 @@ async function addVocabularyCard(req, res) {
 
 async function deleteVocabularyCard(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { vocabularyId } = req.params;
 
   await destroyVocabularyCard(userId, vocabularyId);
@@ -36,20 +36,20 @@ async function deleteVocabularyCard(req, res) {
 
 async function sendGroupVocabulary(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { groupId } = req.params;
 
-  const vocabulary = await getGroupVocabulary(id, groupId);
+  const vocabulary = await getGroupVocabulary(userId, groupId);
 
   res.send(vocabulary);
 }
 
 async function modifyVocabulary(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { vocabularyId } = req.params;
 
-  const vocabulary = await updateVocabulary(req.body, id, vocabularyId);
+  const vocabulary = await updateVocabulary(req.body, userId, vocabularyId);
 
   res.send(vocabulary);
 }

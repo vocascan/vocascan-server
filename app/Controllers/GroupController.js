@@ -28,7 +28,7 @@ async function sendGroups(req, res) {
 
 async function deleteGroup(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { groupId } = req.params;
 
   await destroyGroup(userId, groupId);
@@ -38,10 +38,10 @@ async function deleteGroup(req, res) {
 
 async function modifyGroup(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { groupId } = req.params;
 
-  const group = await updateGroup(req.body, id, groupId);
+  const group = await updateGroup(req.body, userId, groupId);
 
   res.send(group);
 }

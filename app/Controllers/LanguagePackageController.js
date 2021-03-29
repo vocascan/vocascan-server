@@ -50,7 +50,7 @@ async function sendLanguagePackages(req, res) {
 
 async function deleteLanguagePackage(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { languagePackageId } = req.params;
 
   await destroyLanguagePackage(userId, languagePackageId);
@@ -60,10 +60,10 @@ async function deleteLanguagePackage(req, res) {
 
 async function modifyLanguagePackage(req, res) {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
   const { languagePackageId } = req.params;
 
-  const languagePackage = await updateLanguagePackage(req.body, id, languagePackageId);
+  const languagePackage = await updateLanguagePackage(req.body, userId, languagePackageId);
 
   res.send(languagePackage);
 }
