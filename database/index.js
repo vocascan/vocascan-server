@@ -10,16 +10,23 @@ const basename = path.basename(__filename);
 
 const db = {};
 
-// initialize sequelize instance
-const sequelize = new Sequelize({
+const sequelizeOptions = {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  port: process.env.DB_PORT,
-  host: process.env.DB_HOST,
-  dialect: 'postgres',
+  dialect: process.env.DB_DIALECT,
+  storage: process.env.DB_STORAGE,
   operatorsAliases: false,
-});
+};
+
+// initialize sequelize instance
+if (process.env.DB_CONNECTION_URL) {
+  db.sequelize = new Sequelize(process.env.DB_CONNECTION_URL, sequelizeOptions);
+} else {
+  db.sequelize = new Sequelize(sequelizeOptions);
+}
 
 // get all models
 fs.readdirSync(path.resolve('database', 'models'))
@@ -30,7 +37,7 @@ fs.readdirSync(path.resolve('database', 'models'))
   // import model
   .forEach((file) => {
     // eslint-disable-next-line global-require
-    const model = require(path.resolve('database', 'models', file))(sequelize);
+    const model = require(path.resolve('database', 'models', file))(db.sequelize);
     db[model.name] = model;
   });
 
@@ -40,10 +47,6 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
-
-// define db object
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 
 db.migrations = {
   // umzug instance for migrations

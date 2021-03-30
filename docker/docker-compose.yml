@@ -8,6 +8,7 @@ services:
       - db
     environment:
       PORT: '8000'
+      DB_DIALECT: 'postgres'
       DB_HOST: 'db'
       DB_PORT: '5432'
       DB_USERNAME: 'vocascan'
