@@ -10,7 +10,7 @@ async function sendQueryVocabulary(req, res) {
     // get userId from request
     const userId = req.user.id;
     const { languagePackageId } = req.params;
-    const { limit } = { limit: '0', ...req.query };
+    const { limit } = { limit: '100', ...req.query };
     const { staged } = { staged: false, ...req.query };
     // convert to bool
     const isStaged = staged === 'true';

@@ -97,12 +97,12 @@ async function getQueryVocabulary(languagePackageId, userId, limit, res) {
     return false;
   }
 
-  const vocabs = [];
+  const vocabularyWords = [];
 
   /* eslint-disable no-await-in-loop */
   for (const drawer of drawers) {
     // subtract size of vocabs returned to update the limit
-    const vocabularyLimit = limit - vocabs.length;
+    const vocabularyLimit = limit - vocabularyWords.length;
 
     // create date and add days from query Interval
     const queryDate = new Date();
@@ -112,7 +112,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit, res) {
     // compare query date with with last query
     // if queryDate is less than lastQuery: still time
     // if queryDate more than lastQuery: waiting time is over
-    const vocabularies = await VocabularyCard.findAll({
+    const vocabulary = await VocabularyCard.findAll({
       include: [
         {
           model: Translation,
@@ -122,6 +122,11 @@ async function getQueryVocabulary(languagePackageId, userId, limit, res) {
         {
           model: Group,
           attributes: ['active'],
+          required: true,
+        },
+        {
+          model: Drawer,
+          attributes: ['stage'],
           required: true,
         },
       ],
@@ -136,11 +141,19 @@ async function getQueryVocabulary(languagePackageId, userId, limit, res) {
       },
     });
 
-    vocabs.push(...vocabularies);
+    vocabularyWords.push(...vocabulary);
   }
+
+  const formatted = await Promise.all(
+    vocabularyWords.map(async (vocabulary) => ({
+      stage: vocabulary.Drawer.stage,
+
+      ...vocabulary.toJSON(),
+    }))
+  );
   /* eslint-enable no-await-in-loop */
 
-  return vocabs.map((vocab) => deleteKeysFromObject(['Group'], vocab.toJSON()));
+  return formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format));
 }
 
 // return the unactivated vocabulary
@@ -161,7 +174,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId, res) {
   }
 
   // return every vocabulary in drawer 0
-  const vocabularies = await VocabularyCard.findAll({
+  const vocabularyWords = await VocabularyCard.findAll({
     include: [
       {
         model: Translation,
@@ -170,6 +183,11 @@ async function getUnactivatedVocabulary(languagePackageId, userId, res) {
       {
         model: Group,
         attributes: ['active'],
+        required: true,
+      },
+      {
+        model: Drawer,
+        attributes: ['stage'],
         required: true,
       },
     ],
@@ -181,7 +199,17 @@ async function getUnactivatedVocabulary(languagePackageId, userId, res) {
       active: true,
     },
   });
-  return vocabularies.map((vocab) => deleteKeysFromObject(['Group'], vocab.toJSON()));
+
+  const formatted = await Promise.all(
+    vocabularyWords.map(async (vocabulary) => ({
+      stage: vocabulary.Drawer.stage,
+
+      ...vocabulary.toJSON(),
+    }))
+  );
+  /* eslint-enable no-await-in-loop */
+
+  return formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format));
 }
 
 // function to handle correct query

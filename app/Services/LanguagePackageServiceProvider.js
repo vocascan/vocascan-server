@@ -1,4 +1,5 @@
 const { LanguagePackage, Group } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
 
 // create language package
 async function createLanguagePackage(
@@ -20,7 +21,7 @@ async function createLanguagePackage(
     return false;
   }
 
-  return languagePackage;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
 }
 
 // get language package
@@ -85,7 +86,7 @@ async function updateLanguagePackage(
 
   languagePackage.save();
 
-  return languagePackage;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
 }
 
 module.exports = {

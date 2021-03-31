@@ -1,5 +1,6 @@
 const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
 
 // create language package
 async function createVocabularyCard({ languagePackageId, groupId }, name, userId, activate, res) {
@@ -79,6 +80,7 @@ async function createTranslations(translations, userId, languagePackageId, vocab
         languagePackageId: languagePackageId,
         name: translation.name,
       });
+
       if (!createdTranslation) {
         res.status(400).end();
         return false;
@@ -113,7 +115,7 @@ async function getGroupVocabulary(userId, groupId, res) {
         attributes: ['name'],
       },
     ],
-    attributes: ['name'],
+    attributes: ['id', 'name'],
     where: {
       userId,
       groupId,
@@ -138,16 +140,14 @@ async function updateVocabulary({ name, translations }, userId, vocabularyCardId
     },
   });
 
-  if (!oldTranslations) {
-    res.status(404).end();
-    return false;
+  // if there are no translation we don't need to destroy something
+  if (oldTranslations.length !== 0) {
+    await Promise.all(
+      oldTranslations.map(async (oldTranslation) => {
+        await oldTranslation.destroy();
+      })
+    );
   }
-
-  await Promise.all(
-    oldTranslations.map(async (oldTranslation) => {
-      await oldTranslation.destroy();
-    })
-  );
 
   // change name from foreign Word
   const vocabulary = await VocabularyCard.findOne({
@@ -166,11 +166,7 @@ async function updateVocabulary({ name, translations }, userId, vocabularyCardId
   await vocabulary.save();
 
   // create new vocabulary cards from request
-  await Promise.all(
-    translations.map(async (translation) => {
-      await createTranslations(userId, vocabulary.languagePackageId, vocabularyCardId, translation.name);
-    })
-  );
+  await createTranslations(translations, userId, vocabulary.languagePackageId, vocabularyCardId, res);
 
   // fetch vocabulary Card to return it to user
   const newVocabulary = await VocabularyCard.findOne({
@@ -187,7 +183,7 @@ async function updateVocabulary({ name, translations }, userId, vocabularyCardId
     },
   });
 
-  return newVocabulary;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], newVocabulary.toJSON());
 }
 
 module.exports = {

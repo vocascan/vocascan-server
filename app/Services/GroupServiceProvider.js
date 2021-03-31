@@ -1,4 +1,5 @@
 const { Group } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
 
 // create language package
 async function createGroup({ name, active }, userId, languagePackageId, res) {
@@ -14,7 +15,7 @@ async function createGroup({ name, active }, userId, languagePackageId, res) {
     return false;
   }
 
-  return group;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON());
 }
 
 // get groups
@@ -71,7 +72,7 @@ async function updateGroup({ name, active }, userId, groupId, res) {
 
   await group.save();
 
-  return group;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON());
 }
 
 module.exports = {
