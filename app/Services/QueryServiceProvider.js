@@ -3,7 +3,7 @@ const { deleteKeysFromObject } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
 
 // return the number of unresolved vocabulary
-async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
+async function getNumberOfUnresolvedVocabulary(languagePackageId, userId, res) {
   // Get drawers belonging to languagePackage
   const drawers = await Drawer.findAll({
     attributes: ['id', 'stage', 'queryInterval'],
@@ -15,6 +15,11 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
       },
     },
   });
+
+  if (!drawers) {
+    res.status(404).end();
+    return false;
+  }
 
   let number = 0;
 
@@ -43,6 +48,7 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
           active: true,
         },
       });
+
       number += Number(result);
     })
   );
@@ -51,7 +57,7 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
 }
 
 // return the number of unactivated vocabulary
-async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
+async function getNumberOfUnactivatedVocabulary(languagePackageId, userId, res) {
   // Get number of vocabularies belonging to languagePackage
   const number = await await VocabularyCard.count({
     include: [
@@ -73,7 +79,7 @@ async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
 }
 
 // return the unresolved vocabulary
-async function getQueryVocabulary(languagePackageId, userId, limit) {
+async function getQueryVocabulary(languagePackageId, userId, limit, res) {
   // Get drawers belonging to languagePackage
   const drawers = await Drawer.findAll({
     attributes: ['id', 'stage', 'queryInterval'],
@@ -85,6 +91,11 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       },
     },
   });
+
+  if (!drawers) {
+    res.status(404).end();
+    return false;
+  }
 
   const vocabs = [];
 
@@ -133,7 +144,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
 }
 
 // return the unactivated vocabulary
-async function getUnactivatedVocabulary(languagePackageId, userId) {
+async function getUnactivatedVocabulary(languagePackageId, userId, res) {
   // Get drawers id
   const drawer = await Drawer.findOne({
     attributes: ['id'],
@@ -143,6 +154,11 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
       stage: 0,
     },
   });
+
+  if (!drawer) {
+    res.status(404).end();
+    return false;
+  }
 
   // return every vocabulary in drawer 0
   const vocabularies = await VocabularyCard.findAll({
@@ -169,7 +185,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
 }
 
 // function to handle correct query
-async function handleCorrectQuery(userId, vocabularyId) {
+async function handleCorrectQuery(userId, vocabularyId, res) {
   // fetch selected vocabulary card
   const vocabularyCard = await VocabularyCard.findOne({
     include: [
@@ -185,6 +201,11 @@ async function handleCorrectQuery(userId, vocabularyId) {
     },
   });
 
+  if (!vocabularyCard) {
+    res.status(404).end();
+    return false;
+  }
+
   // push vocabulary card one drawer up
   // get drawer id from stage
 
@@ -198,7 +219,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
   });
   if (!drawer) {
     // if no output there is no next drawer => stop
-    return;
+    return false;
   }
 
   // update drawerId for vocabulary card
@@ -206,10 +227,12 @@ async function handleCorrectQuery(userId, vocabularyId) {
   vocabularyCard.drawerId = drawer.id;
 
   await vocabularyCard.save();
+
+  return false;
 }
 
 // function to handle wrong query
-async function handleWrongQuery(userId, vocabularyId) {
+async function handleWrongQuery(userId, vocabularyId, res) {
   // if query was solved wrong, push vocabulary card in drawer one
   const vocabularyCard = await VocabularyCard.findOne({
     include: [
@@ -225,6 +248,11 @@ async function handleWrongQuery(userId, vocabularyId) {
     },
   });
 
+  if (!vocabularyCard) {
+    res.status(404).end();
+    return false;
+  }
+
   const drawer = await Drawer.findOne({
     attributes: ['id'],
     where: {
@@ -239,6 +267,7 @@ async function handleWrongQuery(userId, vocabularyId) {
   vocabularyCard.drawerId = drawer.id;
 
   await vocabularyCard.save();
+  return false;
 }
 
 module.exports = {

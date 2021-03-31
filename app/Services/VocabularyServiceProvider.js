@@ -2,7 +2,7 @@ const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
 
 // create language package
-async function createVocabularyCard({ languagePackageId, groupId }, name, userId, activate) {
+async function createVocabularyCard({ languagePackageId, groupId }, name, userId, activate, res) {
   // if activate = false store vocabulary card in drawer 0 directly
   if (!activate) {
     const drawer = await Drawer.findOne({
@@ -14,6 +14,11 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
       },
     });
 
+    if (!drawer) {
+      res.status(400).end();
+      return false;
+    }
+
     const vocabularyCard = await VocabularyCard.create({
       userId: userId,
       languagePackageId: languagePackageId,
@@ -23,6 +28,11 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
       lastQuery: new Date(),
       active: true,
     });
+
+    if (!vocabularyCard) {
+      res.status(400).end();
+      return false;
+    }
 
     return vocabularyCard;
   }
@@ -36,6 +46,11 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
       userId: userId,
     },
   });
+
+  if (!drawer) {
+    res.status(400).end();
+    return false;
+  }
 
   // create date the day before yesterday so it will appear in the inbox for querying
   let date = new Date();
@@ -55,20 +70,25 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
 }
 
 // create translations
-async function createTranslations(translations, userId, languagePackageId, vocabularyId) {
+async function createTranslations(translations, userId, languagePackageId, vocabularyId, res) {
   await Promise.all(
     translations.map(async (translation) => {
-      await Translation.create({
+      const createdTranslation = await Translation.create({
         userId: userId,
         vocabularyCardId: vocabularyId,
         languagePackageId: languagePackageId,
         name: translation.name,
       });
+      if (!createdTranslation) {
+        res.status(400).end();
+        return false;
+      }
+      return false;
     })
   );
 }
 
-async function destroyVocabularyCard(userId, vocabularyId) {
+async function destroyVocabularyCard(userId, vocabularyId, res) {
   const vocabulary = await VocabularyCard.findOne({
     where: {
       id: vocabularyId,
@@ -76,10 +96,16 @@ async function destroyVocabularyCard(userId, vocabularyId) {
     },
   });
 
+  if (!vocabulary) {
+    res.status(404).end();
+    return false;
+  }
+
   await vocabulary.destroy();
+  return false;
 }
 
-async function getGroupVocabulary(userId, groupId) {
+async function getGroupVocabulary(userId, groupId, res) {
   const vocabulary = await VocabularyCard.findAll({
     include: [
       {
@@ -94,10 +120,15 @@ async function getGroupVocabulary(userId, groupId) {
     },
   });
 
+  if (!vocabulary) {
+    res.status(404).end();
+    return false;
+  }
+
   return vocabulary;
 }
 
-async function updateVocabulary({ name, translations }, userId, vocabularyCardId) {
+async function updateVocabulary({ name, translations }, userId, vocabularyCardId, res) {
   // delete all translations belonging to vocabulary card
 
   const oldTranslations = await Translation.findAll({
@@ -106,6 +137,11 @@ async function updateVocabulary({ name, translations }, userId, vocabularyCardId
       vocabularyCardId,
     },
   });
+
+  if (!oldTranslations) {
+    res.status(404).end();
+    return false;
+  }
 
   await Promise.all(
     oldTranslations.map(async (oldTranslation) => {
@@ -120,6 +156,11 @@ async function updateVocabulary({ name, translations }, userId, vocabularyCardId
       userId,
     },
   });
+
+  if (!vocabulary) {
+    res.status(404).end();
+    return false;
+  }
 
   vocabulary.name = name;
   await vocabulary.save();

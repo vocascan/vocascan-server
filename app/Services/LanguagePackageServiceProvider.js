@@ -3,7 +3,8 @@ const { LanguagePackage, Group } = require('../../database');
 // create language package
 async function createLanguagePackage(
   { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
-  userId
+  userId,
+  res
 ) {
   const languagePackage = await LanguagePackage.create({
     userId: userId,
@@ -13,6 +14,11 @@ async function createLanguagePackage(
     vocabsPerDay: vocabsPerDay,
     rightWords: rightWords,
   });
+
+  if (!languagePackage) {
+    res.status(400).end();
+    return false;
+  }
 
   return languagePackage;
 }
@@ -36,7 +42,7 @@ async function getLanguagePackages(userId, groups, res) {
   return languagePackages;
 }
 
-async function destroyLanguagePackage(userId, languagePackageId) {
+async function destroyLanguagePackage(userId, languagePackageId, res) {
   const languagePackage = await LanguagePackage.findOne({
     where: {
       id: languagePackageId,
@@ -44,13 +50,20 @@ async function destroyLanguagePackage(userId, languagePackageId) {
     },
   });
 
+  if (!languagePackage) {
+    res.status(404).end();
+    return false;
+  }
+
   await languagePackage.destroy();
+  return false;
 }
 
 async function updateLanguagePackage(
   { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
   userId,
-  languagePackageId
+  languagePackageId,
+  res
 ) {
   const languagePackage = await LanguagePackage.findOne({
     where: {
@@ -58,6 +71,11 @@ async function updateLanguagePackage(
       userId,
     },
   });
+
+  if (!languagePackage) {
+    res.status(404).end();
+    return false;
+  }
 
   languagePackage.name = name;
   languagePackage.foreignWordLanguage = foreignWordLanguage;
