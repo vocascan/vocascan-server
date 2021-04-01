@@ -10,9 +10,11 @@ async function up({ context: queryInterface }) {
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'users',
         key: 'id',
+        as: 'userId',
       },
     },
     name: {
