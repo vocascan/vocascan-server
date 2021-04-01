@@ -32,30 +32,25 @@ async function getGroups(userId, languagePackageId, res) {
 }
 
 async function destroyGroup(userId, groupId) {
-  const group = await Group.findOne({
+  const group = await Group.destroy({
     where: {
       id: groupId,
       userId,
     },
   });
-
-  await group.destroy();
 }
 
 async function updateGroup({ name, active }, userId, groupId) {
-  const group = await Group.findOne({
-    where: {
-      userId,
-      id: groupId,
-    },
-  });
-
-  group.name = name;
-  group.active = active;
-
-  await group.save();
-
-  return group;
+  const group = await Group.update(
+    { name, active },
+    {
+      fields: ['name', 'active'],
+      where: {
+        userId,
+        id: groupId,
+      },
+    }
+  );
 }
 
 module.exports = {

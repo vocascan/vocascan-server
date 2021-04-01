@@ -52,22 +52,16 @@ async function updateLanguagePackage(
   userId,
   languagePackageId
 ) {
-  const languagePackage = await LanguagePackage.findOne({
-    where: {
-      id: languagePackageId,
-      userId,
-    },
-  });
-
-  languagePackage.name = name;
-  languagePackage.foreignWordLanguage = foreignWordLanguage;
-  languagePackage.translatedWordLanguage = translatedWordLanguage;
-  languagePackage.vocabsPerDay = vocabsPerDay;
-  languagePackage.rightWords = rightWords;
-
-  languagePackage.save();
-
-  return languagePackage;
+  await LanguagePackage.update(
+    { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
+    {
+      fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
+      where: {
+        id: languagePackageId,
+        userId,
+      },
+    }
+  );
 }
 
 module.exports = {

@@ -63,9 +63,9 @@ async function modifyLanguagePackage(req, res) {
   const userId = req.user.id;
   const { languagePackageId } = req.params;
 
-  const languagePackage = await updateLanguagePackage(req.body, userId, languagePackageId);
+  await updateLanguagePackage(req.body, userId, languagePackageId);
 
-  res.send(languagePackage);
+  res.status(204).end();
 }
 
 module.exports = {

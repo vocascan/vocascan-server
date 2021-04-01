@@ -41,9 +41,9 @@ async function modifyGroup(req, res) {
   const userId = req.user.id;
   const { groupId } = req.params;
 
-  const group = await updateGroup(req.body, userId, groupId);
+  await updateGroup(req.body, userId, groupId);
 
-  res.send(group);
+  res.status(204).end();
 }
 
 module.exports = {

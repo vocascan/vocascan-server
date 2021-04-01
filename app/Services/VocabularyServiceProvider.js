@@ -75,14 +75,12 @@ async function createTranslations(translations, userId, languagePackageId, vocab
 }
 
 async function destroyVocabularyCard(userId, vocabularyId) {
-  const vocabulary = await VocabularyCard.findOne({
+  await VocabularyCard.destroy({
     where: {
       id: vocabularyId,
       userId,
     },
   });
-
-  await vocabulary.destroy();
 }
 
 async function getGroupVocabulary(userId, groupId) {
@@ -106,18 +104,12 @@ async function getGroupVocabulary(userId, groupId) {
 async function updateVocabulary({ name, description, translations, active }, userId, vocabularyCardId, res) {
   // delete all translations belonging to vocabulary card
 
-  const oldTranslations = await Translation.findAll({
+  await Translation.destroy({
     where: {
       userId,
       vocabularyCardId,
     },
   });
-
-  await Promise.all(
-    oldTranslations.map(async (oldTranslation) => {
-      await oldTranslation.destroy();
-    })
-  );
 
   // change values from foreign Word
   const vocabulary = await VocabularyCard.findOne({
