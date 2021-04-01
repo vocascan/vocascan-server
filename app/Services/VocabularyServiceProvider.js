@@ -90,7 +90,7 @@ async function getGroupVocabulary(userId, groupId) {
     include: [
       {
         model: Translation,
-        attributes: ['name'],
+        attributes: ['name', 'description'],
       },
     ],
     attributes: ['id', 'name', 'description'],
@@ -119,7 +119,7 @@ async function updateVocabulary({ name, description, translations, active }, use
     })
   );
 
-  // change name from foreign Word
+  // change values from foreign Word
   const vocabulary = await VocabularyCard.findOne({
     where: {
       id: vocabularyCardId,
@@ -132,12 +132,8 @@ async function updateVocabulary({ name, description, translations, active }, use
   vocabulary.description = description;
   await vocabulary.save();
 
-  // create new vocabulary cards from request
-  await Promise.all(
-    translations.map(async (translation) => {
-      await createTranslations(userId, vocabulary.languagePackageId, vocabularyCardId, translation.name);
-    })
-  );
+  // create new translations from request
+  await createTranslations(translations, userId, vocabulary.languagePackageId, vocabularyCardId);
 
   // fetch vocabulary Card to return it to user
   const newVocabulary = await VocabularyCard.findOne({
@@ -147,7 +143,7 @@ async function updateVocabulary({ name, description, translations, active }, use
         attributes: ['name'],
       },
     ],
-    attributes: ['name'],
+    attributes: ['name', 'description'],
     where: {
       id: vocabularyCardId,
       userId,
