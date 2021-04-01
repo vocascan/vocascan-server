@@ -43,6 +43,10 @@ async function up({ context: queryInterface }) {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     lastQuery: {
       type: DataTypes.DATE,
       allowNull: false,
