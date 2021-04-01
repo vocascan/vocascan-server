@@ -29,17 +29,13 @@ async function addVocabularyCard(req, res) {
 }
 
 async function deleteVocabularyCard(req, res) {
-  try {
-    // get userId from request
-    const userId = req.user.id;
-    const { vocabularyId } = req.params;
+  // get userId from request
+  const userId = req.user.id;
+  const { vocabularyId } = req.params;
 
-    await destroyVocabularyCard(userId, vocabularyId, res);
+  await destroyVocabularyCard(userId, vocabularyId, res);
 
-    res.status(204).end();
-  } catch (e) {
-    res.status(500).end();
-  }
+  res.status(204).end();
 }
 
 async function sendGroupVocabulary(req, res) {

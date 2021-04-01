@@ -130,7 +130,7 @@ async function getGroupVocabulary(userId, groupId, res) {
   return vocabulary;
 }
 
-async function updateVocabulary({ name, translations }, userId, vocabularyCardId, res) {
+async function updateVocabulary({ name, translations, active }, userId, vocabularyCardId, res) {
   // delete all translations belonging to vocabulary card
 
   const oldTranslations = await Translation.findAll({
@@ -163,6 +163,7 @@ async function updateVocabulary({ name, translations }, userId, vocabularyCardId
   }
 
   vocabulary.name = name;
+  vocabulary.active = active;
   await vocabulary.save();
 
   // create new vocabulary cards from request
