@@ -3,11 +3,14 @@ const { Drawer } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
 
 // create language package
-async function createVocabularyCard({ languagePackageId, groupId }, name, userId, activate, res) {
+async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate, res) {
   // if activate = false store vocabulary card in drawer 0 directly
+
+  let drawer;
+
   if (!activate) {
-    const drawer = await Drawer.findOne({
-      attributes: ['id', 'stage'],
+    drawer = await Drawer.findOne({
+      attributes: ['id'],
       where: {
         stage: 0,
         languagePackageId,
@@ -19,40 +22,22 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
       res.status(400).end();
       return false;
     }
-
-    const vocabularyCard = await VocabularyCard.create({
-      userId: userId,
-      languagePackageId: languagePackageId,
-      groupId: groupId,
-      drawerId: drawer.id,
-      name: name,
-      lastQuery: new Date(),
-      active: true,
+  } else {
+    // if user directly activates card, store it in drawer 1
+    drawer = await Drawer.findOne({
+      attributes: ['id'],
+      where: {
+        stage: 1,
+        languagePackageId: languagePackageId,
+        userId: userId,
+      },
     });
 
-    if (!vocabularyCard) {
+    if (!drawer) {
       res.status(400).end();
       return false;
     }
-
-    return vocabularyCard;
   }
-
-  // if user directly activates card, store it in drawer 1
-  const drawer = await Drawer.findOne({
-    attributes: ['id', 'stage'],
-    where: {
-      stage: 1,
-      languagePackageId: languagePackageId,
-      userId: userId,
-    },
-  });
-
-  if (!drawer) {
-    res.status(400).end();
-    return false;
-  }
-
   // create date the day before yesterday so it will appear in the inbox for querying
   let date = new Date();
   const yesterday = date.setDate(date.getDate() - 1);
@@ -63,9 +48,15 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, userId
     groupId: groupId,
     drawerId: drawer.id,
     name: name,
+    description,
     lastQuery: yesterday,
     active: true,
   });
+
+  if (!vocabularyCard) {
+    res.status(400).end();
+    return false;
+  }
 
   return vocabularyCard;
 }
@@ -115,7 +106,7 @@ async function getGroupVocabulary(userId, groupId, res) {
         attributes: ['name'],
       },
     ],
-    attributes: ['id', 'name'],
+    attributes: ['id', 'name', 'description'],
     where: {
       userId,
       groupId,
@@ -130,7 +121,7 @@ async function getGroupVocabulary(userId, groupId, res) {
   return vocabulary;
 }
 
-async function updateVocabulary({ name, translations, active }, userId, vocabularyCardId, res) {
+async function updateVocabulary({ name, description, translations, active }, userId, vocabularyCardId, res) {
   // delete all translations belonging to vocabulary card
 
   const oldTranslations = await Translation.findAll({
@@ -164,6 +155,7 @@ async function updateVocabulary({ name, translations, active }, userId, vocabula
 
   vocabulary.name = name;
   vocabulary.active = active;
+  vocabulary.description = description;
   await vocabulary.save();
 
   // create new vocabulary cards from request

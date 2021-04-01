@@ -10,14 +10,14 @@ async function addVocabularyCard(req, res) {
   try {
     // get userId from request
     const userId = req.user.id;
-    const { name, translations } = req.body;
+    const { name, description, translations } = req.body;
     const { languagePackageId } = req.params;
 
     // check if user wants to train vocabulary card directly
     const activate = req.query.activate === 'true';
 
     // create vocabulary card
-    const vocabularyCard = await createVocabularyCard(req.params, name, userId, activate, res);
+    const vocabularyCard = await createVocabularyCard(req.params, name, description, userId, activate, res);
 
     // parse vocabulary card id from response and create translations
     await createTranslations(translations, userId, languagePackageId, vocabularyCard.id, res);

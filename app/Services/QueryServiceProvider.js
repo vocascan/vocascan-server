@@ -132,7 +132,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit, res) {
       ],
       order: Sequelize.literal('random()'),
       limit: vocabularyLimit,
-      attributes: ['id', 'name'],
+      attributes: ['id', 'name', 'description'],
       where: {
         drawerId: drawer.id,
         lastQuery: { [Op.lt]: queryDate },
@@ -192,7 +192,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId, res) {
       },
     ],
     order: Sequelize.literal('random()'),
-    attributes: ['id', 'name'],
+    attributes: ['id', 'name', 'description'],
     where: {
       drawerId: drawer.id,
       '$Group.active$': true,
