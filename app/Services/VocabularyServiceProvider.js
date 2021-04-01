@@ -101,7 +101,7 @@ async function getGroupVocabulary(userId, groupId) {
   return vocabulary;
 }
 
-async function updateVocabulary({ name, description, translations, active }, userId, vocabularyCardId, res) {
+async function updateVocabulary({ name, description, translations, active }, userId, vocabularyCardId) {
   // delete all translations belonging to vocabulary card
 
   await Translation.destroy({
