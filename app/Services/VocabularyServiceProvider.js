@@ -5,10 +5,8 @@ const { Drawer } = require('../../database');
 async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate, res) {
   // if activate = false store vocabulary card in drawer 0 directly
 
-  let drawer;
-
   // select drawer id depending on the activate state
-  drawer = await Drawer.findOne({
+  const drawer = await Drawer.findOne({
     attributes: ['id'],
     where: {
       stage: activate ? 1 : 0,
@@ -48,7 +46,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
 async function createTranslations(translations, userId, languagePackageId, vocabularyCardId) {
   await Promise.all(
     translations.map(async (translation) => {
-      await Translation.create({
+      const newTranslation = await Translation.create({
         userId,
         vocabularyCardId,
         languagePackageId,
