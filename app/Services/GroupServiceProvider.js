@@ -32,7 +32,7 @@ async function getGroups(userId, languagePackageId, res) {
 }
 
 async function destroyGroup(userId, groupId) {
-  const group = await Group.destroy({
+  await Group.destroy({
     where: {
       id: groupId,
       userId,
@@ -41,7 +41,7 @@ async function destroyGroup(userId, groupId) {
 }
 
 async function updateGroup({ name, active }, userId, groupId) {
-  const group = await Group.update(
+  await Group.update(
     { name, active },
     {
       fields: ['name', 'active'],

@@ -88,7 +88,7 @@ async function getGroupVocabulary(userId, groupId) {
     include: [
       {
         model: Translation,
-        attributes: ['name', 'description'],
+        attributes: ['name'],
       },
     ],
     attributes: ['id', 'name', 'description'],
