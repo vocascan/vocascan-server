@@ -202,23 +202,26 @@ async function handleCorrectQuery(userId, vocabularyId) {
   }
 
   // update drawerId for vocabulary card
-  vocabularyCard.lastQuery = new Date();
-  vocabularyCard.drawerId = drawer.id;
+  const lastQuery = new Date();
+  const drawerId = drawer.id;
 
-  await vocabularyCard.save();
+  await VocabularyCard.update(
+    { lastQuery, drawerId },
+    {
+      fields: ['lastQuery', 'drawerId'],
+      where: {
+        userId,
+        id: vocabularyId,
+      },
+    }
+  );
 }
 
 // function to handle wrong query
 async function handleWrongQuery(userId, vocabularyId) {
   // if query was solved wrong, push vocabulary card in drawer one
   const vocabularyCard = await VocabularyCard.findOne({
-    include: [
-      {
-        model: Drawer,
-        attributes: ['stage'],
-      },
-    ],
-    attributes: ['id', 'name', 'drawerId', 'languagePackageId'],
+    attributes: ['languagePackageId'],
     where: {
       userId,
       id: vocabularyId,
@@ -235,10 +238,18 @@ async function handleWrongQuery(userId, vocabularyId) {
   });
 
   // update drawerId for vocabulary card
-  vocabularyCard.lastQuery = new Date();
-  vocabularyCard.drawerId = drawer.id;
-
-  await vocabularyCard.save();
+  const lastQuery = new Date();
+  const drawerId = drawer.id;
+  await VocabularyCard.update(
+    { lastQuery, drawerId },
+    {
+      fields: ['lastQuery', 'drawerId'],
+      where: {
+        id: vocabularyId,
+        userId,
+      },
+    }
+  );
 }
 
 module.exports = {

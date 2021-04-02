@@ -37,14 +37,12 @@ async function getLanguagePackages(userId, groups, res) {
 }
 
 async function destroyLanguagePackage(userId, languagePackageId) {
-  const languagePackage = await LanguagePackage.findOne({
+  await LanguagePackage.destroy({
     where: {
       id: languagePackageId,
       userId,
     },
   });
-
-  await languagePackage.destroy();
 }
 
 async function updateLanguagePackage(

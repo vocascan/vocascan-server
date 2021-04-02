@@ -101,7 +101,7 @@ async function getGroupVocabulary(userId, groupId) {
   return vocabulary;
 }
 
-async function updateVocabulary({ name, description, translations, active }, userId, vocabularyCardId) {
+async function updateVocabulary({ translations, ...card }, userId, vocabularyCardId) {
   // delete all translations belonging to vocabulary card
 
   await Translation.destroy({
@@ -112,17 +112,20 @@ async function updateVocabulary({ name, description, translations, active }, use
   });
 
   // change values from foreign Word
-  const vocabulary = await VocabularyCard.findOne({
+  await VocabularyCard.update(card, {
+    fields: ['name', 'active', 'description'],
     where: {
       id: vocabularyCardId,
       userId,
     },
   });
 
-  vocabulary.name = name;
-  vocabulary.active = active;
-  vocabulary.description = description;
-  await vocabulary.save();
+  const vocabulary = await VocabularyCard.findOne({
+    where: {
+      id: vocabularyCardId,
+      userId,
+    },
+  });
 
   // create new translations from request
   await createTranslations(translations, userId, vocabulary.languagePackageId, vocabularyCardId);
