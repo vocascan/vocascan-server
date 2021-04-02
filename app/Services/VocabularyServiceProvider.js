@@ -46,7 +46,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
 async function createTranslations(translations, userId, languagePackageId, vocabularyCardId) {
   await Promise.all(
     translations.map(async (translation) => {
-      const newTranslation = await Translation.create({
+      await Translation.create({
         userId,
         vocabularyCardId,
         languagePackageId,
