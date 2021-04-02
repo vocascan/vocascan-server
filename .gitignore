@@ -3,7 +3,3 @@
 /docker/minio
 .vscode
 .env
-*.sql
-*.sqlite
-
-
