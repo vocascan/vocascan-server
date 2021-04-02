@@ -34,7 +34,7 @@ async function deleteVocabularyCard(req, res) {
     const userId = req.user.id;
     const { vocabularyId } = req.params;
 
-    await destroyVocabularyCard(userId, vocabularyId, res);
+    await destroyVocabularyCard(userId, vocabularyId);
 
     res.status(204).end();
   } catch {

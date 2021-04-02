@@ -169,7 +169,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
 }
 
 // function to handle correct query
-async function handleCorrectQuery(userId, vocabularyId) {
+async function handleCorrectQuery(userId, vocabularyCardId) {
   // fetch selected vocabulary card
   const vocabularyCard = await VocabularyCard.findOne({
     include: [
@@ -181,7 +181,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
     attributes: ['id', 'name', 'drawerId', 'languagePackageId'],
     where: {
       userId,
-      id: vocabularyId,
+      id: vocabularyCardId,
     },
   });
 
@@ -211,20 +211,20 @@ async function handleCorrectQuery(userId, vocabularyId) {
       fields: ['lastQuery', 'drawerId'],
       where: {
         userId,
-        id: vocabularyId,
+        id: vocabularyCardId,
       },
     }
   );
 }
 
 // function to handle wrong query
-async function handleWrongQuery(userId, vocabularyId) {
+async function handleWrongQuery(userId, vocabularyCardId) {
   // if query was solved wrong, push vocabulary card in drawer one
   const vocabularyCard = await VocabularyCard.findOne({
     attributes: ['languagePackageId'],
     where: {
       userId,
-      id: vocabularyId,
+      id: vocabularyCardId,
     },
   });
 
@@ -245,7 +245,7 @@ async function handleWrongQuery(userId, vocabularyId) {
     {
       fields: ['lastQuery', 'drawerId'],
       where: {
-        id: vocabularyId,
+        id: vocabularyCardId,
         userId,
       },
     }

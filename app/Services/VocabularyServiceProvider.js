@@ -7,46 +7,30 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
 
   let drawer;
 
-  if (!activate) {
-    drawer = await Drawer.findOne({
-      attributes: ['id'],
-      where: {
-        stage: 0,
-        languagePackageId,
-        userId,
-      },
-    });
+  // select drawer id depending on the activate state
+  drawer = await Drawer.findOne({
+    attributes: ['id'],
+    where: {
+      stage: activate ? 1 : 0,
+      languagePackageId,
+      userId,
+    },
+  });
 
-    if (!drawer) {
-      res.status(400).end();
-      return false;
-    }
-  } else {
-    // if user directly activates card, store it in drawer 1
-    drawer = await Drawer.findOne({
-      attributes: ['id'],
-      where: {
-        stage: 1,
-        languagePackageId: languagePackageId,
-        userId: userId,
-      },
-    });
-
-    if (!drawer) {
-      res.status(400).end();
-      return false;
-    }
+  if (!drawer) {
+    res.status(400).end();
+    return false;
   }
   // create date the day before yesterday so it will appear in the inbox for querying
   let date = new Date();
   const yesterday = date.setDate(date.getDate() - 1);
 
   const vocabularyCard = await VocabularyCard.create({
-    userId: userId,
-    languagePackageId: languagePackageId,
-    groupId: groupId,
+    userId,
+    languagePackageId,
+    groupId,
     drawerId: drawer.id,
-    name: name,
+    name,
     description,
     lastQuery: yesterday,
     active: true,
@@ -61,23 +45,23 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
 }
 
 // create translations
-async function createTranslations(translations, userId, languagePackageId, vocabularyId) {
+async function createTranslations(translations, userId, languagePackageId, vocabularyCardId) {
   await Promise.all(
     translations.map(async (translation) => {
       await Translation.create({
-        userId: userId,
-        vocabularyCardId: vocabularyId,
-        languagePackageId: languagePackageId,
+        userId,
+        vocabularyCardId,
+        languagePackageId,
         name: translation.name,
       });
     })
   );
 }
 
-async function destroyVocabularyCard(userId, vocabularyId) {
+async function destroyVocabularyCard(userId, vocabularyCardId) {
   await VocabularyCard.destroy({
     where: {
-      id: vocabularyId,
+      id: vocabularyCardId,
       userId,
     },
   });
@@ -111,16 +95,16 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
     },
   });
 
-  // change values from foreign Word
-  await VocabularyCard.update(card, {
-    fields: ['name', 'active', 'description'],
+  const vocabulary = await VocabularyCard.findOne({
     where: {
       id: vocabularyCardId,
       userId,
     },
   });
 
-  const vocabulary = await VocabularyCard.findOne({
+  // change values from foreign Word
+  await VocabularyCard.update(card, {
+    fields: ['name', 'active', 'description'],
     where: {
       id: vocabularyCardId,
       userId,

@@ -6,12 +6,12 @@ async function createLanguagePackage(
   userId
 ) {
   const languagePackage = await LanguagePackage.create({
-    userId: userId,
-    name: name,
-    foreignWordLanguage: foreignWordLanguage,
-    translatedWordLanguage: translatedWordLanguage,
-    vocabsPerDay: vocabsPerDay,
-    rightWords: rightWords,
+    userId,
+    name,
+    foreignWordLanguage,
+    translatedWordLanguage,
+    vocabsPerDay,
+    rightWords,
   });
 
   return languagePackage;
@@ -24,7 +24,7 @@ async function getLanguagePackages(userId, groups, res) {
     include: groups ? [{ model: Group, attributes: ['id', 'name', 'active'] }] : [],
     attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
-      userId: userId,
+      userId,
     },
   });
 
@@ -45,21 +45,14 @@ async function destroyLanguagePackage(userId, languagePackageId) {
   });
 }
 
-async function updateLanguagePackage(
-  { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
-  userId,
-  languagePackageId
-) {
-  await LanguagePackage.update(
-    { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
-    {
-      fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
-      where: {
-        id: languagePackageId,
-        userId,
-      },
-    }
-  );
+async function updateLanguagePackage({ ...package }, userId, languagePackageId) {
+  await LanguagePackage.update(package, {
+    fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
 }
 
 module.exports = {

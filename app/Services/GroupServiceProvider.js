@@ -3,10 +3,10 @@ const { Group } = require('../../database');
 // create language package
 async function createGroup({ name, active }, userId, languagePackageId) {
   const group = await Group.create({
-    userId: userId,
-    languagePackageId: languagePackageId,
-    name: name,
-    active: active,
+    userId,
+    languagePackageId,
+    name,
+    active,
   });
 
   return group;
@@ -40,17 +40,14 @@ async function destroyGroup(userId, groupId) {
   });
 }
 
-async function updateGroup({ name, active }, userId, groupId) {
-  await Group.update(
-    { name, active },
-    {
-      fields: ['name', 'active'],
-      where: {
-        userId,
-        id: groupId,
-      },
-    }
-  );
+async function updateGroup({ ...group }, userId, groupId) {
+  await Group.update(group, {
+    fields: ['name', 'active'],
+    where: {
+      userId,
+      id: groupId,
+    },
+  });
 }
 
 module.exports = {
