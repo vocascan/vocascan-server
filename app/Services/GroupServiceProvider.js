@@ -52,8 +52,8 @@ async function destroyGroup(userId, groupId, res) {
     })
     .catch(() => {
       res.status(400).end();
+      return false;
     });
-  return false;
 }
 
 async function updateGroup(group, userId, groupId, res) {
@@ -73,6 +73,7 @@ async function updateGroup(group, userId, groupId, res) {
     })
     .catch(() => {
       res.status(400).end();
+      return false;
     });
 }
 

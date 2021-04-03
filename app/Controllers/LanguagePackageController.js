@@ -17,11 +17,11 @@ async function addLanguagePackage(req, res) {
     const userId = req.user.id;
 
     // create language Package
-    const languagePackage = await createLanguagePackage(req.body, userId);
+    const languagePackage = await createLanguagePackage(req.body, userId, res);
 
     // store drawers for language package in database
 
-    await createDrawers(drawers, languagePackage.id, userId);
+    await createDrawers(drawers, languagePackage.id, userId, res);
 
     res.send(languagePackage);
   } catch (e) {
@@ -35,17 +35,18 @@ async function sendLanguagePackages(req, res) {
     // get userId from request
     const userId = req.user.id;
     const groups = req.query.groups || false;
+    const groupsActive = groups === 'true';
 
     // get language Package
-    const languagePackages = await getLanguagePackages(userId, groups, res);
+    const languagePackages = await getLanguagePackages(userId, groupsActive, res);
 
     // if groups is true, return groups to every language package
     const formatted = await Promise.all(
       languagePackages.map(async (languagePackage) => ({
-        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
+        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId, res),
 
         // add number of unactivated vocabularies
-        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
+        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId, res),
 
         ...languagePackage.toJSON(),
       }))
@@ -64,7 +65,7 @@ async function deleteLanguagePackage(req, res) {
     const userId = req.user.id;
     const { languagePackageId } = req.params;
 
-    await destroyLanguagePackage(userId, languagePackageId);
+    await destroyLanguagePackage(userId, languagePackageId, res);
 
     res.status(204).end();
   } catch (e) {
@@ -79,7 +80,7 @@ async function modifyLanguagePackage(req, res) {
     const userId = req.user.id;
     const { languagePackageId } = req.params;
 
-    await updateLanguagePackage(req.body, userId, languagePackageId);
+    await updateLanguagePackage(req.body, userId, languagePackageId, res);
 
     res.status(204).end();
   } catch (e) {
