@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 const { deleteKeysFromObject } = require('../utils');
-const { User } = require('../../database');
+const { User, Role } = require('../../database');
 
 // Validate inputs from /register and /login route
 function validateAuth(req, res) {
@@ -47,11 +47,18 @@ async function createUser({ username, email, password }) {
   const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
   let emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
+  const role = await Role.findOne({
+    attributes: ['id'],
+    where: {
+      name: 'user',
+    },
+  });
+
   const user = await User.create({
     username,
     email: emailHash,
     password: hash,
-    roleId: 1,
+    roleId: role.id,
   });
 
   return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
