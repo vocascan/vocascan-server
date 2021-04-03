@@ -1,5 +1,6 @@
 const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
 
 // create language package
 async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate, res) {
@@ -34,7 +35,12 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
       lastQuery: yesterday,
       active: true,
     });
-    return vocabularyCard;
+
+    const formatted = deleteKeysFromObject(
+      ['userId', 'lastQuery', 'updatedAt', 'createdAt', 'languagePackageId', 'groupId', 'drawerId'],
+      vocabularyCard.toJSON()
+    );
+    return formatted;
   } catch {
     res.status(400).end();
     return false;

@@ -22,7 +22,7 @@ async function addVocabularyCard(req, res) {
     // parse vocabulary card id from response and create translations
     await createTranslations(translations, userId, languagePackageId, vocabularyCard.id, res);
 
-    const formatted = vocabularyCard.toJSON();
+    const formatted = vocabularyCard;
     formatted.translations = translations;
 
     res.send(formatted);
