@@ -41,29 +41,40 @@ async function deleteVocabularyCard(req, res) {
     await destroyVocabularyCard(userId, vocabularyId);
 
     res.status(204).end();
-  } catch {
+  } catch (e) {
+    console.log(e.message);
     res.status(500).end();
   }
 }
 
 async function sendGroupVocabulary(req, res) {
-  // get userId from request
-  const userId = req.user.id;
-  const { groupId } = req.params;
+  try {
+    // get userId from request
+    const userId = req.user.id;
+    const { groupId } = req.params;
 
-  const vocabulary = await getGroupVocabulary(userId, groupId);
+    const vocabulary = await getGroupVocabulary(userId, groupId);
 
-  res.send(vocabulary);
+    res.send(vocabulary);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).end();
+  }
 }
 
 async function modifyVocabulary(req, res) {
-  // get userId from request
-  const userId = req.user.id;
-  const { vocabularyId } = req.params;
+  try {
+    // get userId from request
+    const userId = req.user.id;
+    const { vocabularyId } = req.params;
 
-  const vocabulary = await updateVocabulary(req.body, userId, vocabularyId);
+    const vocabulary = await updateVocabulary(req.body, userId, vocabularyId);
 
-  res.send(vocabulary);
+    res.send(vocabulary);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).end();
+  }
 }
 
 module.exports = {

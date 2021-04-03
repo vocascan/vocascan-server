@@ -12,60 +12,80 @@ const {
 } = require('../Services/QueryServiceProvider.js');
 
 async function addLanguagePackage(req, res) {
-  // get userId from request
-  const userId = req.user.id;
+  try {
+    // get userId from request
+    const userId = req.user.id;
 
-  // create language Package
-  const languagePackage = await createLanguagePackage(req.body, userId);
+    // create language Package
+    const languagePackage = await createLanguagePackage(req.body, userId);
 
-  // store drawers for language package in database
+    // store drawers for language package in database
 
-  await createDrawers(drawers, languagePackage.id, userId);
+    await createDrawers(drawers, languagePackage.id, userId);
 
-  res.send(languagePackage);
+    res.send(languagePackage);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).end();
+  }
 }
 
 async function sendLanguagePackages(req, res) {
-  // get userId from request
-  const userId = req.user.id;
-  const groups = req.query.groups || false;
+  try {
+    // get userId from request
+    const userId = req.user.id;
+    const groups = req.query.groups || false;
 
-  // get language Package
-  const languagePackages = await getLanguagePackages(userId, groups, res);
+    // get language Package
+    const languagePackages = await getLanguagePackages(userId, groups, res);
 
-  // if groups is true, return groups to every language package
-  const formatted = await Promise.all(
-    languagePackages.map(async (languagePackage) => ({
-      unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
+    // if groups is true, return groups to every language package
+    const formatted = await Promise.all(
+      languagePackages.map(async (languagePackage) => ({
+        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
 
-      // add number of unactivated vocabularies
-      unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
+        // add number of unactivated vocabularies
+        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
 
-      ...languagePackage.toJSON(),
-    }))
-  );
+        ...languagePackage.toJSON(),
+      }))
+    );
 
-  res.send(formatted);
+    res.send(formatted);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).end();
+  }
 }
 
 async function deleteLanguagePackage(req, res) {
-  // get userId from request
-  const userId = req.user.id;
-  const { languagePackageId } = req.params;
+  try {
+    // get userId from request
+    const userId = req.user.id;
+    const { languagePackageId } = req.params;
 
-  await destroyLanguagePackage(userId, languagePackageId);
+    await destroyLanguagePackage(userId, languagePackageId);
 
-  res.status(204).end();
+    res.status(204).end();
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).end();
+  }
 }
 
 async function modifyLanguagePackage(req, res) {
-  // get userId from request
-  const userId = req.user.id;
-  const { languagePackageId } = req.params;
+  try {
+    // get userId from request
+    const userId = req.user.id;
+    const { languagePackageId } = req.params;
 
-  await updateLanguagePackage(req.body, userId, languagePackageId);
+    await updateLanguagePackage(req.body, userId, languagePackageId);
 
-  res.status(204).end();
+    res.status(204).end();
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).end();
+  }
 }
 
 module.exports = {
