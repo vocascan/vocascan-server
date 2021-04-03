@@ -116,7 +116,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       ],
       order: Sequelize.literal('random()'),
       limit: vocabularyLimit,
-      attributes: ['id', 'name'],
+      attributes: ['id', 'name', 'description'],
       where: {
         drawerId: drawer.id,
         lastQuery: { [Op.lt]: queryDate },
@@ -158,7 +158,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
       },
     ],
     order: Sequelize.literal('random()'),
-    attributes: ['id', 'name'],
+    attributes: ['id', 'name', 'description'],
     where: {
       drawerId: drawer.id,
       '$Group.active$': true,
@@ -169,7 +169,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
 }
 
 // function to handle correct query
-async function handleCorrectQuery(userId, vocabularyId) {
+async function handleCorrectQuery(userId, vocabularyCardId) {
   // fetch selected vocabulary card
   const vocabularyCard = await VocabularyCard.findOne({
     include: [
@@ -181,7 +181,7 @@ async function handleCorrectQuery(userId, vocabularyId) {
     attributes: ['id', 'name', 'drawerId', 'languagePackageId'],
     where: {
       userId,
-      id: vocabularyId,
+      id: vocabularyCardId,
     },
   });
 
@@ -202,26 +202,25 @@ async function handleCorrectQuery(userId, vocabularyId) {
   }
 
   // update drawerId for vocabulary card
-  vocabularyCard.lastQuery = new Date();
-  vocabularyCard.drawerId = drawer.id;
+  const lastQuery = new Date();
+  const drawerId = drawer.id;
 
-  await vocabularyCard.save();
+  await vocabularyCard.update(
+    { lastQuery, drawerId },
+    {
+      fields: ['lastQuery', 'drawerId'],
+    }
+  );
 }
 
 // function to handle wrong query
-async function handleWrongQuery(userId, vocabularyId) {
+async function handleWrongQuery(userId, vocabularyCardId) {
   // if query was solved wrong, push vocabulary card in drawer one
   const vocabularyCard = await VocabularyCard.findOne({
-    include: [
-      {
-        model: Drawer,
-        attributes: ['stage'],
-      },
-    ],
-    attributes: ['id', 'name', 'drawerId', 'languagePackageId'],
+    attributes: ['languagePackageId'],
     where: {
       userId,
-      id: vocabularyId,
+      id: vocabularyCardId,
     },
   });
 
@@ -235,10 +234,15 @@ async function handleWrongQuery(userId, vocabularyId) {
   });
 
   // update drawerId for vocabulary card
-  vocabularyCard.lastQuery = new Date();
-  vocabularyCard.drawerId = drawer.id;
+  const lastQuery = new Date();
+  const drawerId = drawer.id;
 
-  await vocabularyCard.save();
+  await vocabularyCard.update(
+    { lastQuery, drawerId },
+    {
+      fields: ['lastQuery', 'drawerId'],
+    }
+  );
 }
 
 module.exports = {

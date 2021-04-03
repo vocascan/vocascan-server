@@ -3,10 +3,10 @@ const { Group } = require('../../database');
 // create language package
 async function createGroup({ name, active }, userId, languagePackageId) {
   const group = await Group.create({
-    userId: userId,
-    languagePackageId: languagePackageId,
-    name: name,
-    active: active,
+    userId,
+    languagePackageId,
+    name,
+    active,
   });
 
   return group;
@@ -18,8 +18,8 @@ async function getGroups(userId, languagePackageId, res) {
   const groups = await Group.findAll({
     attributes: ['id', 'name', 'active'],
     where: {
-      userId: userId,
-      languagePackageId: languagePackageId,
+      userId,
+      languagePackageId,
     },
   });
 
@@ -32,18 +32,27 @@ async function getGroups(userId, languagePackageId, res) {
 }
 
 async function destroyGroup(userId, groupId) {
-  const group = await Group.findOne({
+  await Group.destroy({
     where: {
       id: groupId,
       userId,
     },
   });
+}
 
-  await group.destroy();
+async function updateGroup(group, userId, groupId) {
+  await Group.update(group, {
+    fields: ['name', 'active'],
+    where: {
+      userId,
+      id: groupId,
+    },
+  });
 }
 
 module.exports = {
   createGroup,
   getGroups,
   destroyGroup,
+  updateGroup,
 };
