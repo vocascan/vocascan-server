@@ -1,5 +1,6 @@
 const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
 
 // create language package
 async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate, res) {
