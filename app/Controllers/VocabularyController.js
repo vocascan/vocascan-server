@@ -20,7 +20,7 @@ async function addVocabularyCard(req, res) {
     const vocabularyCard = await createVocabularyCard(req.params, name, description, userId, activate, res);
 
     // parse vocabulary card id from response and create translations
-    await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
+    await createTranslations(translations, userId, languagePackageId, vocabularyCard.id, res);
 
     const formatted = vocabularyCard.toJSON();
     formatted.translations = translations;
@@ -38,7 +38,7 @@ async function deleteVocabularyCard(req, res) {
     const userId = req.user.id;
     const { vocabularyId } = req.params;
 
-    await destroyVocabularyCard(userId, vocabularyId);
+    await destroyVocabularyCard(userId, vocabularyId, res);
 
     res.status(204).end();
   } catch (e) {
@@ -53,7 +53,7 @@ async function sendGroupVocabulary(req, res) {
     const userId = req.user.id;
     const { groupId } = req.params;
 
-    const vocabulary = await getGroupVocabulary(userId, groupId);
+    const vocabulary = await getGroupVocabulary(userId, groupId, res);
 
     res.send(vocabulary);
   } catch (e) {
@@ -68,7 +68,7 @@ async function modifyVocabulary(req, res) {
     const userId = req.user.id;
     const { vocabularyId } = req.params;
 
-    const vocabulary = await updateVocabulary(req.body, userId, vocabularyId);
+    const vocabulary = await updateVocabulary(req.body, userId, vocabularyId, res);
 
     res.send(vocabulary);
   } catch (e) {
