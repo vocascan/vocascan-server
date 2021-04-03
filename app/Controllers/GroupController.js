@@ -9,7 +9,7 @@ async function addGroup(req, res) {
     const { languagePackageId } = req.params;
 
     // create language Package
-    const group = await createGroup(req.body, userId, languagePackageId);
+    const group = await createGroup(req.body, userId, languagePackageId, res);
 
     res.send(group);
   } catch (e) {
@@ -42,7 +42,7 @@ async function deleteGroup(req, res) {
     const userId = req.user.id;
     const { groupId } = req.params;
 
-    await destroyGroup(userId, groupId);
+    await destroyGroup(userId, groupId, res);
 
     res.status(204).end();
   } catch (e) {
@@ -57,7 +57,7 @@ async function modifyGroup(req, res) {
     const userId = req.user.id;
     const { groupId } = req.params;
 
-    await updateGroup(req.body, userId, groupId);
+    await updateGroup(req.body, userId, groupId, res);
 
     res.status(204).end();
   } catch (e) {
