@@ -1,4 +1,4 @@
-const { DataTypes, UUIDV4 } = require('sequelize');
+const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
   await queryInterface.createTable('roles', {
