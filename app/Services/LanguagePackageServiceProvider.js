@@ -45,7 +45,7 @@ async function destroyLanguagePackage(userId, languagePackageId) {
   });
 }
 
-async function updateLanguagePackage({ ...package }, userId, languagePackageId) {
+async function updateLanguagePackage(package, userId, languagePackageId) {
   await LanguagePackage.update(package, {
     fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {

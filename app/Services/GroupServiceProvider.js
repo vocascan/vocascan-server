@@ -40,7 +40,7 @@ async function destroyGroup(userId, groupId) {
   });
 }
 
-async function updateGroup({ ...group }, userId, groupId) {
+async function updateGroup(group, userId, groupId) {
   await Group.update(group, {
     fields: ['name', 'active'],
     where: {

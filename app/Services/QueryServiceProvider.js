@@ -205,14 +205,10 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
   const lastQuery = new Date();
   const drawerId = drawer.id;
 
-  await VocabularyCard.update(
+  await vocabularyCard.update(
     { lastQuery, drawerId },
     {
       fields: ['lastQuery', 'drawerId'],
-      where: {
-        userId,
-        id: vocabularyCardId,
-      },
     }
   );
 }
@@ -240,14 +236,11 @@ async function handleWrongQuery(userId, vocabularyCardId) {
   // update drawerId for vocabulary card
   const lastQuery = new Date();
   const drawerId = drawer.id;
-  await VocabularyCard.update(
+
+  await vocabularyCard.update(
     { lastQuery, drawerId },
     {
       fields: ['lastQuery', 'drawerId'],
-      where: {
-        id: vocabularyCardId,
-        userId,
-      },
     }
   );
 }

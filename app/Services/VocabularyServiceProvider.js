@@ -101,12 +101,8 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
   });
 
   // change values from foreign Word
-  await VocabularyCard.update(card, {
+  await vocabulary.update(card, {
     fields: ['name', 'active', 'description'],
-    where: {
-      id: vocabularyCardId,
-      userId,
-    },
   });
 
   // create new translations from request
