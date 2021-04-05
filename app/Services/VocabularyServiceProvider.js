@@ -1,9 +1,10 @@
 const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
+const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 // create language package
-async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate, res) {
+async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate) {
   try {
     // if activate = false store vocabulary card in drawer 0 directly
 
@@ -18,8 +19,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
     });
 
     if (!drawer) {
-      res.status(400).end();
-      return false;
+      return [{ status: 404, error: 'drawer not found' }];
     }
     // create date the day before yesterday so it will appear in the inbox for querying
     let date = new Date();
@@ -40,15 +40,19 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
       ['userId', 'lastQuery', 'updatedAt', 'createdAt', 'languagePackageId', 'groupId', 'drawerId'],
       vocabularyCard.toJSON()
     );
-    return formatted;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, formatted];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
 // create translations
-async function createTranslations(translations, userId, languagePackageId, vocabularyCardId, res) {
+async function createTranslations(translations, userId, languagePackageId, vocabularyCardId) {
   try {
     await Promise.all(
       translations.map(async (translation) => {
@@ -60,14 +64,18 @@ async function createTranslations(translations, userId, languagePackageId, vocab
         });
       })
     );
-    return false;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, false];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
-async function destroyVocabularyCard(userId, vocabularyCardId, res) {
+async function destroyVocabularyCard(userId, vocabularyCardId) {
   await VocabularyCard.destroy({
     where: {
       id: vocabularyCardId,
@@ -76,18 +84,21 @@ async function destroyVocabularyCard(userId, vocabularyCardId, res) {
   })
     .then((deletedVocabularyCard) => {
       if (deletedVocabularyCard) {
-        return false;
+        return [null];
       }
-      res.status(404).end();
-      return false;
+      return [{ status: 404, error: 'vocabulary card not found' }];
     })
-    .catch(() => {
-      res.status(400).end();
-      return false;
+    .catch((err) => {
+      const error = formatSequelizeError(err);
+
+      if (error) {
+        return { status: getStatusCode(error), ...error };
+      }
+      return [null];
     });
 }
 
-async function getGroupVocabulary(userId, groupId, res) {
+async function getGroupVocabulary(userId, groupId) {
   try {
     const vocabulary = await VocabularyCard.findAll({
       include: [
@@ -103,14 +114,18 @@ async function getGroupVocabulary(userId, groupId, res) {
       },
     });
 
-    return vocabulary;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, vocabulary];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
-async function updateVocabulary({ translations, ...card }, userId, vocabularyCardId, res) {
+async function updateVocabulary({ translations, ...card }, userId, vocabularyCardId) {
   try {
     // delete all translations belonging to vocabulary card
 
@@ -129,7 +144,7 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
     });
 
     if (!vocabulary) {
-      res.status(404).end();
+      return [{ status: 404, error: 'vocabulary card not found' }];
     }
 
     // change values from foreign Word
@@ -155,10 +170,14 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
       },
     });
 
-    return newVocabulary;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, newVocabulary];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 

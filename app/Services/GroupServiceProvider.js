@@ -1,8 +1,9 @@
 const { Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
+const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 // create language package
-async function createGroup({ name, active }, userId, languagePackageId, res) {
+async function createGroup({ name, active }, userId, languagePackageId) {
   try {
     const group = await Group.create({
       userId,
@@ -10,15 +11,19 @@ async function createGroup({ name, active }, userId, languagePackageId, res) {
       name,
       active,
     });
-    return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON());
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON())];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [false];
   }
 }
 
 // get groups
-async function getGroups(userId, languagePackageId, res) {
+async function getGroups(userId, languagePackageId) {
   // Get user with email from database
   try {
     const groups = await Group.findAll({
@@ -29,14 +34,18 @@ async function getGroups(userId, languagePackageId, res) {
       },
     });
 
-    return groups;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, groups];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
-async function destroyGroup(userId, groupId, res) {
+async function destroyGroup(userId, groupId) {
   await Group.destroy({
     where: {
       id: groupId,
@@ -45,18 +54,21 @@ async function destroyGroup(userId, groupId, res) {
   })
     .then((deletedGroup) => {
       if (deletedGroup) {
-        return false;
+        return [null];
       }
-      res.status(404).end();
-      return false;
+      return [{ status: 404, error: 'group not found' }];
     })
-    .catch(() => {
-      res.status(400).end();
-      return false;
+    .catch((err) => {
+      const error = formatSequelizeError(err);
+
+      if (error) {
+        return { status: getStatusCode(error), ...error };
+      }
+      return [null];
     });
 }
 
-async function updateGroup(group, userId, groupId, res) {
+async function updateGroup(group, userId, groupId) {
   await Group.update(group, {
     fields: ['name', 'active'],
     where: {
@@ -66,14 +78,17 @@ async function updateGroup(group, userId, groupId, res) {
   })
     .then((updatedGroup) => {
       if (updatedGroup[0]) {
-        return false;
+        return [null];
       }
-      res.status(404).end();
-      return false;
+      return [{ status: 404, error: 'group not found' }];
     })
-    .catch(() => {
-      res.status(400).end();
-      return false;
+    .catch((err) => {
+      const error = formatSequelizeError(err);
+
+      if (error) {
+        return { status: getStatusCode(error), ...error };
+      }
+      return [null];
     });
 }
 

@@ -12,7 +12,10 @@ async function register(req, res) {
     return;
   }
 
-  const user = await createUser(req.body);
+  const [error, user] = await createUser(req.body);
+  if (error) {
+    res.status(error.status).send({ error: error.error });
+  }
   const token = generateJWT({ id: user.id });
 
   res.send({ token, user });
@@ -23,7 +26,10 @@ async function login(req, res) {
     return;
   }
 
-  const user = await loginUser(req.body, res);
+  const [error, user] = await loginUser(req.body, res);
+  if (error) {
+    res.status(error.status).send({ error: error.error });
+  }
 
   if (user) {
     // generate JWT with userId
@@ -41,7 +47,10 @@ async function deleteUser(req, res) {
   // get userId from request
   const userId = req.user.id;
 
-  await destroyUser(userId);
+  const [error] = await destroyUser(userId);
+  if (error) {
+    res.status(error.status).send({ error: error.error });
+  }
 
   res.status(204).end();
 }

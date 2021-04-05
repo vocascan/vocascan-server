@@ -15,15 +15,20 @@ async function sendQueryVocabulary(req, res) {
     // convert to bool
     const isStaged = staged === 'true';
 
-    let vocabulary;
     // if staged = true return the staged vocabulary
     if (isStaged) {
-      vocabulary = await getUnactivatedVocabulary(languagePackageId, userId, res);
+      const [error, vocabulary] = await getUnactivatedVocabulary(languagePackageId, userId);
+      if (error) {
+        res.status(error.status).send({ error: error.error });
+      }
+      res.send(vocabulary);
     } else {
-      vocabulary = await getQueryVocabulary(languagePackageId, userId, limit, res);
+      const [error, vocabulary] = await getQueryVocabulary(languagePackageId, userId, limit);
+      if (error) {
+        res.status(error.status).send({ error: error.error });
+      }
+      res.send(vocabulary);
     }
-
-    res.send(vocabulary);
   } catch (e) {
     console.log(e.message);
     res.status(500).end();
@@ -41,10 +46,16 @@ async function checkVocabulary(req, res) {
 
     // check if vocabulary card got answered right
     if (isAnswerRight) {
-      await handleCorrectQuery(userId, vocabularyId, res);
+      const [error] = await handleCorrectQuery(userId, vocabularyId);
+      if (error) {
+        res.status(error.status).send({ error: error.error });
+      }
       res.status(204).end();
     } else {
-      await handleWrongQuery(userId, vocabularyId, res);
+      const [error] = await handleWrongQuery(userId, vocabularyId);
+      if (error) {
+        res.status(error.status).send({ error: error.error });
+      }
       res.status(204).end();
     }
   } catch (e) {

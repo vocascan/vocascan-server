@@ -9,7 +9,8 @@ const LanguagePackageController = require('../app/Controllers/LanguagePackageCon
 const GroupController = require('../app/Controllers/GroupController.js');
 const VocabularyController = require('../app/Controllers/VocabularyController.js');
 const QueryController = require('../app/Controllers/QueryController.js');
-const DocsController = require('../app/Controllers/DocsController');
+const DocsController = require('../app/Controllers/DocsController.js');
+const StatsController = require('../app/Controllers/StatsController.js');
 
 const router = express.Router();
 
@@ -18,6 +19,9 @@ router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
 router.get('/user', ProtectMiddleware, AuthController.profile);
 router.delete('/user', ProtectMiddleware, AuthController.deleteUser);
+
+// STATS
+router.get('/user/stats', ProtectMiddleware, StatsController.sendAccountStats);
 
 // Language package
 router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);

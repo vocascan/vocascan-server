@@ -17,11 +17,19 @@ async function addLanguagePackage(req, res) {
     const userId = req.user.id;
 
     // create language Package
-    const languagePackage = await createLanguagePackage(req.body, userId, res);
+    const [error, languagePackage] = await createLanguagePackage(req.body, userId);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     // store drawers for language package in database
 
-    await createDrawers(drawers, languagePackage.id, userId, res);
+    const drawerError = await createDrawers(drawers, languagePackage.id, userId);
+
+    if (drawerError) {
+      res.status(drawerError.status).send({ error: drawerError.error });
+    }
 
     res.send(languagePackage);
   } catch (e) {
@@ -38,15 +46,19 @@ async function sendLanguagePackages(req, res) {
     const groupsActive = groups === 'true';
 
     // get language Package
-    const languagePackages = await getLanguagePackages(userId, groupsActive, res);
+    const [error, languagePackages] = await getLanguagePackages(userId, groupsActive);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     // if groups is true, return groups to every language package
     const formatted = await Promise.all(
       languagePackages.map(async (languagePackage) => ({
-        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId, res),
+        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
 
         // add number of unactivated vocabularies
-        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId, res),
+        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
 
         ...languagePackage.toJSON(),
       }))
@@ -65,7 +77,11 @@ async function deleteLanguagePackage(req, res) {
     const userId = req.user.id;
     const { languagePackageId } = req.params;
 
-    await destroyLanguagePackage(userId, languagePackageId, res);
+    const [error] = await destroyLanguagePackage(userId, languagePackageId);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.status(204).end();
   } catch (e) {
@@ -80,7 +96,11 @@ async function modifyLanguagePackage(req, res) {
     const userId = req.user.id;
     const { languagePackageId } = req.params;
 
-    await updateLanguagePackage(req.body, userId, languagePackageId, res);
+    const [error] = await updateLanguagePackage(req.body, userId, languagePackageId);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.status(204).end();
   } catch (e) {

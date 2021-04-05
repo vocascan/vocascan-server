@@ -17,15 +17,20 @@ async function addVocabularyCard(req, res) {
     const activate = req.query.activate === 'true';
 
     // create vocabulary card
-    const vocabularyCard = await createVocabularyCard(req.params, name, description, userId, activate, res);
+    const [error, vocabularyCard] = await createVocabularyCard(req.params, name, description, userId, activate);
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     // parse vocabulary card id from response and create translations
-    await createTranslations(translations, userId, languagePackageId, vocabularyCard.id, res);
+    const translationError = await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
+    if (translationError) {
+      res.status(translationError.status).send({ error: translationError.error });
+    }
 
-    const formatted = vocabularyCard;
-    formatted.translations = translations;
+    vocabularyCard.translations = translations;
 
-    res.send(formatted);
+    res.send(vocabularyCard);
   } catch (e) {
     console.log(e.message);
     res.status(500).end();
@@ -38,7 +43,10 @@ async function deleteVocabularyCard(req, res) {
     const userId = req.user.id;
     const { vocabularyId } = req.params;
 
-    await destroyVocabularyCard(userId, vocabularyId, res);
+    const [error] = await destroyVocabularyCard(userId, vocabularyId);
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.status(204).end();
   } catch (e) {
@@ -53,7 +61,10 @@ async function sendGroupVocabulary(req, res) {
     const userId = req.user.id;
     const { groupId } = req.params;
 
-    const vocabulary = await getGroupVocabulary(userId, groupId, res);
+    const [error, vocabulary] = await getGroupVocabulary(userId, groupId);
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.send(vocabulary);
   } catch (e) {
@@ -68,7 +79,10 @@ async function modifyVocabulary(req, res) {
     const userId = req.user.id;
     const { vocabularyId } = req.params;
 
-    const vocabulary = await updateVocabulary(req.body, userId, vocabularyId, res);
+    const [error, vocabulary] = await updateVocabulary(req.body, userId, vocabularyId);
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.send(vocabulary);
   } catch (e) {

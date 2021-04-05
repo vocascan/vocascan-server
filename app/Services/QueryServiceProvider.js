@@ -1,9 +1,10 @@
 const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
+const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 // return the number of unresolved vocabulary
-async function getNumberOfUnresolvedVocabulary(languagePackageId, userId, res) {
+async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
   try {
     // Get drawers belonging to languagePackage
     const drawers = await Drawer.findAll({
@@ -48,15 +49,19 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId, res) {
       })
     );
 
-    return number;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, number];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
 // return the number of unactivated vocabulary
-async function getNumberOfUnactivatedVocabulary(languagePackageId, userId, res) {
+async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
   try {
     // Get number of vocabularies belonging to languagePackage
     const number = await await VocabularyCard.count({
@@ -74,15 +79,19 @@ async function getNumberOfUnactivatedVocabulary(languagePackageId, userId, res) 
         active: true,
       },
     });
-    return number;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, number];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
 // return the unresolved vocabulary
-async function getQueryVocabulary(languagePackageId, userId, limit, res) {
+async function getQueryVocabulary(languagePackageId, userId, limit) {
   try {
     // Get drawers belonging to languagePackage
     const drawers = await Drawer.findAll({
@@ -152,15 +161,19 @@ async function getQueryVocabulary(languagePackageId, userId, limit, res) {
       }))
     );
 
-    return formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format));
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format))];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return [{ status: getStatusCode(error), ...error }];
+    }
+    return [null];
   }
 }
 
 // return the unactivated vocabulary
-async function getUnactivatedVocabulary(languagePackageId, userId, res) {
+async function getUnactivatedVocabulary(languagePackageId, userId) {
   try {
     // Get drawers id
     const drawer = await Drawer.findOne({
@@ -208,15 +221,19 @@ async function getUnactivatedVocabulary(languagePackageId, userId, res) {
     );
     /* eslint-enable no-await-in-loop */
 
-    return formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format));
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null, formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format))];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
 // function to handle correct query
-async function handleCorrectQuery(userId, vocabularyCardId, res) {
+async function handleCorrectQuery(userId, vocabularyCardId) {
   try {
     // fetch selected vocabulary card
     const vocabularyCard = await VocabularyCard.findOne({
@@ -234,8 +251,7 @@ async function handleCorrectQuery(userId, vocabularyCardId, res) {
     });
 
     if (!vocabularyCard) {
-      res.status(404).end();
-      return false;
+      return [{ status: 404, error: 'vocabulary card not found' }];
     }
 
     // push vocabulary card one drawer up
@@ -264,15 +280,19 @@ async function handleCorrectQuery(userId, vocabularyCardId, res) {
         fields: ['lastQuery', 'drawerId'],
       }
     );
-    return false;
-  } catch {
-    res.status(400).end();
-    return false;
+    return [null];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 
 // function to handle wrong query
-async function handleWrongQuery(userId, vocabularyCardId, res) {
+async function handleWrongQuery(userId, vocabularyCardId) {
   try {
     // if query was solved wrong, push vocabulary card in drawer one
     const vocabularyCard = await VocabularyCard.findOne({
@@ -284,8 +304,7 @@ async function handleWrongQuery(userId, vocabularyCardId, res) {
     });
 
     if (!vocabularyCard) {
-      res.status(404).end();
-      return false;
+      return [{ status: 404, error: 'vocabulary card not found' }];
     }
 
     const drawer = await Drawer.findOne({
@@ -307,10 +326,14 @@ async function handleWrongQuery(userId, vocabularyCardId, res) {
         fields: ['lastQuery', 'drawerId'],
       }
     );
-    return false;
-  } catch {
-    res.status(400).send();
-    return false;
+    return [null];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
   }
 }
 

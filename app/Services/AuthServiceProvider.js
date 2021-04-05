@@ -2,12 +2,12 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 const { deleteKeysFromObject } = require('../utils');
+const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 const { User } = require('../../database');
 
 // Validate inputs from /register and /login route
-function validateAuth(req, res) {
+function validateAuth(req) {
   if (!req.body.email || !req.body.password) {
-    res.status(400).end();
     return false;
   }
 
@@ -17,7 +17,7 @@ function validateAuth(req, res) {
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   if (!validateAuth(req, res)) {
-    return false;
+    return [{ status: 400, error: 'missing parameter' }];
   }
 
   // Check if email address already exists
@@ -30,8 +30,7 @@ async function validateRegister(req, res) {
       },
     })
   ) {
-    res.status(409).end();
-    return false;
+    return [{ status: 409, error: 'email already exists' }];
   }
 
   return true;
@@ -47,14 +46,23 @@ async function createUser({ username, email, password }) {
   const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
   let emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
-  const user = await User.create({
-    username,
-    email: emailHash,
-    password: hash,
-    roleId: 1,
-  });
+  try {
+    const user = await User.create({
+      username,
+      email: emailHash,
+      password: hash,
+      roleId: 1,
+    });
 
-  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
+    return [null, deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON())];
+  } catch (err) {
+    const error = formatSequelizeError(err);
+
+    if (error) {
+      return { status: getStatusCode(error), ...error };
+    }
+    return [null];
+  }
 }
 
 // Log user in
@@ -70,30 +78,40 @@ async function loginUser({ email, password }, res) {
   });
 
   if (!user) {
-    res.status(404).end();
-    return false;
+    return [{ status: 404, error: 'account not found' }];
   }
 
   // Check password
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    res.status(401).end();
-    return false;
+    return [{ status: 401, error: 'wrong password' }];
   }
 
-  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
+  return [null, deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON())];
 }
 
 async function destroyUser(userId) {
   // get user from database
-  const user = await User.findOne({
+  const user = await User.destroy({
     where: {
       id: userId,
     },
-  });
+  })
+    .then((deletedUser) => {
+      if (deletedUser) {
+        return null;
+      }
+      return [{ status: 404, error: 'account not found' }];
+    })
+    .catch((err) => {
+      const error = formatSequelizeError(err);
 
-  await user.destroy();
+      if (error) {
+        return { status: getStatusCode(error), ...error };
+      }
+      return [null];
+    });
 }
 
 module.exports = {

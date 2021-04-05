@@ -9,7 +9,11 @@ async function addGroup(req, res) {
     const { languagePackageId } = req.params;
 
     // create language Package
-    const group = await createGroup(req.body, userId, languagePackageId, res);
+    const [error, group] = await createGroup(req.body, userId, languagePackageId);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.send(group);
   } catch (e) {
@@ -27,7 +31,11 @@ async function sendGroups(req, res) {
     const { languagePackageId } = req.params;
 
     // create language Package
-    const groups = await getGroups(userId, languagePackageId, res);
+    const [error, groups] = await getGroups(userId, languagePackageId);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.send(groups);
   } catch (e) {
@@ -42,7 +50,11 @@ async function deleteGroup(req, res) {
     const userId = req.user.id;
     const { groupId } = req.params;
 
-    await destroyGroup(userId, groupId, res);
+    const [error] = await destroyGroup(userId, groupId);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.status(204).end();
   } catch (e) {
@@ -57,7 +69,11 @@ async function modifyGroup(req, res) {
     const userId = req.user.id;
     const { groupId } = req.params;
 
-    await updateGroup(req.body, userId, groupId, res);
+    const [error] = await updateGroup(req.body, userId, groupId);
+
+    if (error) {
+      res.status(error.status).send({ error: error.error });
+    }
 
     res.status(204).end();
   } catch (e) {
