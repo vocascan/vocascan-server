@@ -66,7 +66,7 @@ async function createUser({ username, email, password }) {
 }
 
 // Log user in
-async function loginUser({ email, password }, res) {
+async function loginUser({ email, password }) {
   // Get user with email from database
   let emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
@@ -93,7 +93,7 @@ async function loginUser({ email, password }, res) {
 
 async function destroyUser(userId) {
   // get user from database
-  const user = await User.destroy({
+  await User.destroy({
     where: {
       id: userId,
     },
