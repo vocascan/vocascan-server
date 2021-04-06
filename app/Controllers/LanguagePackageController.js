@@ -55,10 +55,10 @@ async function sendLanguagePackages(req, res) {
     // if groups is true, return groups to every language package
     const formatted = await Promise.all(
       languagePackages.map(async (languagePackage) => ({
-        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
+        unresolvedVocabularies: (await getNumberOfUnresolvedVocabulary(languagePackage.id, userId))[1],
 
         // add number of unactivated vocabularies
-        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
+        unactivatedVocabularies: (await getNumberOfUnactivatedVocabulary(languagePackage.id, userId))[1],
 
         ...languagePackage.toJSON(),
       }))
