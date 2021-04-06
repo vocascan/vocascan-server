@@ -58,7 +58,7 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
 async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
   try {
     // Get number of vocabularies belonging to languagePackage
-    const number = await await VocabularyCard.count({
+    const number = await VocabularyCard.count({
       include: [
         {
           model: Drawer,
