@@ -9,6 +9,7 @@
     "test": "npm run lint",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "jwt-secret": "node ./scripts/jwt-secret.js",
     "swagger": "swagger-ui-watcher -p 3200 ./docs/api/swagger.json",
     "postinstall": "node -e \"process.exit(process.env.npm_config_sqlite === 'true')\" || npm i --no-save --no-package-lock sqlite3"
   },
