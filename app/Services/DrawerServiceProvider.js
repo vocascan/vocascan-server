@@ -1,5 +1,4 @@
 const { Drawer } = require('../../database');
-const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 // create language package
 async function createDrawer(languagePackageId, stage, queryInterval, userId) {
@@ -13,12 +12,7 @@ async function createDrawer(languagePackageId, stage, queryInterval, userId) {
 
     return [null, drawer];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 

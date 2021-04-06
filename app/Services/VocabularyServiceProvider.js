@@ -1,7 +1,6 @@
 const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
-const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 // create language package
 async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate) {
@@ -42,12 +41,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
     );
     return [null, formatted];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -66,36 +60,8 @@ async function createTranslations(translations, userId, languagePackageId, vocab
     );
     return [null, false];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
-}
-
-async function destroyVocabularyCard(userId, vocabularyCardId) {
-  await VocabularyCard.destroy({
-    where: {
-      id: vocabularyCardId,
-      userId,
-    },
-  })
-    .then((deletedVocabularyCard) => {
-      if (deletedVocabularyCard) {
-        return [null];
-      }
-      return [{ status: 404, error: 'vocabulary card not found' }];
-    })
-    .catch((err) => {
-      const error = formatSequelizeError(err);
-
-      if (error) {
-        return { status: getStatusCode(error), ...error };
-      }
-      return [null];
-    });
 }
 
 async function getGroupVocabulary(userId, groupId) {
@@ -116,12 +82,24 @@ async function getGroupVocabulary(userId, groupId) {
 
     return [null, vocabulary];
   } catch (err) {
-    const error = formatSequelizeError(err);
+    return [{ status: 400, error: err.message }];
+  }
+}
 
-    if (error) {
-      return { status: getStatusCode(error), ...error };
+async function destroyVocabularyCard(userId, vocabularyCardId) {
+  try {
+    const counter = await VocabularyCard.destroy({
+      where: {
+        id: vocabularyCardId,
+        userId,
+      },
+    });
+    if (counter) {
+      return [{ status: 404, error: 'vocabulary card not found' }];
     }
     return [null];
+  } catch (err) {
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -172,12 +150,7 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
 
     return [null, newVocabulary];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 

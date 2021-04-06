@@ -1,7 +1,6 @@
 const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
-const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 // return the number of unresolved vocabulary
 async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
@@ -51,12 +50,7 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
 
     return [null, number];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -81,12 +75,7 @@ async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
     });
     return [null, number];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -163,12 +152,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
 
     return [null, formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format))];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return [{ status: getStatusCode(error), ...error }];
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -223,12 +207,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
 
     return [null, formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format))];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -282,12 +261,7 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
     );
     return [null];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -328,12 +302,7 @@ async function handleWrongQuery(userId, vocabularyCardId) {
     );
     return [null];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 

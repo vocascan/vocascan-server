@@ -1,6 +1,5 @@
 const { LanguagePackage, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
-const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 // create language package
 async function createLanguagePackage(
@@ -19,12 +18,7 @@ async function createLanguagePackage(
 
     return [null, deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON())];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -45,60 +39,43 @@ async function getLanguagePackages(userId, groups) {
     }
     return [null, languagePackages];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
+    return [{ status: 400, error: err.message }];
   }
-  return [null];
 }
 
 async function destroyLanguagePackage(userId, languagePackageId) {
-  await LanguagePackage.destroy({
-    where: {
-      id: languagePackageId,
-      userId,
-    },
-  })
-    .then((deletedLanguagePackage) => {
-      if (deletedLanguagePackage) {
-        return [null];
-      }
-      return [{ status: 404, error: 'language package not found' }];
-    })
-    .catch((err) => {
-      const error = formatSequelizeError(err);
-
-      if (error) {
-        return { status: getStatusCode(error), ...error };
-      }
-      return [null];
+  try {
+    const counter = await LanguagePackage.destroy({
+      where: {
+        id: languagePackageId,
+        userId,
+      },
     });
+    if (counter === 0) {
+      return [{ status: 404, error: 'language package not found' }];
+    }
+    return [null];
+  } catch (err) {
+    return [{ status: 400, error: err.message }];
+  }
 }
 
 async function updateLanguagePackage(package, userId, languagePackageId) {
-  await LanguagePackage.update(package, {
-    fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
-    where: {
-      id: languagePackageId,
-      userId,
-    },
-  })
-    .then((updatedLanguagePackage) => {
-      if (updatedLanguagePackage[0]) {
-        return [null];
-      }
-      return [{ status: 404, error: 'language package not found' }];
-    })
-    .catch((err) => {
-      const error = formatSequelizeError(err);
-
-      if (error) {
-        return { status: getStatusCode(error), ...error };
-      }
-      return [null];
+  try {
+    const counter = await LanguagePackage.update(package, {
+      fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
+      where: {
+        id: languagePackageId,
+        userId,
+      },
     });
+    if (counter[0]) {
+      return [{ status: 404, error: 'language package not found' }];
+    }
+    return [null];
+  } catch (err) {
+    return [{ status: 400, error: err.message }];
+  }
 }
 
 module.exports = {

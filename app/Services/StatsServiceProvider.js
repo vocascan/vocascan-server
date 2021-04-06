@@ -1,5 +1,4 @@
 const { LanguagePackage, Group, VocabularyCard } = require('../../database');
-const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 
 async function getNumberOfLanguagePackages(userId) {
   try {
@@ -10,12 +9,7 @@ async function getNumberOfLanguagePackages(userId) {
     });
     return [null, number];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -29,12 +23,7 @@ async function getNumberOfActiveGroups(userId) {
     });
     return [null, number];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -48,12 +37,7 @@ async function getNumberOfInactiveGroups(userId) {
     });
     return [null, number];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -67,12 +51,7 @@ async function getNumberOfActiveVocabulary(userId) {
     });
     return [null, number];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -86,12 +65,7 @@ async function getNumberOfInactiveVocabulary(userId) {
     });
     return [null, number];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 

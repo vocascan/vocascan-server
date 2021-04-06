@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 const { deleteKeysFromObject } = require('../utils');
-const { formatSequelizeError, getStatusCode } = require('../utils/error.js');
 const { User } = require('../../database');
 
 // Validate inputs from /register and /login route
@@ -56,12 +55,7 @@ async function createUser({ username, email, password }) {
 
     return [null, deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON())];
   } catch (err) {
-    const error = formatSequelizeError(err);
-
-    if (error) {
-      return { status: getStatusCode(error), ...error };
-    }
-    return [null];
+    return [{ status: 400, error: err.message }];
   }
 }
 
@@ -105,12 +99,7 @@ async function destroyUser(userId) {
       return [{ status: 404, error: 'account not found' }];
     })
     .catch((err) => {
-      const error = formatSequelizeError(err);
-
-      if (error) {
-        return { status: getStatusCode(error), ...error };
-      }
-      return [null];
+      return [{ status: 400, error: err.message }];
     });
 }
 
