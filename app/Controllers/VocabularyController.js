@@ -23,7 +23,7 @@ async function addVocabularyCard(req, res) {
     }
 
     // parse vocabulary card id from response and create translations
-    const translationError = await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
+    const [translationError] = await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
     if (translationError) {
       res.status(translationError.status).send({ error: translationError.error });
     }

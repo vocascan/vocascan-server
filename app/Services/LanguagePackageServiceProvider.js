@@ -69,7 +69,7 @@ async function updateLanguagePackage(package, userId, languagePackageId) {
         userId,
       },
     });
-    if (counter[0]) {
+    if (counter[0] === 0) {
       return [{ status: 404, error: 'language package not found' }];
     }
     return [null];

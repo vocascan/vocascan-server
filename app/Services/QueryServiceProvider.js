@@ -207,7 +207,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
 
     return [null, formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format))];
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    return [{ status: 400, error: 'wrong language package id' }];
   }
 }
 
@@ -222,7 +222,6 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
           attributes: ['stage'],
         },
       ],
-      attributes: ['id', 'name', 'drawerId', 'languagePackageId'],
       where: {
         userId,
         id: vocabularyCardId,
@@ -270,7 +269,6 @@ async function handleWrongQuery(userId, vocabularyCardId) {
   try {
     // if query was solved wrong, push vocabulary card in drawer one
     const vocabularyCard = await VocabularyCard.findOne({
-      attributes: ['languagePackageId'],
       where: {
         userId,
         id: vocabularyCardId,

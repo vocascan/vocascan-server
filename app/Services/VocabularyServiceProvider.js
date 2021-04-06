@@ -18,7 +18,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
     });
 
     if (!drawer) {
-      return [{ status: 404, error: 'drawer not found' }];
+      return [{ status: 404, error: 'no drawer found due to wrong lanuage package id' }];
     }
     // create date the day before yesterday so it will appear in the inbox for querying
     let date = new Date();
@@ -58,7 +58,7 @@ async function createTranslations(translations, userId, languagePackageId, vocab
         });
       })
     );
-    return [null, false];
+    return [null];
   } catch (err) {
     return [{ status: 400, error: err.message }];
   }

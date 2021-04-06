@@ -94,7 +94,7 @@ async function destroyUser(userId) {
   })
     .then((deletedUser) => {
       if (deletedUser) {
-        return null;
+        return [null];
       }
       return [{ status: 404, error: 'account not found' }];
     })
