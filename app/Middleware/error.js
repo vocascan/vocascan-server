@@ -5,10 +5,24 @@ const ApiError = require('../utils/ApiError');
 const errorConverter = (err, req, res, next) => {
   let error = err;
   if (!(error instanceof ApiError)) {
-    const statusCode =
-      error.statusCode || error instanceof Sequelize.UniqueConstraintError
-        ? httpStatus.BAD_REQUEST
-        : httpStatus.INTERNAL_SERVER_ERROR;
+    let statusCode;
+
+    // handle every possible database error
+    if (error.statusCode) {
+      statusCode = error.statusCode;
+    } else if (
+      error instanceof Sequelize.ForeignKeyConstraintError ||
+      error instanceof Sequelize.InstanceError ||
+      error instanceof Sequelize.UniqueConstraintError
+    ) {
+      statusCode = httpStatus.CONFLICT;
+    } else if (error instanceof Sequelize.ConnectionError || error instanceof Sequelize.TimeoutError) {
+      statusCode = httpStatus.SERVICE_UNAVAILABLE;
+    } else if (error instanceof Sequelize.DatabaseError || error instanceof Sequelize.ValidationError) {
+      statusCode = httpStatus.BAD_REQUEST;
+    } else {
+      statusCode = httpStatus.INTERNAL_SERVER_ERROR;
+    }
     const message = error.message || httpStatus[statusCode];
     error = new ApiError(statusCode, message, false, err.stack);
   }
@@ -18,10 +32,10 @@ const errorConverter = (err, req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
   let { statusCode, message } = err;
-  if (!err.isOperational) {
+  /* if (!err.isOperational) {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
-  }
+  } */
 
   res.locals.errorMessage = err.message;
 
