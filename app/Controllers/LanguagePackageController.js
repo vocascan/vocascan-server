@@ -10,8 +10,9 @@ const {
   getNumberOfUnresolvedVocabulary,
   getNumberOfUnactivatedVocabulary,
 } = require('../Services/QueryServiceProvider.js');
+const catchAsync = require('../utils/catchAsync');
 
-async function addLanguagePackage(req, res) {
+const addLanguagePackage = catchAsync(async (req, res) => {
   try {
     // get userId from request
     const userId = req.user.id;
@@ -28,9 +29,9 @@ async function addLanguagePackage(req, res) {
     console.log(e.message);
     res.status(500).end();
   }
-}
+});
 
-async function sendLanguagePackages(req, res) {
+const sendLanguagePackages = catchAsync(async (req, res) => {
   try {
     // get userId from request
     const userId = req.user.id;
@@ -57,9 +58,9 @@ async function sendLanguagePackages(req, res) {
     console.log(e.message);
     res.status(500).end();
   }
-}
+});
 
-async function deleteLanguagePackage(req, res) {
+const deleteLanguagePackage = catchAsync(async (req, res) => {
   try {
     // get userId from request
     const userId = req.user.id;
@@ -76,26 +77,21 @@ async function deleteLanguagePackage(req, res) {
     console.log(e.message);
     res.status(500).end();
   }
-}
+});
 
-async function modifyLanguagePackage(req, res) {
-  try {
-    // get userId from request
-    const userId = req.user.id;
-    const { languagePackageId } = req.params;
+const modifyLanguagePackage = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+  const { languagePackageId } = req.params;
 
-    const [error] = await updateLanguagePackage(req.body, userId, languagePackageId);
+  const [error] = await updateLanguagePackage(req.body, userId, languagePackageId);
 
-    if (error) {
-      res.status(error.status).send({ error: error.error });
-    }
-
-    res.status(204).end();
-  } catch (e) {
-    console.log(e.message);
-    res.status(500).end();
+  if (error) {
+    res.status(error.status).send({ error: error.error });
   }
-}
+
+  res.status(204).end();
+});
 
 module.exports = {
   addLanguagePackage,

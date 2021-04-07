@@ -5,8 +5,9 @@ const {
   getNumberOfActiveVocabulary,
   getNumberOfInactiveVocabulary,
 } = require('../Services/StatsServiceProvider.js');
+const catchAsync = require('../utils/catchAsync');
 
-async function sendAccountStats(req, res) {
+const sendAccountStats = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
   const logs = {};
@@ -22,7 +23,7 @@ async function sendAccountStats(req, res) {
   logs.inactiveVocabulary = await getNumberOfInactiveVocabulary(userId);
 
   res.send(logs);
-}
+});
 
 module.exports = {
   sendAccountStats,
