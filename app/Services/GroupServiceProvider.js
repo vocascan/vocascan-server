@@ -1,5 +1,7 @@
 const { Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // create language package
 async function createGroup({ name, active }, userId, languagePackageId) {
@@ -10,9 +12,9 @@ async function createGroup({ name, active }, userId, languagePackageId) {
       name,
       active,
     });
-    return [null, deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON())];
+    return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON());
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -28,9 +30,9 @@ async function getGroups(userId, languagePackageId) {
       },
     });
 
-    return [null, groups];
+    return groups;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -44,12 +46,12 @@ async function destroyGroup(userId, groupId) {
     });
 
     if (counter === 0) {
-      return [{ status: 404, error: 'group not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'Group not found');
     }
 
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -63,11 +65,11 @@ async function updateGroup(group, userId, groupId) {
       },
     });
     if (counter[0] === 0) {
-      return [{ status: 404, error: 'group not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'Group not found');
     }
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 

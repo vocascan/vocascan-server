@@ -17,16 +17,10 @@ async function sendQueryVocabulary(req, res) {
 
     // if staged = true return the staged vocabulary
     if (isStaged) {
-      const [error, vocabulary] = await getUnactivatedVocabulary(languagePackageId, userId);
-      if (error) {
-        res.status(error.status).send({ error: error.error });
-      }
+      const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId);
       res.send(vocabulary);
     } else {
-      const [error, vocabulary] = await getQueryVocabulary(languagePackageId, userId, limit);
-      if (error) {
-        res.status(error.status).send({ error: error.error });
-      }
+      const vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
       res.send(vocabulary);
     }
   } catch (e) {
@@ -46,16 +40,10 @@ async function checkVocabulary(req, res) {
 
     // check if vocabulary card got answered right
     if (isAnswerRight) {
-      const [error] = await handleCorrectQuery(userId, vocabularyId);
-      if (error) {
-        res.status(error.status).send({ error: error.error });
-      }
+      await handleCorrectQuery(userId, vocabularyId);
       res.status(204).end();
     } else {
-      const [error] = await handleWrongQuery(userId, vocabularyId);
-      if (error) {
-        res.status(error.status).send({ error: error.error });
-      }
+      await handleWrongQuery(userId, vocabularyId);
       res.status(204).end();
     }
   } catch (e) {

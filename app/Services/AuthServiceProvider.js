@@ -3,6 +3,8 @@ const crypto = require('crypto');
 
 const { deleteKeysFromObject } = require('../utils');
 const { User } = require('../../database');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // Validate inputs from /register and /login route
 function validateAuth(req) {
@@ -16,7 +18,7 @@ function validateAuth(req) {
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   if (!validateAuth(req, res)) {
-    return [{ status: 400, error: 'missing parameter' }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'missing parameter');
   }
 
   // Check if email address already exists
@@ -29,7 +31,7 @@ async function validateRegister(req, res) {
       },
     })
   ) {
-    return [{ status: 409, error: 'email already exists' }];
+    throw new ApiError(httpStatus.CONFLICT, 'email already exists');
   }
 
   return true;
@@ -53,9 +55,9 @@ async function createUser({ username, email, password }) {
       roleId: 1,
     });
 
-    return [null, deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON())];
+    return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -72,17 +74,17 @@ async function loginUser({ email, password }) {
   });
 
   if (!user) {
-    return [{ status: 404, error: 'account not found' }];
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
   }
 
   // Check password
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    return [{ status: 401, error: 'wrong password' }];
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password');
   }
 
-  return [null, deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON())];
+  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
 async function destroyUser(userId) {
@@ -96,10 +98,10 @@ async function destroyUser(userId) {
       if (deletedUser) {
         return [null];
       }
-      return [{ status: 404, error: 'account not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
     })
-    .catch((err) => {
-      return [{ status: 400, error: err.message }];
+    .catch(() => {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
     });
 }
 

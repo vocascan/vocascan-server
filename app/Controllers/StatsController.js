@@ -11,15 +11,15 @@ async function sendAccountStats(req, res) {
 
   const logs = {};
   // get number of language packages
-  logs.languagePackages = (await getNumberOfLanguagePackages(userId))[1];
+  logs.languagePackages = await getNumberOfLanguagePackages(userId);
   // get number of active groups
-  logs.activeGroups = (await getNumberOfActiveGroups(userId))[1];
+  logs.activeGroups = await getNumberOfActiveGroups(userId);
   // get number of inactive groups
-  logs.inactiveGroups = (await getNumberOfInactiveGroups(userId))[1];
+  logs.inactiveGroups = await getNumberOfInactiveGroups(userId);
   // get number of active vocabulary
-  logs.activeVocabulary = (await getNumberOfActiveVocabulary(userId))[1];
+  logs.activeVocabulary = await getNumberOfActiveVocabulary(userId);
   // get number of inactive vocabulary
-  logs.inactiveVocabulary = (await getNumberOfInactiveVocabulary(userId))[1];
+  logs.inactiveVocabulary = await getNumberOfInactiveVocabulary(userId);
 
   res.send(logs);
 }

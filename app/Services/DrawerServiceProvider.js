@@ -1,4 +1,6 @@
 const { Drawer } = require('../../database');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // create language package
 async function createDrawer(languagePackageId, stage, queryInterval, userId) {
@@ -10,9 +12,9 @@ async function createDrawer(languagePackageId, stage, queryInterval, userId) {
       queryInterval,
     });
 
-    return [null, drawer];
+    return drawer;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 

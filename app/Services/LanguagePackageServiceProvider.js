@@ -1,5 +1,7 @@
 const { LanguagePackage, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // create language package
 async function createLanguagePackage(
@@ -16,9 +18,9 @@ async function createLanguagePackage(
       rightWords,
     });
 
-    return [null, deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON())];
+    return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -34,12 +36,9 @@ async function getLanguagePackages(userId, groups) {
       },
     });
 
-    if (!languagePackages) {
-      return [{ status: 404, error: 'language package not found' }];
-    }
-    return [null, languagePackages];
+    return languagePackages;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -52,11 +51,11 @@ async function destroyLanguagePackage(userId, languagePackageId) {
       },
     });
     if (counter === 0) {
-      return [{ status: 404, error: 'language package not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
     }
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -70,11 +69,11 @@ async function updateLanguagePackage(package, userId, languagePackageId) {
       },
     });
     if (counter[0] === 0) {
-      return [{ status: 404, error: 'language package not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
     }
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 

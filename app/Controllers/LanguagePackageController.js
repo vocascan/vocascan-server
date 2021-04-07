@@ -17,19 +17,11 @@ async function addLanguagePackage(req, res) {
     const userId = req.user.id;
 
     // create language Package
-    const [error, languagePackage] = await createLanguagePackage(req.body, userId);
-
-    if (error) {
-      res.status(error.status).send({ error: error.error });
-    }
+    const languagePackage = await createLanguagePackage(req.body, userId);
 
     // store drawers for language package in database
 
-    const drawerError = await createDrawers(drawers, languagePackage.id, userId);
-
-    if (drawerError) {
-      res.status(drawerError.status).send({ error: drawerError.error });
-    }
+    await createDrawers(drawers, languagePackage.id, userId);
 
     res.send(languagePackage);
   } catch (e) {
@@ -46,19 +38,15 @@ async function sendLanguagePackages(req, res) {
     const groupsActive = groups === 'true';
 
     // get language Package
-    const [error, languagePackages] = await getLanguagePackages(userId, groupsActive);
-
-    if (error) {
-      res.status(error.status).send({ error: error.error });
-    }
+    const languagePackages = await getLanguagePackages(userId, groupsActive);
 
     // if groups is true, return groups to every language package
     const formatted = await Promise.all(
       languagePackages.map(async (languagePackage) => ({
-        unresolvedVocabularies: (await getNumberOfUnresolvedVocabulary(languagePackage.id, userId))[1],
+        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
 
         // add number of unactivated vocabularies
-        unactivatedVocabularies: (await getNumberOfUnactivatedVocabulary(languagePackage.id, userId))[1],
+        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
 
         ...languagePackage.toJSON(),
       }))

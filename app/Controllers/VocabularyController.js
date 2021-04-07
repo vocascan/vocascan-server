@@ -17,16 +17,10 @@ async function addVocabularyCard(req, res) {
     const activate = req.query.activate === 'true';
 
     // create vocabulary card
-    const [error, vocabularyCard] = await createVocabularyCard(req.params, name, description, userId, activate);
-    if (error) {
-      res.status(error.status).send({ error: error.error });
-    }
+    const vocabularyCard = await createVocabularyCard(req.params, name, description, userId, activate);
 
     // parse vocabulary card id from response and create translations
-    const [translationError] = await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
-    if (translationError) {
-      res.status(translationError.status).send({ error: translationError.error });
-    }
+    await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
 
     vocabularyCard.translations = translations;
 
@@ -43,10 +37,7 @@ async function deleteVocabularyCard(req, res) {
     const userId = req.user.id;
     const { vocabularyId } = req.params;
 
-    const [error] = await destroyVocabularyCard(userId, vocabularyId);
-    if (error) {
-      res.status(error.status).send({ error: error.error });
-    }
+    await destroyVocabularyCard(userId, vocabularyId);
 
     res.status(204).end();
   } catch (e) {
@@ -61,10 +52,7 @@ async function sendGroupVocabulary(req, res) {
     const userId = req.user.id;
     const { groupId } = req.params;
 
-    const [error, vocabulary] = await getGroupVocabulary(userId, groupId);
-    if (error) {
-      res.status(error.status).send({ error: error.error });
-    }
+    const vocabulary = await getGroupVocabulary(userId, groupId);
 
     res.send(vocabulary);
   } catch (e) {
@@ -79,10 +67,7 @@ async function modifyVocabulary(req, res) {
     const userId = req.user.id;
     const { vocabularyId } = req.params;
 
-    const [error, vocabulary] = await updateVocabulary(req.body, userId, vocabularyId);
-    if (error) {
-      res.status(error.status).send({ error: error.error });
-    }
+    const vocabulary = await updateVocabulary(req.body, userId, vocabularyId);
 
     res.send(vocabulary);
   } catch (e) {

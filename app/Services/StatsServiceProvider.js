@@ -1,4 +1,6 @@
 const { LanguagePackage, Group, VocabularyCard } = require('../../database');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 async function getNumberOfLanguagePackages(userId) {
   try {
@@ -7,9 +9,9 @@ async function getNumberOfLanguagePackages(userId) {
         userId,
       },
     });
-    return [null, number];
+    return number;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -21,9 +23,9 @@ async function getNumberOfActiveGroups(userId) {
         active: true,
       },
     });
-    return [null, number];
+    return number;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -35,9 +37,9 @@ async function getNumberOfInactiveGroups(userId) {
         active: false,
       },
     });
-    return [null, number];
+    return number;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -49,9 +51,9 @@ async function getNumberOfActiveVocabulary(userId) {
         active: true,
       },
     });
-    return [null, number];
+    return number;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -63,9 +65,9 @@ async function getNumberOfInactiveVocabulary(userId) {
         active: false,
       },
     });
-    return [null, number];
+    return number;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 

@@ -1,6 +1,8 @@
 const { VocabularyCard, Translation } = require('../../database');
 const { Drawer } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // create language package
 async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate) {
@@ -18,7 +20,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
     });
 
     if (!drawer) {
-      return [{ status: 404, error: 'no drawer found due to wrong lanuage package id' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong lanuage package id');
     }
     // create date the day before yesterday so it will appear in the inbox for querying
     let date = new Date();
@@ -39,9 +41,9 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
       ['userId', 'lastQuery', 'updatedAt', 'createdAt', 'languagePackageId', 'groupId', 'drawerId'],
       vocabularyCard.toJSON()
     );
-    return [null, formatted];
+    return formatted;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -58,9 +60,9 @@ async function createTranslations(translations, userId, languagePackageId, vocab
         });
       })
     );
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -80,9 +82,9 @@ async function getGroupVocabulary(userId, groupId) {
       },
     });
 
-    return [null, vocabulary];
+    return vocabulary;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -95,11 +97,11 @@ async function destroyVocabularyCard(userId, vocabularyCardId) {
       },
     });
     if (counter) {
-      return [{ status: 404, error: 'vocabulary card not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
     }
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -122,7 +124,7 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
     });
 
     if (!vocabulary) {
-      return [{ status: 404, error: 'vocabulary card not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
     }
 
     // change values from foreign Word
@@ -148,9 +150,9 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
       },
     });
 
-    return [null, newVocabulary];
+    return newVocabulary;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 

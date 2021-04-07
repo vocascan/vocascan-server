@@ -1,6 +1,8 @@
 const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // return the number of unresolved vocabulary
 async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
@@ -48,9 +50,9 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
       })
     );
 
-    return [null, number];
+    return number;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -73,9 +75,9 @@ async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
         active: true,
       },
     });
-    return [null, number];
+    return number;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -150,9 +152,9 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       }))
     );
 
-    return [null, formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format))];
+    return formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format));
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -205,9 +207,9 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
     );
     /* eslint-enable no-await-in-loop */
 
-    return [null, formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format))];
+    return formatted.map((format) => deleteKeysFromObject(['Group', 'Drawer'], format));
   } catch (err) {
-    return [{ status: 400, error: 'wrong language package id' }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'wrong language package id');
   }
 }
 
@@ -229,7 +231,7 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
     });
 
     if (!vocabularyCard) {
-      return [{ status: 404, error: 'vocabulary card not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
     }
 
     // push vocabulary card one drawer up
@@ -258,9 +260,9 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
         fields: ['lastQuery', 'drawerId'],
       }
     );
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
@@ -276,7 +278,7 @@ async function handleWrongQuery(userId, vocabularyCardId) {
     });
 
     if (!vocabularyCard) {
-      return [{ status: 404, error: 'vocabulary card not found' }];
+      throw new ApiError(httpStatus.NOT_FOUND, 'Vocabulary card not found');
     }
 
     const drawer = await Drawer.findOne({
@@ -298,9 +300,9 @@ async function handleWrongQuery(userId, vocabularyCardId) {
         fields: ['lastQuery', 'drawerId'],
       }
     );
-    return [null];
+    return false;
   } catch (err) {
-    return [{ status: 400, error: err.message }];
+    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
   }
 }
 
