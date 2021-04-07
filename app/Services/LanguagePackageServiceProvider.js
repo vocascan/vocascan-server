@@ -8,73 +8,57 @@ async function createLanguagePackage(
   { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
   userId
 ) {
-  try {
-    const languagePackage = await LanguagePackage.create({
-      userId,
-      name,
-      foreignWordLanguage,
-      translatedWordLanguage,
-      vocabsPerDay,
-      rightWords,
-    });
+  const languagePackage = await LanguagePackage.create({
+    userId,
+    name,
+    foreignWordLanguage,
+    translatedWordLanguage,
+    vocabsPerDay,
+    rightWords,
+  });
 
-    return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
-  } catch (err) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
-  }
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
 }
 
 // get language package
 async function getLanguagePackages(userId, groups) {
-  try {
-    // Get user with email from database
-    const languagePackages = await LanguagePackage.findAll({
-      include: groups ? [{ model: Group, attributes: ['id', 'name', 'active'] }] : [],
-      attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
-      where: {
-        userId,
-      },
-    });
+  // Get user with email from database
+  const languagePackages = await LanguagePackage.findAll({
+    include: groups ? [{ model: Group, attributes: ['id', 'name', 'active'] }] : [],
+    attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
+    where: {
+      userId,
+    },
+  });
 
-    return languagePackages;
-  } catch (err) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
-  }
+  return languagePackages;
 }
 
 async function destroyLanguagePackage(userId, languagePackageId) {
-  try {
-    const counter = await LanguagePackage.destroy({
-      where: {
-        id: languagePackageId,
-        userId,
-      },
-    });
-    if (counter === 0) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
-    }
-    return false;
-  } catch (err) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
+  const counter = await LanguagePackage.destroy({
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
+  if (counter === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
   }
+  return false;
 }
 
 async function updateLanguagePackage(package, userId, languagePackageId) {
-  try {
-    const counter = await LanguagePackage.update(package, {
-      fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
-      where: {
-        id: languagePackageId,
-        userId,
-      },
-    });
-    if (counter[0] === 0) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
-    }
-    return false;
-  } catch (err) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
+  const counter = await LanguagePackage.update(package, {
+    fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
+  if (counter[0] === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
   }
+  return false;
 }
 
 module.exports = {

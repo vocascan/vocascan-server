@@ -47,18 +47,14 @@ async function createUser({ username, email, password }) {
   const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
   let emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
-  try {
-    const user = await User.create({
-      username,
-      email: emailHash,
-      password: hash,
-      roleId: 1,
-    });
+  const user = await User.create({
+    username,
+    email: emailHash,
+    password: hash,
+    roleId: 1,
+  });
 
-    return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
-  } catch (err) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
-  }
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
 }
 
 // Log user in
@@ -89,20 +85,14 @@ async function loginUser({ email, password }) {
 
 async function destroyUser(userId) {
   // get user from database
-  await User.destroy({
+  const counter = await User.destroy({
     where: {
       id: userId,
     },
-  })
-    .then((deletedUser) => {
-      if (deletedUser) {
-        return [null];
-      }
-      throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
-    })
-    .catch(() => {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'bad request');
-    });
+  });
+  if (counter === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
+  }
 }
 
 module.exports = {
