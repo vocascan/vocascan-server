@@ -18,16 +18,16 @@ app.use(express.json());
 // routes
 app.use('/', routes);
 
+// send back a 404 error for any unknown api request
+app.use((req, res, next) => {
+  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+});
+
 // convert error to ApiError, if needed
 app.use(errorConverter);
 
 // handle error
 app.use(errorHandler);
-
-// send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
-});
 
 Promise.resolve()
   // Checks migrations and run them if they are not already applied. To keep
