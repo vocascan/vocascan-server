@@ -1,6 +1,8 @@
 const httpStatus = require('http-status');
 const { Sequelize } = require('sequelize');
 const ApiError = require('../utils/ApiError');
+const logger = require('../config/logger');
+require('dotenv').config();
 
 const errorConverter = (err, req, res, next) => {
   let error = err;
@@ -42,7 +44,12 @@ const errorHandler = (err, req, res, next) => {
   const response = {
     code: statusCode,
     message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   };
+
+  if (process.env.NODE_ENV === 'development') {
+    logger.error(err);
+  }
 
   return res.status(statusCode).send(response);
 };
