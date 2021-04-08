@@ -55,11 +55,7 @@ const deleteLanguagePackage = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { languagePackageId } = req.params;
 
-  const [error] = await destroyLanguagePackage(userId, languagePackageId);
-
-  if (error) {
-    res.status(error.status).send({ error: error.error });
-  }
+  await destroyLanguagePackage(userId, languagePackageId);
 
   res.status(204).end();
 });
@@ -69,11 +65,7 @@ const modifyLanguagePackage = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { languagePackageId } = req.params;
 
-  const [error] = await updateLanguagePackage(req.body, userId, languagePackageId);
-
-  if (error) {
-    res.status(error.status).send({ error: error.error });
-  }
+  await updateLanguagePackage(req.body, userId, languagePackageId);
 
   res.status(204).end();
 });
