@@ -9,7 +9,7 @@ const httpStatus = require('http-status');
 // Validate inputs from /register and /login route
 function validateAuth(req) {
   if (!req.body.email || !req.body.password) {
-    return false;
+    throw new ApiError(httpStatus.BAD_REQUEST, 'missing parameter');
   }
 
   return true;
@@ -17,9 +17,7 @@ function validateAuth(req) {
 
 // Validate inputs from /register route
 async function validateRegister(req, res) {
-  if (!validateAuth(req, res)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'missing parameter');
-  }
+  validateAuth(req, res);
 
   // Check if email address already exists
   let emailHash = crypto.createHash('sha256').update(req.body.email).digest('base64');

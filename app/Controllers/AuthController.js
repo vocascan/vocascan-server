@@ -9,9 +9,7 @@ const { generateJWT, deleteKeysFromObject } = require('../utils');
 const catchAsync = require('../utils/catchAsync');
 
 const register = catchAsync(async (req, res) => {
-  if (!(await validateRegister(req, res))) {
-    return;
-  }
+  await validateRegister(req, res);
 
   const user = await createUser(req.body);
   const token = generateJWT({ id: user.id });
@@ -20,9 +18,7 @@ const register = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
-  if (!validateLogin(req, res)) {
-    return;
-  }
+  validateLogin(req, res);
 
   const user = await loginUser(req.body, res);
 
