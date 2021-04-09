@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 
 // create language package
-async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, activate) {
+async function createVocabularyCard({ languagePackageId, groupId }, name, description, userId, active, activate) {
   // if activate = false store vocabulary card in drawer 0 directly
 
   // select drawer id depending on the activate state
@@ -33,7 +33,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
     name,
     description,
     lastQuery: yesterday,
-    active: true,
+    active,
   });
 
   const formatted = deleteKeysFromObject(
