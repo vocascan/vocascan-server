@@ -20,7 +20,7 @@ async function validateRegister(req, res) {
   validateAuth(req, res);
 
   // Check if email address already exists
-  let emailHash = crypto.createHash('sha256').update(req.body.email).digest('base64');
+  const emailHash = crypto.createHash('sha256').update(req.body.email).digest('base64');
 
   if (
     await User.count({
@@ -43,7 +43,7 @@ function validateLogin(req, res) {
 async function createUser({ username, email, password }) {
   // Hash password
   const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
-  let emailHash = crypto.createHash('sha256').update(email).digest('base64');
+  const emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
   const user = await User.create({
     username,
@@ -58,7 +58,7 @@ async function createUser({ username, email, password }) {
 // Log user in
 async function loginUser({ email, password }) {
   // Get user with email from database
-  let emailHash = crypto.createHash('sha256').update(email).digest('base64');
+  const emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
   const user = await User.findOne({
     attributes: ['id', 'username', 'password'],

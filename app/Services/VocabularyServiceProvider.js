@@ -22,7 +22,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
     throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong lanuage package id');
   }
   // create date the day before yesterday so it will appear in the inbox for querying
-  let date = new Date();
+  const date = new Date();
   const yesterday = date.setDate(date.getDate() - 1);
 
   const vocabularyCard = await VocabularyCard.create({

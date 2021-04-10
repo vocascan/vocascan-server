@@ -14,13 +14,15 @@ const StatsController = require('../app/Controllers/StatsController.js');
 
 const router = express.Router();
 
-// AUTH
+// Auth
 router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
+
+// User
 router.get('/user', ProtectMiddleware, AuthController.profile);
 router.delete('/user', ProtectMiddleware, AuthController.deleteUser);
 
-// STATS
+// Stats
 router.get('/user/stats', ProtectMiddleware, StatsController.sendAccountStats);
 
 // Language package

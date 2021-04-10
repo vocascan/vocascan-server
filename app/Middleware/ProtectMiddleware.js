@@ -5,7 +5,7 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 
 // Check for Authorization header and add user attribute to request object
-const ProtectMiddleware = catchAsync(async (req, res, next) => {
+const ProtectMiddleware = catchAsync(async (req, _res, next) => {
   // Break if no Authorization header is set
   if (!req.header('Authorization')) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Not Authorized');
