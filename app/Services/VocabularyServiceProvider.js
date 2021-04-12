@@ -19,7 +19,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
   });
 
   if (!drawer) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong lanuage package id');
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id');
   }
   // create date the day before yesterday so it will appear in the inbox for querying
   const date = new Date();
@@ -66,7 +66,7 @@ async function getGroupVocabulary(userId, groupId) {
         attributes: ['name'],
       },
     ],
-    attributes: ['id', 'name', 'description'],
+    attributes: ['id', 'name', 'active', 'description'],
     where: {
       userId,
       groupId,
@@ -83,7 +83,8 @@ async function destroyVocabularyCard(userId, vocabularyCardId) {
       userId,
     },
   });
-  if (counter) {
+
+  if (counter === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
   }
   return false;
@@ -126,7 +127,7 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
         attributes: ['name'],
       },
     ],
-    attributes: ['name', 'description'],
+    attributes: ['name', 'active', 'description'],
     where: {
       id: vocabularyCardId,
       userId,

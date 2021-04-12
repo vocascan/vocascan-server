@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const chalk = require('chalk');
 
-const { errorConverter, errorHandler } = require('./app/Middleware/error.js');
+const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
 const ApiError = require('./app/utils/ApiError.js');
 const httpStatus = require('http-status');
 
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use('/', routes);
 
 // send back a 404 error for any unknown api request
-app.use((req, res, next) => {
+app.use((_req, _res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
 

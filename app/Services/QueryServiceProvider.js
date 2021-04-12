@@ -158,6 +158,10 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
     },
   });
 
+  if (!drawer) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id');
+  }
+
   // return every vocabulary in drawer 0
   const vocabularyWords = await VocabularyCard.findAll({
     include: [

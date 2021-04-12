@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const { Sequelize } = require('sequelize');
 const ApiError = require('../utils/ApiError');
 
-const errorConverter = (err, req, res, next) => {
+const errorConverter = (err, _req, _res, next) => {
   let error = err;
   if (!(error instanceof ApiError)) {
     let statusCode;
@@ -30,7 +30,7 @@ const errorConverter = (err, req, res, next) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, _req, res, _next) => {
   const { statusCode, message } = err;
 
   res.locals.errorMessage = err.message;
