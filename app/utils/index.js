@@ -56,10 +56,33 @@ const deleteKeysFromObject = (keys, object) => {
  */
 const round = (x, dp = 2) => Math.round(x * 10 ** dp) / 10 ** dp;
 
+/**
+ * Zip arrays
+ * See: https://stackoverflow.com/questions/4856717/javascript-equivalent-of-pythons-zip-function
+ * @example
+ *    zip([[1,2],[11,22],[111,222]])
+ *    // returns [[1,11,111],[2,22,222]]]
+ *
+ * @param  {...Array} arrays arrays to zip
+ * @returns {Array} zipped array
+ */
+const zip = (...arrays) => arrays[0].map((_, i) => arrays.map((array) => array[i]));
+
+/**
+ * Resolve all Promises in keys in an object
+ * See: https://stackoverflow.com/questions/29292921/how-to-use-promise-all-with-an-object-as-input
+ * @param {Object} obj object
+ * @returns {Promise<Object>} promise with object
+ */
+const promiseAllValues = async (obj) =>
+  Object.fromEntries(zip(Object.keys(obj), await Promise.all(Object.values(obj))));
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
   filterObject,
   deleteKeysFromObject,
   round,
+  zip,
+  promiseAllValues,
 };
