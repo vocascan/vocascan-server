@@ -4,7 +4,6 @@ const ApiError = require('../utils/ApiError');
 const logger = require('../config/logger');
 
 const errorConverter = (err, _req, _res, next) => {
-
   let error = err;
   if (!(error instanceof ApiError)) {
     let statusCode;
@@ -40,10 +39,10 @@ const errorHandler = (err, _req, res, _next) => {
   const response = {
     code: statusCode,
     message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.DEBUG === 'true' && { stack: err.stack }),
   };
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.DEBUG === 'true') {
     logger.error(err);
   }
 
