@@ -21,11 +21,11 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
   let number = 0;
 
   await Promise.all(
-    Object.keys(drawers).map(async (key) => {
+    drawers.map(async (drawer) => {
       // create date and add days from query Interval
-      let queryDate = new Date();
+      const queryDate = new Date();
       // subtract query interval from actual date
-      queryDate.setDate(queryDate.getDate() - drawers[key].queryInterval);
+      queryDate.setDate(queryDate.getDate() - drawer.queryInterval);
 
       // compare query date with with last query
       // if queryDate is less than lastQuery: still time
@@ -39,7 +39,7 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
           },
         ],
         where: {
-          drawerId: drawers[key].id,
+          drawerId: drawer.id,
           lastQuery: { [Op.lt]: queryDate },
           '$Group.active$': true,
           active: true,
@@ -157,6 +157,10 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
       stage: 0,
     },
   });
+
+  if (!drawer) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id');
+  }
 
   // return every vocabulary in drawer 0
   const vocabularyWords = await VocabularyCard.findAll({

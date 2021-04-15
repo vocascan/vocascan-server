@@ -9,41 +9,21 @@ async function getNumberOfLanguagePackages(userId) {
   return number;
 }
 
-async function getNumberOfActiveGroups(userId) {
+async function getNumberOfGroups(userId, active) {
   const number = await Group.count({
     where: {
       userId,
-      active: true,
+      active: !!active,
     },
   });
   return number;
 }
 
-async function getNumberOfInactiveGroups(userId) {
-  const number = await Group.count({
-    where: {
-      userId,
-      active: false,
-    },
-  });
-  return number;
-}
-
-async function getNumberOfActiveVocabulary(userId) {
+async function getNumberOfVocabulary(userId, active) {
   const number = await VocabularyCard.count({
     where: {
       userId,
-      active: true,
-    },
-  });
-  return number;
-}
-
-async function getNumberOfInactiveVocabulary(userId) {
-  const number = await VocabularyCard.count({
-    where: {
-      userId,
-      active: false,
+      active: !!active,
     },
   });
   return number;
@@ -51,8 +31,6 @@ async function getNumberOfInactiveVocabulary(userId) {
 
 module.exports = {
   getNumberOfLanguagePackages,
-  getNumberOfActiveGroups,
-  getNumberOfInactiveGroups,
-  getNumberOfActiveVocabulary,
-  getNumberOfInactiveVocabulary,
+  getNumberOfGroups,
+  getNumberOfVocabulary,
 };

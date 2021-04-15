@@ -1,28 +1,34 @@
 const {
   getNumberOfLanguagePackages,
-  getNumberOfActiveGroups,
-  getNumberOfInactiveGroups,
-  getNumberOfActiveVocabulary,
-  getNumberOfInactiveVocabulary,
+  getNumberOfGroups,
+  getNumberOfVocabulary,
 } = require('../Services/StatsServiceProvider.js');
 const catchAsync = require('../utils/catchAsync');
+const { promiseAllValues } = require('../utils/index.js');
 
 const sendAccountStats = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
-  const logs = {};
-  // get number of language packages
-  logs.languagePackages = await getNumberOfLanguagePackages(userId);
-  // get number of active groups
-  logs.activeGroups = await getNumberOfActiveGroups(userId);
-  // get number of inactive groups
-  logs.inactiveGroups = await getNumberOfInactiveGroups(userId);
-  // get number of active vocabulary
-  logs.activeVocabulary = await getNumberOfActiveVocabulary(userId);
-  // get number of inactive vocabulary
-  logs.inactiveVocabulary = await getNumberOfInactiveVocabulary(userId);
+  const stats = {
+    // get number of language packages
+    languagePackages: getNumberOfLanguagePackages(userId),
 
-  res.send(logs);
+    // get number of active groups
+    activeGroups: getNumberOfGroups(userId, true),
+
+    // get number of inactive groups
+    inactiveGroups: getNumberOfGroups(userId, false),
+
+    // get number of active vocabulary
+    activeVocabulary: getNumberOfVocabulary(userId, true),
+
+    // get number of inactive vocabulary
+    inactiveVocabulary: getNumberOfVocabulary(userId, false),
+  };
+
+  const resolvedStats = await promiseAllValues(stats);
+
+  res.send(resolvedStats);
 });
 
 module.exports = {

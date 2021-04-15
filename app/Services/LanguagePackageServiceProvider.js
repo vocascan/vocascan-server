@@ -41,6 +41,7 @@ async function destroyLanguagePackage(userId, languagePackageId) {
       userId,
     },
   });
+
   if (counter === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
   }
@@ -55,6 +56,7 @@ async function updateLanguagePackage(package, userId, languagePackageId) {
       userId,
     },
   });
+
   if (counter[0] === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
   }
