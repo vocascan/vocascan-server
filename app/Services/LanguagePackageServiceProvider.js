@@ -1,4 +1,7 @@
 const { LanguagePackage, Group } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // create language package
 async function createLanguagePackage(
@@ -14,11 +17,11 @@ async function createLanguagePackage(
     rightWords,
   });
 
-  return languagePackage;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
 }
 
 // get language package
-async function getLanguagePackages(userId, groups, res) {
+async function getLanguagePackages(userId, groups) {
   // Get user with email from database
   const languagePackages = await LanguagePackage.findAll({
     include: groups ? [{ model: Group, attributes: ['id', 'name', 'active'] }] : [],
@@ -28,31 +31,36 @@ async function getLanguagePackages(userId, groups, res) {
     },
   });
 
-  if (!languagePackages) {
-    res.status(404).end();
-    return false;
-  }
-
   return languagePackages;
 }
 
 async function destroyLanguagePackage(userId, languagePackageId) {
-  await LanguagePackage.destroy({
+  const counter = await LanguagePackage.destroy({
     where: {
       id: languagePackageId,
       userId,
     },
   });
+
+  if (counter === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
+  }
+  return false;
 }
 
 async function updateLanguagePackage(package, userId, languagePackageId) {
-  await LanguagePackage.update(package, {
+  const counter = await LanguagePackage.update(package, {
     fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
       id: languagePackageId,
       userId,
     },
   });
+
+  if (counter[0] === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
+  }
+  return false;
 }
 
 module.exports = {
