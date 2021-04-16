@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { Sequelize } = require('sequelize');
 const ApiError = require('../utils/ApiError');
+const logger = require('../config/logger');
 
 const errorConverter = (err, _req, _res, next) => {
   let error = err;
@@ -38,7 +39,12 @@ const errorHandler = (err, _req, res, _next) => {
   const response = {
     code: statusCode,
     message,
+    ...(process.env.DEBUG === 'true' && { stack: err.stack }),
   };
+
+  if (process.env.DEBUG === 'true' || response.code >= 500) {
+    logger.error(err);
+  }
 
   return res.status(statusCode).send(response);
 };
