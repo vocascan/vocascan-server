@@ -442,20 +442,16 @@
             "type": "string"
           },
           "foreignWordLanguage": {
-            "type": "string",
-            "format": "password"
+            "type": "string"
           },
           "translatedWordLanguage": {
-            "type": "string",
-            "format": "password"
+            "type": "string"
           },
           "vocabsPerDay": {
-            "type": "integer",
-            "format": "password"
+            "type": "integer"
           },
           "rightWords": {
-            "type": "integer",
-            "format": "password"
+            "type": "integer"
           }
         }
       },
@@ -468,12 +464,10 @@
             "format": "uuid"
           },
           "name": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "active": {
-            "type": "boolean",
-            "nullable": true
+            "type": "boolean"
           }
         }
       },
@@ -486,8 +480,7 @@
             "format": "uuid"
           },
           "name": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "Translations": {
             "type": "array",
