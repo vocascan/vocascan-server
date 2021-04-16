@@ -1,5 +1,4 @@
 const winston = require('winston');
-require('dotenv').config();
 
 const enumerateErrorFormat = winston.format((info) => {
   if (info instanceof Error) {
