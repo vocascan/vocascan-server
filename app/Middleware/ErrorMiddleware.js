@@ -42,7 +42,7 @@ const errorHandler = (err, _req, res, _next) => {
     ...(process.env.DEBUG === 'true' && { stack: err.stack }),
   };
 
-  if (process.env.DEBUG === 'true') {
+  if (process.env.DEBUG === 'true' || response.code >= 500) {
     logger.error(err);
   }
 
