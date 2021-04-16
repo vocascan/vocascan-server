@@ -10,8 +10,9 @@ const {
   getNumberOfUnresolvedVocabulary,
   getNumberOfUnactivatedVocabulary,
 } = require('../Services/QueryServiceProvider.js');
+const catchAsync = require('../utils/catchAsync');
 
-async function addLanguagePackage(req, res) {
+const addLanguagePackage = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
 
@@ -23,15 +24,16 @@ async function addLanguagePackage(req, res) {
   await createDrawers(drawers, languagePackage.id, userId);
 
   res.send(languagePackage);
-}
+});
 
-async function sendLanguagePackages(req, res) {
+const sendLanguagePackages = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const groups = req.query.groups || false;
+  const groupsActive = groups === 'true';
 
   // get language Package
-  const languagePackages = await getLanguagePackages(userId, groups, res);
+  const languagePackages = await getLanguagePackages(userId, groupsActive);
 
   // if groups is true, return groups to every language package
   const formatted = await Promise.all(
@@ -46,9 +48,9 @@ async function sendLanguagePackages(req, res) {
   );
 
   res.send(formatted);
-}
+});
 
-async function deleteLanguagePackage(req, res) {
+const deleteLanguagePackage = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { languagePackageId } = req.params;
@@ -56,9 +58,9 @@ async function deleteLanguagePackage(req, res) {
   await destroyLanguagePackage(userId, languagePackageId);
 
   res.status(204).end();
-}
+});
 
-async function modifyLanguagePackage(req, res) {
+const modifyLanguagePackage = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { languagePackageId } = req.params;
@@ -66,7 +68,7 @@ async function modifyLanguagePackage(req, res) {
   await updateLanguagePackage(req.body, userId, languagePackageId);
 
   res.status(204).end();
-}
+});
 
 module.exports = {
   addLanguagePackage,

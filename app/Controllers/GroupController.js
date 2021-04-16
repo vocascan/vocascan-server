@@ -1,6 +1,7 @@
 const { createGroup, getGroups, destroyGroup, updateGroup } = require('../Services/GroupServiceProvider.js');
+const catchAsync = require('../utils/catchAsync');
 
-async function addGroup(req, res) {
+const addGroup = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
 
@@ -11,9 +12,9 @@ async function addGroup(req, res) {
   const group = await createGroup(req.body, userId, languagePackageId);
 
   res.send(group);
-}
+});
 
-async function sendGroups(req, res) {
+const sendGroups = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
 
@@ -21,12 +22,12 @@ async function sendGroups(req, res) {
   const { languagePackageId } = req.params;
 
   // create language Package
-  const groups = await getGroups(userId, languagePackageId, res);
+  const groups = await getGroups(userId, languagePackageId);
 
   res.send(groups);
-}
+});
 
-async function deleteGroup(req, res) {
+const deleteGroup = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { groupId } = req.params;
@@ -34,9 +35,9 @@ async function deleteGroup(req, res) {
   await destroyGroup(userId, groupId);
 
   res.status(204).end();
-}
+});
 
-async function modifyGroup(req, res) {
+const modifyGroup = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { groupId } = req.params;
@@ -44,7 +45,7 @@ async function modifyGroup(req, res) {
   await updateGroup(req.body, userId, groupId);
 
   res.status(204).end();
-}
+});
 
 module.exports = {
   addGroup,

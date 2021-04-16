@@ -4,28 +4,28 @@ const {
   handleWrongQuery,
   getUnactivatedVocabulary,
 } = require('../Services/QueryServiceProvider.js');
+const catchAsync = require('../utils/catchAsync');
 
-async function sendQueryVocabulary(req, res) {
+const sendQueryVocabulary = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { languagePackageId } = req.params;
-  const { limit } = { limit: '0', ...req.query };
+  const { limit } = { limit: '100', ...req.query };
   const { staged } = { staged: false, ...req.query };
   // convert to bool
   const isStaged = staged === 'true';
 
-  let vocabulary;
   // if staged = true return the staged vocabulary
   if (isStaged) {
-    vocabulary = await getUnactivatedVocabulary(languagePackageId, userId);
+    const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId);
+    res.send(vocabulary);
   } else {
-    vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
+    const vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
+    res.send(vocabulary);
   }
+});
 
-  res.send(vocabulary);
-}
-
-async function checkVocabulary(req, res) {
+const checkVocabulary = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { vocabularyId } = req.params;
@@ -41,7 +41,7 @@ async function checkVocabulary(req, res) {
     await handleWrongQuery(userId, vocabularyId);
     res.status(204).end();
   }
-}
+});
 
 module.exports = {
   sendQueryVocabulary,
