@@ -3,10 +3,9 @@ const { DataTypes } = require('sequelize');
 async function up({ context: queryInterface }) {
   await queryInterface.createTable('roles', {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
     },
     name: {
       type: DataTypes.STRING,
