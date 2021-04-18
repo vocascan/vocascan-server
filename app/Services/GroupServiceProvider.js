@@ -1,4 +1,4 @@
-const { Group } = require('../../database');
+const { LanguagePackage, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
@@ -16,7 +16,17 @@ async function createGroup({ name, active }, userId, languagePackageId) {
 
 // get groups
 async function getGroups(userId, languagePackageId) {
-  // Get user with email from database
+  const languagePackage = await LanguagePackage.count({
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
+
+  if (languagePackage === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no groups found, because the language package does not exist');
+  }
+
   const groups = await Group.findAll({
     attributes: ['id', 'name', 'active'],
     where: {
@@ -51,6 +61,7 @@ async function updateGroup(group, userId, groupId) {
       id: groupId,
     },
   });
+
   if (counter[0] === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Group not found');
   }
