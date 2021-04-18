@@ -18,6 +18,10 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
     },
   });
 
+  if (drawers.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist');
+  }
+
   let number = 0;
 
   await Promise.all(
@@ -68,6 +72,7 @@ async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
       active: true,
     },
   });
+
   return number;
 }
 
@@ -84,6 +89,10 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       },
     },
   });
+
+  if (drawers.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist');
+  }
 
   const allVocabulary = [];
 
