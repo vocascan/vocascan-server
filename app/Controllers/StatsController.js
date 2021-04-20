@@ -9,26 +9,24 @@ const { promiseAllValues } = require('../utils/index.js');
 const sendAccountStats = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
-  const stats = {
+  const stats = await promiseAllValues({
     // get number of language packages
-    languagePackages: getNumberOfLanguagePackages(userId),
+    languagePackages: getNumberOfLanguagePackages({ userId }),
 
     // get number of active groups
-    activeGroups: getNumberOfGroups(userId, true),
+    activeGroups: getNumberOfGroups({ userId, active: true }),
 
     // get number of inactive groups
-    inactiveGroups: getNumberOfGroups(userId, false),
+    inactiveGroups: getNumberOfGroups({ userId, active: false }),
 
     // get number of active vocabulary
-    activeVocabulary: getNumberOfVocabulary(userId, true),
+    activeVocabulary: getNumberOfVocabulary({ userId, active: true }),
 
     // get number of inactive vocabulary
-    inactiveVocabulary: getNumberOfVocabulary(userId, false),
-  };
+    inactiveVocabulary: getNumberOfVocabulary({ userId, active: false }),
+  });
 
-  const resolvedStats = await promiseAllValues(stats);
-
-  res.send(resolvedStats);
+  res.send(stats);
 });
 
 module.exports = {

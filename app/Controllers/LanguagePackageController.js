@@ -6,7 +6,7 @@ const {
 } = require('../Services/LanguagePackageServiceProvider.js');
 const { createDrawers } = require('../Services/DrawerServiceProvider.js');
 const { drawers } = require('../utils/constants.js');
-const { getStats } = require('../Services/QueryServiceProvider.js');
+const { getStats } = require('../Services/StatsServiceProvider.js');
 const catchAsync = require('../utils/catchAsync');
 
 const addLanguagePackage = catchAsync(async (req, res) => {

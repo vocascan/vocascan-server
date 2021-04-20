@@ -1,5 +1,5 @@
 const { createGroup, getGroups, destroyGroup, updateGroup } = require('../Services/GroupServiceProvider.js');
-const { getStats } = require('../Services/QueryServiceProvider.js');
+const { getStats } = require('../Services/StatsServiceProvider.js');
 const catchAsync = require('../utils/catchAsync');
 
 const addGroup = catchAsync(async (req, res) => {
