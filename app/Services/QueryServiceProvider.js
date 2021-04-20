@@ -1,11 +1,11 @@
 const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
-const { deleteKeysFromObject, shiftDate, dayDateDiff } = require('../utils/index.js');
+const { deleteKeysFromObject, shiftDate, dayDateDiff, promiseAllValues } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 
 // return the number of unresolved vocabulary
-async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
+async function getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, userId }) {
   // Get drawers belonging to languagePackage
   const drawers = await Drawer.findAll({
     attributes: ['id', 'stage', 'queryInterval'],
@@ -42,6 +42,7 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
         ],
         where: {
           drawerId: drawer.id,
+          ...(groupId ? { groupId } : {}),
           lastQuery: { [Op.lt]: queryDate },
           '$Group.active$': true,
           active: true,
@@ -55,7 +56,7 @@ async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
 }
 
 // return the number of unactivated vocabulary
-async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
+async function getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, userId }) {
   // Get number of vocabularies belonging to languagePackage
   const number = await VocabularyCard.count({
     include: [
@@ -67,6 +68,7 @@ async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
     ],
     where: {
       languagePackageId,
+      ...(groupId ? { groupId } : {}),
       userId,
       '$Drawer.stage$': 0,
       active: true,
@@ -74,6 +76,28 @@ async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
   });
 
   return number;
+}
+
+async function getNumberOfAllVocabulary({ languagePackageId, groupId, userId }) {
+  const number = await VocabularyCard.count({
+    where: {
+      languagePackageId,
+      ...(groupId ? { groupId } : {}),
+      userId,
+    },
+  });
+
+  return number;
+}
+
+async function getStats({ languagePackageId, groupId, userId }) {
+  const stats = await promiseAllValues({
+    allVocabularies: getNumberOfAllVocabulary({ languagePackageId, groupId, userId }),
+    unresolvedVocabularies: getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, userId }),
+    unactivatedVocabularies: getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, userId }),
+  });
+
+  return stats;
 }
 
 // return the unresolved vocabulary
@@ -319,6 +343,8 @@ async function handleWrongQuery(userId, vocabularyCardId) {
 module.exports = {
   getNumberOfUnresolvedVocabulary,
   getNumberOfUnactivatedVocabulary,
+  getNumberOfAllVocabulary,
+  getStats,
   getQueryVocabulary,
   getUnactivatedVocabulary,
   handleCorrectQuery,

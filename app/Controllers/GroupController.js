@@ -1,4 +1,5 @@
 const { createGroup, getGroups, destroyGroup, updateGroup } = require('../Services/GroupServiceProvider.js');
+const { getStats } = require('../Services/QueryServiceProvider.js');
 const catchAsync = require('../utils/catchAsync');
 
 const addGroup = catchAsync(async (req, res) => {
@@ -24,7 +25,19 @@ const sendGroups = catchAsync(async (req, res) => {
   // create language Package
   const groups = await getGroups(userId, languagePackageId);
 
-  res.send(groups);
+  const formatted = await Promise.all(
+    groups.map(async (group) => ({
+      ...group.toJSON(),
+
+      stats: await getStats({
+        groupId: group.id,
+        languagePackageId,
+        userId,
+      }),
+    }))
+  );
+
+  res.send(formatted);
 });
 
 const deleteGroup = catchAsync(async (req, res) => {
