@@ -26,20 +26,24 @@ const addLanguagePackage = catchAsync(async (req, res) => {
 const sendLanguagePackages = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
-  const groups = req.query.groups || false;
-  const groupsActive = groups === 'true';
+  const includeGroups = (req.query.groups || false) === 'true';
+  const includeStats = (req.query.stats || false) === 'true';
 
   // get language Package
-  const languagePackages = await getLanguagePackages(userId, groupsActive);
+  const languagePackages = await getLanguagePackages(userId, includeGroups);
 
   const formatted = await Promise.all(
     languagePackages.map(async (languagePackage) => ({
       ...languagePackage.toJSON(),
 
-      stats: await getStats({
-        languagePackageId: languagePackage.id,
-        userId,
-      }),
+      ...(includeStats
+        ? {
+            stats: await getStats({
+              languagePackageId: languagePackage.id,
+              userId,
+            }),
+          }
+        : {}),
     }))
   );
 

@@ -22,18 +22,25 @@ const sendGroups = catchAsync(async (req, res) => {
   // get language package id from params
   const { languagePackageId } = req.params;
 
-  // create language Package
+  // decide if we have to fetch stats
+  const includeStats = (req.query.stats || false) === 'true';
+
+  // get groups
   const groups = await getGroups(userId, languagePackageId);
 
   const formatted = await Promise.all(
     groups.map(async (group) => ({
       ...group.toJSON(),
 
-      stats: await getStats({
-        groupId: group.id,
-        languagePackageId,
-        userId,
-      }),
+      ...(includeStats
+        ? {
+            stats: await getStats({
+              groupId: group.id,
+              languagePackageId,
+              userId,
+            }),
+          }
+        : {}),
     }))
   );
 
