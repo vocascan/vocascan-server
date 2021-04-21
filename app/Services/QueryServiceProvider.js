@@ -4,78 +4,6 @@ const { Sequelize, Op } = require('sequelize');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 
-// return the number of unresolved vocabulary
-async function getNumberOfUnresolvedVocabulary(languagePackageId, userId) {
-  // Get drawers belonging to languagePackage
-  const drawers = await Drawer.findAll({
-    attributes: ['id', 'stage', 'queryInterval'],
-    where: {
-      userId,
-      languagePackageId,
-      stage: {
-        [Op.ne]: 0,
-      },
-    },
-  });
-
-  if (drawers.length === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist');
-  }
-
-  let number = 0;
-
-  await Promise.all(
-    drawers.map(async (drawer) => {
-      // subtract query interval from actual date
-      const queryDate = shiftDate(new Date(), -drawer.queryInterval);
-
-      // compare query date with with last query
-      // if queryDate is less than lastQuery: still time
-      // if queryDate more than lastQuery: waiting time is over
-
-      const result = await VocabularyCard.count({
-        include: [
-          {
-            model: Group,
-            attributes: ['active'],
-          },
-        ],
-        where: {
-          drawerId: drawer.id,
-          lastQuery: { [Op.lt]: queryDate },
-          '$Group.active$': true,
-          active: true,
-        },
-      });
-      number += Number(result);
-    })
-  );
-
-  return number;
-}
-
-// return the number of unactivated vocabulary
-async function getNumberOfUnactivatedVocabulary(languagePackageId, userId) {
-  // Get number of vocabularies belonging to languagePackage
-  const number = await VocabularyCard.count({
-    include: [
-      {
-        model: Drawer,
-        attributes: ['stage'],
-        required: true,
-      },
-    ],
-    where: {
-      languagePackageId,
-      userId,
-      '$Drawer.stage$': 0,
-      active: true,
-    },
-  });
-
-  return number;
-}
-
 // return the unresolved vocabulary
 async function getQueryVocabulary(languagePackageId, userId, limit) {
   // Get drawers belonging to languagePackage
@@ -317,8 +245,6 @@ async function handleWrongQuery(userId, vocabularyCardId) {
 }
 
 module.exports = {
-  getNumberOfUnresolvedVocabulary,
-  getNumberOfUnactivatedVocabulary,
   getQueryVocabulary,
   getUnactivatedVocabulary,
   handleCorrectQuery,

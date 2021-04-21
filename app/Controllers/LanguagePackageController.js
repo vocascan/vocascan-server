@@ -6,10 +6,7 @@ const {
 } = require('../Services/LanguagePackageServiceProvider.js');
 const { createDrawers } = require('../Services/DrawerServiceProvider.js');
 const { drawers } = require('../utils/constants.js');
-const {
-  getNumberOfUnresolvedVocabulary,
-  getNumberOfUnactivatedVocabulary,
-} = require('../Services/QueryServiceProvider.js');
+const { getStats } = require('../Services/StatsServiceProvider.js');
 const catchAsync = require('../utils/catchAsync');
 
 const addLanguagePackage = catchAsync(async (req, res) => {
@@ -29,21 +26,24 @@ const addLanguagePackage = catchAsync(async (req, res) => {
 const sendLanguagePackages = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
-  const groups = req.query.groups || false;
-  const groupsActive = groups === 'true';
+  const includeGroups = (req.query.groups || false) === 'true';
+  const includeStats = (req.query.stats || false) === 'true';
 
   // get language Package
-  const languagePackages = await getLanguagePackages(userId, groupsActive);
+  const languagePackages = await getLanguagePackages(userId, includeGroups);
 
-  // if groups is true, return groups to every language package
   const formatted = await Promise.all(
     languagePackages.map(async (languagePackage) => ({
-      unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, userId),
-
-      // add number of unactivated vocabularies
-      unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, userId),
-
       ...languagePackage.toJSON(),
+
+      ...(includeStats
+        ? {
+            stats: await getStats({
+              languagePackageId: languagePackage.id,
+              userId,
+            }),
+          }
+        : {}),
     }))
   );
 
