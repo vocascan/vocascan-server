@@ -13,11 +13,11 @@ async function getNumberOfLanguagePackages({ userId }) {
   return number;
 }
 
-async function getNumberOfGroups({ userId, active }) {
+async function getNumberOfGroups({ userId, active = null }) {
   const number = await Group.count({
     where: {
       userId,
-      active,
+      ...(active ? { active: true } : {}),
     },
   });
   return number;
@@ -25,12 +25,15 @@ async function getNumberOfGroups({ userId, active }) {
 
 async function getNumberOfVocabulary({ active = null, languagePackageId, groupId, userId }) {
   const number = await VocabularyCard.count({
-    include: [
-      {
-        model: Group,
-        attributes: ['active'],
-      },
-    ],
+    include:
+      active !== null
+        ? [
+            {
+              model: Group,
+              attributes: ['active'],
+            },
+          ]
+        : [],
     where: {
       userId,
 
@@ -136,13 +139,39 @@ async function getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, us
   return number;
 }
 
-async function getStats({ languagePackageId, groupId, userId }) {
+// get user stats
+async function getUserStats({ userId }) {
   const stats = await promiseAllValues({
-    allVocabularies: getNumberOfVocabulary({ languagePackageId, groupId, userId }),
-    activeVocabularies: getNumberOfVocabulary({ languagePackageId, groupId, userId, active: true }),
-    inactiveVocabularies: getNumberOfVocabulary({ languagePackageId, groupId, userId, active: false }),
-    unresolvedVocabularies: getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, userId }),
-    unactivatedVocabularies: getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, userId }),
+    languagePackages: promiseAllValues({
+      all: getNumberOfLanguagePackages({ userId }),
+    }),
+
+    groups: promiseAllValues({
+      all: getNumberOfGroups({ userId }),
+      active: getNumberOfGroups({ userId, active: true }),
+      inactive: getNumberOfGroups({ userId, active: false }),
+    }),
+
+    vocabularies: promiseAllValues({
+      all: getNumberOfVocabulary({ userId }),
+      active: getNumberOfVocabulary({ userId, active: true }),
+      inactive: getNumberOfVocabulary({ userId, active: false }),
+    }),
+  });
+
+  return stats;
+}
+
+// get stats for groups or packages
+async function getStats({ languagePackageId, groupId, userId }) {
+  const stats = promiseAllValues({
+    vocabularies: promiseAllValues({
+      all: getNumberOfVocabulary({ languagePackageId, groupId, userId }),
+      active: getNumberOfVocabulary({ languagePackageId, groupId, userId, active: true }),
+      inactive: getNumberOfVocabulary({ languagePackageId, groupId, userId, active: false }),
+      unresolved: getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, userId }),
+      unactivated: getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, userId }),
+    }),
   });
 
   return stats;
@@ -154,5 +183,6 @@ module.exports = {
   getNumberOfVocabulary,
   getNumberOfUnresolvedVocabulary,
   getNumberOfUnactivatedVocabulary,
+  getUserStats,
   getStats,
 };
