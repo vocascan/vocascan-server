@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('learnedToday', {
+  await queryInterface.createTable('packageProgress', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -51,7 +51,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('learnedToday');
+  await queryInterface.dropTable('packageProgress');
 }
 
 module.exports = { up, down };

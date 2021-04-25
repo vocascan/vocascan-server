@@ -1,4 +1,4 @@
-const { Drawer, VocabularyCard, Translation, Group, LearnedToday } = require('../../database');
+const { Drawer, VocabularyCard, Translation, Group, PackageProgress } = require('../../database');
 const { deleteKeysFromObject, shiftDate, dayDateDiff } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
 const ApiError = require('../utils/ApiError.js');
@@ -148,7 +148,7 @@ function checkCanBeLearned(vocabularyCard) {
 }
 
 async function countLearned({ userId, languagePackageId, right }) {
-  const learnedToday = await LearnedToday.findOne({
+  const packageProgress = await PackageProgress.findOne({
     where: {
       userId,
       languagePackageId: languagePackageId,
@@ -156,10 +156,10 @@ async function countLearned({ userId, languagePackageId, right }) {
     },
   });
 
-  if (learnedToday) {
-    await learnedToday.increment(right ? 'learnedTodayRight' : 'learnedTodayWrong', { by: 1 });
+  if (packageProgress) {
+    await packageProgress.increment(right ? 'learnedTodayRight' : 'learnedTodayWrong', { by: 1 });
   } else {
-    await LearnedToday.create({
+    await PackageProgress.create({
       userId,
       languagePackageId: languagePackageId,
       ...(right ? { learnedTodayRight: 1 } : { learnedTodayWrong: 1 }),

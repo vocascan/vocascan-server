@@ -1,8 +1,8 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const LearnedToday = sequelize.define(
-    'LearnedToday',
+  const PackageProgress = sequelize.define(
+    'PackageProgress',
     {
       id: {
         type: DataTypes.UUID,
@@ -36,14 +36,14 @@ module.exports = (sequelize) => {
     },
     {
       sequelize,
-      tableName: 'learnedToday',
+      tableName: 'packageProgress',
     }
   );
 
-  LearnedToday.associate = (db) => {
-    LearnedToday.belongsTo(db.User, { foreignKey: 'userId' });
-    LearnedToday.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+  PackageProgress.associate = (db) => {
+    PackageProgress.belongsTo(db.User, { foreignKey: 'userId' });
+    PackageProgress.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
   };
 
-  return LearnedToday;
+  return PackageProgress;
 };

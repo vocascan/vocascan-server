@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { LanguagePackage, Group, VocabularyCard, Drawer, LearnedToday, sequelize } = require('../../database');
+const { LanguagePackage, Group, VocabularyCard, Drawer, PackageProgress, sequelize } = require('../../database');
 const { shiftDate, promiseAllValues } = require('../utils/index.js');
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
@@ -151,7 +151,7 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
     },
   });
 
-  const number = await LearnedToday.findOne({
+  const number = await PackageProgress.findOne({
     attributes: languagePackageId
       ? [
           ['learnedTodayRight', 'right'],
