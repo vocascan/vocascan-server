@@ -147,7 +147,7 @@ function checkCanBeLearned(vocabularyCard) {
   }
 }
 
-async function countLearned({ userId, languagePackageId, right }) {
+async function countLearned({ userId, languagePackageId, correct }) {
   const packageProgress = await PackageProgress.findOne({
     where: {
       userId,
@@ -157,12 +157,12 @@ async function countLearned({ userId, languagePackageId, right }) {
   });
 
   if (packageProgress) {
-    await packageProgress.increment(right ? 'learnedTodayRight' : 'learnedTodayWrong', { by: 1 });
+    await packageProgress.increment(correct ? 'learnedTodayCorrect' : 'learnedTodayWrong', { by: 1 });
   } else {
     await PackageProgress.create({
       userId,
       languagePackageId: languagePackageId,
-      ...(right ? { learnedTodayRight: 1 } : { learnedTodayWrong: 1 }),
+      ...(correct ? { learnedTodayCorrect: 1 } : { learnedTodayWrong: 1 }),
     });
   }
 }
@@ -190,11 +190,11 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
   // check if vocab can be learned due to last query date
   checkCanBeLearned(vocabularyCard);
 
-  // count card as right queried today
+  // count card as correct queried today
   await countLearned({
     userId,
     languagePackageId: vocabularyCard.languagePackageId,
-    right: true,
+    correct: true,
   });
 
   // push vocabulary card one drawer up
@@ -254,7 +254,7 @@ async function handleWrongQuery(userId, vocabularyCardId) {
   await countLearned({
     userId,
     languagePackageId: vocabularyCard.languagePackageId,
-    right: false,
+    correct: false,
   });
 
   const drawer = await Drawer.findOne({

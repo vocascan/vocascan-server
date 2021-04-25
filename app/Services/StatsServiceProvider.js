@@ -154,11 +154,11 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
   const number = await PackageProgress.findOne({
     attributes: languagePackageId
       ? [
-          ['learnedTodayRight', 'right'],
+          ['learnedTodayCorrect', 'correct'],
           ['learnedTodayWrong', 'wrong'],
         ]
       : [
-          [sequelize.fn('sum', sequelize.col('learnedTodayRight')), 'right'],
+          [sequelize.fn('sum', sequelize.col('learnedTodayCorrect')), 'correct'],
           [sequelize.fn('sum', sequelize.col('learnedTodayWrong')), 'wrong'],
         ],
     where: {
@@ -170,7 +170,7 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
 
   if (number) {
     const progress = number.toJSON();
-    const dueToday = languagePackage.vocabsPerDay - (progress.right + progress.wrong);
+    const dueToday = languagePackage.vocabsPerDay - (progress.correct + progress.wrong);
 
     return {
       dueToday: dueToday > 0 ? dueToday : 0,
@@ -180,7 +180,7 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
 
   return {
     dueToday: 0,
-    right: 0,
+    correct: 0,
     wrong: 0,
   };
 }

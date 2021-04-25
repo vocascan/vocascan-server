@@ -31,7 +31,7 @@ async function up({ context: queryInterface }) {
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    learnedTodayRight: {
+    learnedTodayCorrect: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

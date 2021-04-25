@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
         defaultValue: new Date(),
         allowNull: false,
       },
-      learnedTodayRight: {
+      learnedTodayCorrect: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
         allowNull: false,
