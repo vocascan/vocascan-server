@@ -223,7 +223,8 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
       fields: ['lastQuery', 'drawerId'],
     }
   );
-  return false;
+
+  return vocabularyCard;
 }
 
 // function to handle wrong query
@@ -275,7 +276,8 @@ async function handleWrongQuery(userId, vocabularyCardId) {
       fields: ['lastQuery', 'drawerId'],
     }
   );
-  return false;
+
+  return vocabularyCard;
 }
 
 module.exports = {

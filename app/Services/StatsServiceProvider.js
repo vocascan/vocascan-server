@@ -141,6 +141,16 @@ async function getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, us
 
 // get number of today learned vocabs
 async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, userId }) {
+  const languagePackage = await LanguagePackage.findOne({
+    attributes: languagePackageId
+      ? ['vocabsPerDay']
+      : [[sequelize.fn('sum', sequelize.col('vocabsPerDay')), 'vocabsPerDay']],
+    where: {
+      ...(languagePackageId ? { id: languagePackageId } : {}),
+      userId,
+    },
+  });
+
   const number = await LearnedToday.findOne({
     attributes: languagePackageId
       ? [
@@ -159,10 +169,17 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
   });
 
   if (number) {
-    return number.toJSON();
+    const progress = number.toJSON();
+    const dueToday = languagePackage.vocabsPerDay - (progress.right + progress.wrong);
+
+    return {
+      dueToday: dueToday > 0 ? dueToday : 0,
+      ...progress,
+    };
   }
 
   return {
+    dueToday: 0,
     right: 0,
     wrong: 0,
   };
@@ -201,7 +218,7 @@ async function getStats({ languagePackageId, groupId, userId }) {
       inactive: getNumberOfVocabulary({ languagePackageId, groupId, userId, active: false }),
       unresolved: getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, userId }),
       unactivated: getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, userId }),
-      learnedToday: getNumberOfLearnedTodayVocabulary({ languagePackageId, userId }),
+      ...(!groupId ? { learnedToday: getNumberOfLearnedTodayVocabulary({ languagePackageId, userId }) } : {}),
     }),
   });
 
@@ -214,6 +231,7 @@ module.exports = {
   getNumberOfVocabulary,
   getNumberOfUnresolvedVocabulary,
   getNumberOfUnactivatedVocabulary,
+  getNumberOfLearnedTodayVocabulary,
   getUserStats,
   getStats,
 };
