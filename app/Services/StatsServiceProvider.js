@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { LanguagePackage, Group, VocabularyCard, Drawer } = require('../../database');
+const { LanguagePackage, Group, VocabularyCard, Drawer, LearnedToday, sequelize } = require('../../database');
 const { shiftDate, promiseAllValues } = require('../utils/index.js');
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
@@ -139,6 +139,35 @@ async function getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, us
   return number;
 }
 
+// get number of today learned vocabs
+async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, userId }) {
+  const number = await LearnedToday.findOne({
+    attributes: languagePackageId
+      ? [
+          ['learnedTodayRight', 'right'],
+          ['learnedTodayWrong', 'wrong'],
+        ]
+      : [
+          [sequelize.fn('sum', sequelize.col('learnedTodayRight')), 'right'],
+          [sequelize.fn('sum', sequelize.col('learnedTodayWrong')), 'wrong'],
+        ],
+    where: {
+      userId,
+      date: new Date(),
+      ...(languagePackageId ? { languagePackageId } : {}),
+    },
+  });
+
+  if (number) {
+    return number.toJSON();
+  }
+
+  return {
+    right: 0,
+    wrong: 0,
+  };
+}
+
 // get user stats
 async function getUserStats({ userId }) {
   const stats = await promiseAllValues({
@@ -156,6 +185,7 @@ async function getUserStats({ userId }) {
       all: getNumberOfVocabulary({ userId }),
       active: getNumberOfVocabulary({ userId, active: true }),
       inactive: getNumberOfVocabulary({ userId, active: false }),
+      learnedToday: getNumberOfLearnedTodayVocabulary({ userId }),
     }),
   });
 
@@ -171,6 +201,7 @@ async function getStats({ languagePackageId, groupId, userId }) {
       inactive: getNumberOfVocabulary({ languagePackageId, groupId, userId, active: false }),
       unresolved: getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, userId }),
       unactivated: getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, userId }),
+      learnedToday: getNumberOfLearnedTodayVocabulary({ languagePackageId, userId }),
     }),
   });
 

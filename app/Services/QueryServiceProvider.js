@@ -1,4 +1,4 @@
-const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
+const { Drawer, VocabularyCard, Translation, Group, LearnedToday } = require('../../database');
 const { deleteKeysFromObject, shiftDate, dayDateDiff } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
 const ApiError = require('../utils/ApiError.js');
@@ -147,6 +147,26 @@ function checkCanBeLearned(vocabularyCard) {
   }
 }
 
+async function countLearned({ userId, languagePackageId, right }) {
+  const learnedToday = await LearnedToday.findOne({
+    where: {
+      userId,
+      languagePackageId: languagePackageId,
+      date: new Date(),
+    },
+  });
+
+  if (learnedToday) {
+    await learnedToday.increment(right ? 'learnedTodayRight' : 'learnedTodayWrong', { by: 1 });
+  } else {
+    await LearnedToday.create({
+      userId,
+      languagePackageId: languagePackageId,
+      ...(right ? { learnedTodayRight: 1 } : { learnedTodayWrong: 1 }),
+    });
+  }
+}
+
 // function to handle correct query
 async function handleCorrectQuery(userId, vocabularyCardId) {
   // fetch selected vocabulary card
@@ -169,6 +189,13 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
 
   // check if vocab can be learned due to last query date
   checkCanBeLearned(vocabularyCard);
+
+  // count card as right queried today
+  await countLearned({
+    userId,
+    languagePackageId: vocabularyCard.languagePackageId,
+    right: true,
+  });
 
   // push vocabulary card one drawer up
   // get drawer id from stage
@@ -221,6 +248,13 @@ async function handleWrongQuery(userId, vocabularyCardId) {
 
   // check if vocab can be learned due to last query date
   checkCanBeLearned(vocabularyCard);
+
+  // count card as wrong queried today
+  await countLearned({
+    userId,
+    languagePackageId: vocabularyCard.languagePackageId,
+    right: false,
+  });
 
   const drawer = await Drawer.findOne({
     attributes: ['id'],
