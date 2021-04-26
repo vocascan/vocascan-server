@@ -1,9 +1,14 @@
 # Vocascan-server
 Server for Vocascan
 
-![Github license](https://img.shields.io/github/license/vocascan/Vocascan-server?style=flat-square) ![Github Open Issues](https://img.shields.io/github/issues/vocascan/Vocascan-server?style=flat-square) ![Github Stars](https://img.shields.io/github/stars/vocascan/Vocascan-server?style=flat-square) ![Github forks](https://img.shields.io/github/forks/vocascan/Vocascan-server?style=flat-square) ![Github downloads](https://img.shields.io/github/downloads/vocascan/Vocascan-server/total?label=Downloads) ![Docker Image](https://github.com/vocascan/vocascan-server/workflows/Docker%20Image/badge.svg)
+![Github license](https://img.shields.io/github/license/vocascan/Vocascan-server?style=flat-square)
+![Github Open Issues](https://img.shields.io/github/issues/vocascan/Vocascan-server?style=flat-square)
+![Github Stars](https://img.shields.io/github/stars/vocascan/Vocascan-server?style=flat-square)
+![Github forks](https://img.shields.io/github/forks/vocascan/Vocascan-server?style=flat-square)
+![Github downloads](https://img.shields.io/github/downloads/vocascan/Vocascan-server/total?label=Downloads)
+![Docker Image](https://img.shields.io/github/workflow/status/vocascan/vocascan-server/docker?label=Build&style=flat-square)
 
-![cover](https://github.com/vocascan/Vocascan-server/blob/main/images/vocascan-server-cover.png)
+![cover](./images/vocascan-server-cover.png)
 
 ## Table of Contents
 
@@ -46,6 +51,6 @@ For questions or ideas please use [Discussions](https://github.com/vocascan/voca
 
 ## Contributors
 
-[<img src="https://avatars3.githubusercontent.com/u/54618409?s=400&v=4" width="50" />](https://github.com/noctera)
-[<img src="https://avatars3.githubusercontent.com/u/60048565?s=400&v=4" width="50" />](https://github.com/luwol03)
-[<img src="https://avatars3.githubusercontent.com/u/67190487?s=400&v=4" width="50" />](https://github.com/retfloww)
+[<img src="https://github.com/noctera.png" width="50" />](https://github.com/noctera)
+[<img src="https://github.com/luwol03.png" width="50" />](https://github.com/luwol03)
+[<img src="https://github.com/retfloww.png" width="50" />](https://github.com/retfloww)
