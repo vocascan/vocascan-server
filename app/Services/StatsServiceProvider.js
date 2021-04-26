@@ -151,6 +151,10 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
     },
   });
 
+  if (!languagePackage) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'languagePackage not found');
+  }
+
   const number = await PackageProgress.findOne({
     attributes: languagePackageId
       ? [
@@ -170,16 +174,19 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
 
   if (number) {
     const progress = number.toJSON();
-    const dueToday = languagePackage.vocabsPerDay - (progress.correct + progress.wrong);
 
-    return {
-      dueToday: dueToday > 0 ? dueToday : 0,
-      ...progress,
-    };
+    if (progress.correct !== null && progress.wrong !== null) {
+      const dueToday = languagePackage.vocabsPerDay - progress.correct;
+
+      return {
+        dueToday: dueToday > 0 ? dueToday : 0,
+        ...progress,
+      };
+    }
   }
 
   return {
-    dueToday: 0,
+    dueToday: languagePackage.vocabsPerDay,
     correct: 0,
     wrong: 0,
   };
