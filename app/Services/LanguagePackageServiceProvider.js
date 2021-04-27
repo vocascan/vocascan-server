@@ -1,4 +1,7 @@
-const { LanguagePackage } = require('../../database');
+const { LanguagePackage, Group } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // create language package
 async function createLanguagePackage(
@@ -6,48 +9,64 @@ async function createLanguagePackage(
   userId
 ) {
   const languagePackage = await LanguagePackage.create({
-    userId: userId,
-    name: name,
-    foreignWordLanguage: foreignWordLanguage,
-    translatedWordLanguage: translatedWordLanguage,
-    vocabsPerDay: vocabsPerDay,
-    rightWords: rightWords,
+    userId,
+    name,
+    foreignWordLanguage,
+    translatedWordLanguage,
+    vocabsPerDay,
+    rightWords,
   });
 
-  return languagePackage;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
 }
 
 // get language package
-async function getLanguagePackages(userId, res) {
+async function getLanguagePackages(userId, groups) {
   // Get user with email from database
   const languagePackages = await LanguagePackage.findAll({
+    // if groups is true, return groups to every language package
+    include: groups ? [{ model: Group, attributes: ['id', 'name', 'active'] }] : [],
     attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
-      userId: userId,
+      userId,
     },
   });
-
-  if (!languagePackages) {
-    res.status(404).end();
-    return false;
-  }
 
   return languagePackages;
 }
 
 async function destroyLanguagePackage(userId, languagePackageId) {
-  const languagePackage = await LanguagePackage.findOne({
+  const counter = await LanguagePackage.destroy({
     where: {
       id: languagePackageId,
       userId,
     },
   });
 
-  await languagePackage.destroy();
+  if (counter === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
+  }
+  return false;
+}
+
+async function updateLanguagePackage(package, userId, languagePackageId) {
+  const counter = await LanguagePackage.update(package, {
+    fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
+    where: {
+      id: languagePackageId,
+      userId,
+    },
+  });
+
+  if (counter[0] === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
+  }
+  return false;
 }
 
 module.exports = {
   createLanguagePackage,
   getLanguagePackages,
   destroyLanguagePackage,
+  updateLanguagePackage,
 };

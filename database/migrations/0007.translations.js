@@ -10,25 +10,31 @@ async function up({ context: queryInterface }) {
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'users',
         key: 'id',
+        as: 'userId',
       },
     },
     vocabularyCardId: {
       type: DataTypes.UUID,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'vocabularyCards',
         key: 'id',
+        as: 'vocabularyCardId',
       },
     },
     languagePackageId: {
       type: DataTypes.UUID,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'languagePackages',
         key: 'id',
+        as: 'languaPackageId',
       },
     },
     name: {

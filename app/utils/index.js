@@ -56,10 +56,60 @@ const deleteKeysFromObject = (keys, object) => {
  */
 const round = (x, dp = 2) => Math.round(x * 10 ** dp) / 10 ** dp;
 
+/**
+ * Zip arrays
+ * See: https://stackoverflow.com/questions/4856717/javascript-equivalent-of-pythons-zip-function
+ * @example
+ *    zip([[1,2],[11,22],[111,222]])
+ *    // returns [[1,11,111],[2,22,222]]]
+ *
+ * @param  {...Array} arrays arrays to zip
+ * @returns {Array} zipped array
+ */
+const zip = (...arrays) => arrays[0].map((_, i) => arrays.map((array) => array[i]));
+
+/**
+ * Resolve all Promises in keys in an object
+ * See: https://stackoverflow.com/questions/29292921/how-to-use-promise-all-with-an-object-as-input
+ * @param {Object} obj object
+ * @returns {Promise<Object>} promise with object
+ */
+const promiseAllValues = async (obj) =>
+  Object.fromEntries(zip(Object.keys(obj), await Promise.all(Object.values(obj))));
+
+/**
+ * Shift date
+ * @param {Date} date input date
+ * @param {Number} numDays amount of days
+ * @returns {Date} new date object
+ */
+const shiftDate = (date, numDays) => {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + numDays);
+  return newDate;
+};
+
+/**
+ * Calculate day difference between two dates
+ * See: https://www.geeksforgeeks.org/how-to-calculate-the-number-of-days-between-two-dates-in-javascript/
+ * @param {Date} date1 first date
+ * @param {Date} date2 second date
+ * @returns {Number}
+ */
+const dayDateDiff = (date1, date2) => {
+  const timeDiff = date2.getTime() - date1.getTime();
+
+  return Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+};
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
   filterObject,
   deleteKeysFromObject,
   round,
+  zip,
+  promiseAllValues,
+  shiftDate,
+  dayDateDiff,
 };

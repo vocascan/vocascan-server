@@ -1,49 +1,76 @@
-const { Group } = require('../../database');
+const { LanguagePackage, Group } = require('../../database');
+const { deleteKeysFromObject } = require('../utils');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 // create language package
 async function createGroup({ name, active }, userId, languagePackageId) {
   const group = await Group.create({
-    userId: userId,
-    languagePackageId: languagePackageId,
-    name: name,
-    active: active,
+    userId,
+    languagePackageId,
+    name,
+    active,
   });
-
-  return group;
+  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON());
 }
 
 // get groups
-async function getGroups(userId, languagePackageId, res) {
-  // Get user with email from database
-  const groups = await Group.findAll({
-    attributes: ['id', 'name', 'active'],
+async function getGroups(userId, languagePackageId) {
+  const languagePackage = await LanguagePackage.count({
     where: {
-      userId: userId,
-      languagePackageId: languagePackageId,
+      id: languagePackageId,
+      userId,
     },
   });
 
-  if (!groups) {
-    res.status(404).end();
-    return false;
+  if (languagePackage === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no groups found, because the language package does not exist');
   }
+
+  const groups = await Group.findAll({
+    attributes: ['id', 'name', 'active'],
+    where: {
+      userId,
+      languagePackageId,
+    },
+  });
 
   return groups;
 }
 
 async function destroyGroup(userId, groupId) {
-  const group = await Group.findOne({
+  const counter = await Group.destroy({
     where: {
       id: groupId,
       userId,
     },
   });
 
-  await group.destroy();
+  if (counter === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Group not found');
+  }
+
+  return false;
+}
+
+async function updateGroup(group, userId, groupId) {
+  const counter = await Group.update(group, {
+    fields: ['name', 'active'],
+    where: {
+      userId,
+      id: groupId,
+    },
+  });
+
+  if (counter[0] === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Group not found');
+  }
+  return false;
 }
 
 module.exports = {
   createGroup,
   getGroups,
   destroyGroup,
+  updateGroup,
 };

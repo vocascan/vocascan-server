@@ -1,11 +1,15 @@
+const { v4: uuid } = require('uuid');
+
 const roles = [
   {
+    id: uuid(),
     name: 'user',
     adminRights: 'false',
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
+    id: uuid(),
     name: 'admin',
     adminRights: 'true',
     createdAt: new Date(),

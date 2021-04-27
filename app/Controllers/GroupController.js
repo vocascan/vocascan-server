@@ -1,43 +1,75 @@
-const { createGroup, getGroups, destroyGroup } = require('../Services/GroupServiceProvider.js');
+const { createGroup, getGroups, destroyGroup, updateGroup } = require('../Services/GroupServiceProvider.js');
+const { getStats } = require('../Services/StatsServiceProvider.js');
+const catchAsync = require('../utils/catchAsync');
 
-async function addGroup(req, res) {
+const addGroup = catchAsync(async (req, res) => {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
 
   // get language package id from params
   const { languagePackageId } = req.params;
 
   // create language Package
-  const group = await createGroup(req.body, id, languagePackageId);
+  const group = await createGroup(req.body, userId, languagePackageId);
 
   res.send(group);
-}
+});
 
-async function sendGroups(req, res) {
+const sendGroups = catchAsync(async (req, res) => {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
 
   // get language package id from params
   const { languagePackageId } = req.params;
 
-  // create language Package
-  const groups = await getGroups(id, languagePackageId, res);
+  // decide if we have to fetch stats
+  const includeStats = (req.query.stats || false) === 'true';
 
-  res.send(groups);
-}
+  // get groups
+  const groups = await getGroups(userId, languagePackageId);
 
-async function deleteGroup(req, res) {
+  const formatted = await Promise.all(
+    groups.map(async (group) => ({
+      ...group.toJSON(),
+
+      ...(includeStats
+        ? {
+            stats: await getStats({
+              groupId: group.id,
+              languagePackageId,
+              userId,
+            }),
+          }
+        : {}),
+    }))
+  );
+
+  res.send(formatted);
+});
+
+const deleteGroup = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { groupId } = req.params;
 
-  destroyGroup(userId, groupId);
+  await destroyGroup(userId, groupId);
 
-  res.sendStatus(200);
-}
+  res.status(204).end();
+});
+
+const modifyGroup = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+  const { groupId } = req.params;
+
+  await updateGroup(req.body, userId, groupId);
+
+  res.status(204).end();
+});
 
 module.exports = {
   addGroup,
   sendGroups,
   deleteGroup,
+  modifyGroup,
 };

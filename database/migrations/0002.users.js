@@ -20,11 +20,12 @@ async function up({ context: queryInterface }) {
       allowNull: false,
     },
     roleId: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1,
+      type: DataTypes.UUID,
+      onDelete: 'CASCADE',
       references: {
         model: 'roles',
         key: 'id',
+        as: 'roleId',
       },
     },
     createdAt: {

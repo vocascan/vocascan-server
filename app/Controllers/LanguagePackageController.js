@@ -2,83 +2,77 @@ const {
   createLanguagePackage,
   getLanguagePackages,
   destroyLanguagePackage,
+  updateLanguagePackage,
 } = require('../Services/LanguagePackageServiceProvider.js');
-const { createDrawer } = require('../Services/DrawerServiceProvider.js');
+const { createDrawers } = require('../Services/DrawerServiceProvider.js');
 const { drawers } = require('../utils/constants.js');
-const { getGroups } = require('../Services/GroupServiceProvider.js');
-const {
-  getNumberOfUnresolvedVocabulary,
-  getNumberOfUnactivatedVocabulary,
-} = require('../Services/QueryServiceProvider.js');
+const { getStats } = require('../Services/StatsServiceProvider.js');
+const catchAsync = require('../utils/catchAsync');
 
-async function addLanguagePackage(req, res) {
+const addLanguagePackage = catchAsync(async (req, res) => {
   // get userId from request
-  const { id } = req.user;
+  const userId = req.user.id;
 
   // create language Package
-  const languagePackage = await createLanguagePackage(req.body, id);
+  const languagePackage = await createLanguagePackage(req.body, userId);
 
-  // iterate over drawers and store them in the database
-  await Promise.all(
-    drawers.map(async (drawer) => {
-      await createDrawer(languagePackage.id, drawer.stage, drawer.queryInterval, id);
-    })
-  );
+  // store drawers for language package in database
+
+  await createDrawers(drawers, languagePackage.id, userId);
 
   res.send(languagePackage);
-}
+});
 
-async function sendLanguagePackages(req, res) {
+const sendLanguagePackages = catchAsync(async (req, res) => {
   // get userId from request
-  const { id } = req.user;
-  const { groups } = req.query || false;
+  const userId = req.user.id;
+  const includeGroups = (req.query.groups || false) === 'true';
+  const includeStats = (req.query.stats || false) === 'true';
 
   // get language Package
-  const languagePackages = await getLanguagePackages(id, res);
+  const languagePackages = await getLanguagePackages(userId, includeGroups);
 
-  let formatted;
-  // if groups is true, return groups to every language package
-  if (groups) {
-    formatted = await Promise.all(
-      languagePackages.map(async (languagePackage) => ({
-        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, id),
+  const formatted = await Promise.all(
+    languagePackages.map(async (languagePackage) => ({
+      ...languagePackage.toJSON(),
 
-        // add number of unactivated vocabularies
-        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, id),
-
-        groups: await getGroups(id, languagePackage.id, res),
-
-        ...languagePackage.toJSON(),
-      }))
-    );
-  } else {
-    formatted = await Promise.all(
-      languagePackages.map(async (languagePackage) => ({
-        unresolvedVocabularies: await getNumberOfUnresolvedVocabulary(languagePackage.id, id),
-
-        // add number of unactivated vocabularies
-        unactivatedVocabularies: await getNumberOfUnactivatedVocabulary(languagePackage.id, id),
-
-        ...languagePackage.toJSON(),
-      }))
-    );
-  }
+      ...(includeStats
+        ? {
+            stats: await getStats({
+              languagePackageId: languagePackage.id,
+              userId,
+            }),
+          }
+        : {}),
+    }))
+  );
 
   res.send(formatted);
-}
+});
 
-async function deleteLanguagePackage(req, res) {
+const deleteLanguagePackage = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { languagePackageId } = req.params;
 
-  destroyLanguagePackage(userId, languagePackageId);
+  await destroyLanguagePackage(userId, languagePackageId);
 
-  res.sendStatus(200);
-}
+  res.status(204).end();
+});
+
+const modifyLanguagePackage = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+  const { languagePackageId } = req.params;
+
+  await updateLanguagePackage(req.body, userId, languagePackageId);
+
+  res.status(204).end();
+});
 
 module.exports = {
   addLanguagePackage,
   sendLanguagePackages,
   deleteLanguagePackage,
+  modifyLanguagePackage,
 };

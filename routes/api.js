@@ -9,15 +9,21 @@ const LanguagePackageController = require('../app/Controllers/LanguagePackageCon
 const GroupController = require('../app/Controllers/GroupController.js');
 const VocabularyController = require('../app/Controllers/VocabularyController.js');
 const QueryController = require('../app/Controllers/QueryController.js');
-const DocsController = require('../app/Controllers/DocsController');
+const DocsController = require('../app/Controllers/DocsController.js');
+const StatsController = require('../app/Controllers/StatsController.js');
 
 const router = express.Router();
 
-// AUTH
+// Auth
 router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
+
+// User
 router.get('/user', ProtectMiddleware, AuthController.profile);
 router.delete('/user', ProtectMiddleware, AuthController.deleteUser);
+
+// Stats
+router.get('/user/stats', ProtectMiddleware, StatsController.sendAccountStats);
 
 // Language package
 router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
@@ -27,11 +33,13 @@ router.delete(
   ProtectMiddleware,
   LanguagePackageController.deleteLanguagePackage
 );
+router.put('/languagePackage/:languagePackageId', ProtectMiddleware, LanguagePackageController.modifyLanguagePackage);
 
 // Group
 router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
-router.get('/:languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
+router.get('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
 router.delete('/group/:groupId', ProtectMiddleware, GroupController.deleteGroup);
+router.put('/group/:groupId', ProtectMiddleware, GroupController.modifyGroup);
 
 // Vocabulary
 router.post(
@@ -41,15 +49,12 @@ router.post(
 );
 router.delete('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.deleteVocabularyCard);
 router.get('/group/:groupId/vocabulary', ProtectMiddleware, VocabularyController.sendGroupVocabulary);
+router.put('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.modifyVocabulary);
 
 // Query
 router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);
-router.get(
-  '/languagePackage/:languagePackageId/query/staged',
-  ProtectMiddleware,
-  QueryController.sendUnactivatedVocabulary
-);
-router.post('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
+
+router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
 
 // Docs
 router.get('/swagger.json', DocsController.document);
