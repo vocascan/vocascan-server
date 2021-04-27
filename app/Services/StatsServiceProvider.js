@@ -72,7 +72,7 @@ async function getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, use
     attributes: ['id', 'stage', 'queryInterval'],
     where: {
       userId,
-      languagePackageId,
+      ...(languagePackageId ? { languagePackageId } : {}),
       stage: {
         [Op.ne]: 0,
       },
@@ -128,8 +128,8 @@ async function getNumberOfUnactivatedVocabulary({ languagePackageId, groupId, us
       },
     ],
     where: {
-      languagePackageId,
       ...(groupId ? { groupId } : {}),
+      ...(languagePackageId ? { languagePackageId } : {}),
       userId,
       '$Drawer.stage$': 0,
       active: true,
@@ -209,16 +209,23 @@ async function getUserStats({ userId }) {
       all: getNumberOfVocabulary({ userId }),
       active: getNumberOfVocabulary({ userId, active: true }),
       inactive: getNumberOfVocabulary({ userId, active: false }),
+      unresolved: getNumberOfUnresolvedVocabulary({ userId }),
+      unactivated: getNumberOfUnactivatedVocabulary({ userId }),
       learnedToday: getNumberOfLearnedTodayVocabulary({ userId }),
     }),
   });
+
+  // set dueToday not bigger than unresolved
+  if (stats.vocabularies.unresolved < stats.vocabularies.learnedToday.dueToday) {
+    stats.vocabularies.learnedToday.dueToday = stats.vocabularies.unresolved;
+  }
 
   return stats;
 }
 
 // get stats for groups or packages
 async function getStats({ languagePackageId, groupId, userId }) {
-  const stats = promiseAllValues({
+  const stats = await promiseAllValues({
     vocabularies: promiseAllValues({
       all: getNumberOfVocabulary({ languagePackageId, groupId, userId }),
       active: getNumberOfVocabulary({ languagePackageId, groupId, userId, active: true }),
@@ -228,6 +235,11 @@ async function getStats({ languagePackageId, groupId, userId }) {
       ...(!groupId ? { learnedToday: getNumberOfLearnedTodayVocabulary({ languagePackageId, userId }) } : {}),
     }),
   });
+
+  // set dueToday not bigger than unresolved
+  if (!groupId && stats.vocabularies.unresolved < stats.vocabularies.learnedToday.dueToday) {
+    stats.vocabularies.learnedToday.dueToday = stats.vocabularies.unresolved;
+  }
 
   return stats;
 }

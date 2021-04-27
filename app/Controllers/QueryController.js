@@ -4,7 +4,10 @@ const {
   handleWrongQuery,
   getUnactivatedVocabulary,
 } = require('../Services/QueryServiceProvider.js');
-const { getNumberOfLearnedTodayVocabulary } = require('../Services/StatsServiceProvider.js');
+const {
+  getNumberOfUnresolvedVocabulary,
+  getNumberOfLearnedTodayVocabulary,
+} = require('../Services/StatsServiceProvider.js');
 const catchAsync = require('../utils/catchAsync');
 
 const sendQueryVocabulary = catchAsync(async (req, res) => {
@@ -43,10 +46,21 @@ const checkVocabulary = catchAsync(async (req, res) => {
   }
 
   if (progress) {
-    const queryProgress = await getNumberOfLearnedTodayVocabulary({
-      userId,
-      languagePackageId: vocabularyCard.languagePackageId,
-    });
+    const [unresolved, queryProgress] = await Promise.all([
+      getNumberOfUnresolvedVocabulary({
+        languagePackageId: vocabularyCard.languagePackageId,
+        userId,
+      }),
+
+      getNumberOfLearnedTodayVocabulary({
+        userId,
+        languagePackageId: vocabularyCard.languagePackageId,
+      }),
+    ]);
+
+    if (unresolved < queryProgress.dueToday) {
+      queryProgress.dueToday = unresolved;
+    }
 
     return res.send({ queryProgress });
   }
