@@ -102,6 +102,20 @@ const dayDateDiff = (date1, date2) => {
   return Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 };
 
+/**
+ * Check if given date is today
+ * @param {Date} date date to check
+ * @returns {Boolean}
+ */
+const isToday = (date) => {
+  const today = new Date();
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+};
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
@@ -112,4 +126,5 @@ module.exports = {
   promiseAllValues,
   shiftDate,
   dayDateDiff,
+  isToday,
 };

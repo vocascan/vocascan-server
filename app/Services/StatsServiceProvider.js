@@ -91,8 +91,8 @@ async function getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, use
       const queryDate = shiftDate(new Date(), -drawer.queryInterval);
 
       // compare query date with with last query
-      // if queryDate is less than lastQuery: still time
-      // if queryDate more than lastQuery: waiting time is over
+      // if queryDate is less than lastQueryCorrect -> still time
+      // if queryDate more than lastQueryCorrect -> waiting time is over
 
       const result = await VocabularyCard.count({
         include: [
@@ -104,7 +104,7 @@ async function getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, use
         where: {
           drawerId: drawer.id,
           ...(groupId ? { groupId } : {}),
-          lastQuery: { [Op.lt]: queryDate },
+          lastQueryCorrect: { [Op.lt]: queryDate },
           '$Group.active$': true,
           active: true,
         },
@@ -216,6 +216,8 @@ async function getUserStats({ userId }) {
   });
 
   // set dueToday not bigger than unresolved
+  /* TODO: fix this in another pull request because for now another package
+           with less vocab can cover a package with more vocabs to resolve */
   if (stats.vocabularies.unresolved < stats.vocabularies.learnedToday.dueToday) {
     stats.vocabularies.learnedToday.dueToday = stats.vocabularies.unresolved;
   }
