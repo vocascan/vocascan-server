@@ -30,7 +30,8 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
     const vocabularyLimit = limit - allVocabulary.length;
 
     // subtract query interval from actual date
-    const queryDate = shiftDate(new Date(), -drawer.queryInterval);
+    const queryDate = shiftDate(new Date(), 1 - drawer.queryInterval);
+    queryDate.setHours(0, 0, 0, 0);
 
     // compare query date with with last query
     // if queryDate is less than lastQueryCorrect: still time
