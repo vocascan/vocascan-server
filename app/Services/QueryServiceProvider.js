@@ -138,6 +138,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
 function checkCanBeLearned(vocabularyCard) {
   // add query interval to last queried date
   const queryDate = shiftDate(vocabularyCard.lastQueryCorrect, vocabularyCard.Drawer.queryInterval);
+  queryDate.setHours(0, 0, 0, 0);
   const now = new Date();
 
   // check if vocab can be learned due to last query date
