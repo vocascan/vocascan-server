@@ -150,6 +150,12 @@ function checkCanBeLearned(vocabularyCard) {
 }
 
 async function countLearned({ userId, vocabularyCard, correct }) {
+  // don't count activate process
+  if (vocabularyCard.Drawer.stage === 0) {
+    return;
+  }
+
+  // don't count if the vocab was answered wrong today
   if (isToday(vocabularyCard.lastQuery)) {
     return;
   }
