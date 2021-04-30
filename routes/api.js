@@ -11,6 +11,7 @@ const VocabularyController = require('../app/Controllers/VocabularyController.js
 const QueryController = require('../app/Controllers/QueryController.js');
 const DocsController = require('../app/Controllers/DocsController.js');
 const StatsController = require('../app/Controllers/StatsController.js');
+const InfoController = require('../app/Controllers/InfoController.js');
 
 const router = express.Router();
 
@@ -59,5 +60,8 @@ router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.che
 // Docs
 router.get('/swagger.json', DocsController.document);
 router.use('/swagger', DocsController.swagger);
+
+// Info
+router.get('/info', InfoController.sendInfo);
 
 module.exports = router;
