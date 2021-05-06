@@ -1,5 +1,5 @@
-const { Drawer, VocabularyCard, Translation, Group } = require('../../database');
-const { deleteKeysFromObject, shiftDate, dayDateDiff } = require('../utils/index.js');
+const { Drawer, VocabularyCard, Translation, Group, PackageProgress } = require('../../database');
+const { deleteKeysFromObject, shiftDate, dayDateDiff, isToday } = require('../utils/index.js');
 const { Sequelize, Op } = require('sequelize');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
@@ -30,11 +30,12 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
     const vocabularyLimit = limit - allVocabulary.length;
 
     // subtract query interval from actual date
-    const queryDate = shiftDate(new Date(), -drawer.queryInterval);
+    const queryDate = shiftDate(new Date(), 1 - drawer.queryInterval);
+    queryDate.setHours(0, 0, 0, 0);
 
     // compare query date with with last query
-    // if queryDate is less than lastQuery: still time
-    // if queryDate more than lastQuery: waiting time is over
+    // if queryDate is less than lastQueryCorrect: still time
+    // if queryDate more than lastQueryCorrect: waiting time is over
     const vocabulary = await VocabularyCard.findAll({
       include: [
         {
@@ -58,7 +59,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
       attributes: ['id', 'name', 'description'],
       where: {
         drawerId: drawer.id,
-        lastQuery: { [Op.lt]: queryDate },
+        lastQueryCorrect: { [Op.lt]: queryDate },
         '$Group.active$': true,
         active: true,
       },
@@ -136,7 +137,8 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
 
 function checkCanBeLearned(vocabularyCard) {
   // add query interval to last queried date
-  const queryDate = shiftDate(vocabularyCard.lastQuery, vocabularyCard.Drawer.queryInterval);
+  const queryDate = shiftDate(vocabularyCard.lastQueryCorrect, vocabularyCard.Drawer.queryInterval);
+  queryDate.setHours(0, 0, 0, 0);
   const now = new Date();
 
   // check if vocab can be learned due to last query date
@@ -144,6 +146,39 @@ function checkCanBeLearned(vocabularyCard) {
     const diff = dayDateDiff(now, queryDate);
 
     throw new ApiError(httpStatus.FORBIDDEN, `vocabulary card can be learned only in ${diff} days`);
+  }
+}
+
+async function countLearned({ userId, vocabularyCard, correct }) {
+  // don't count activate process
+  if (vocabularyCard.Drawer.stage === 0) {
+    return;
+  }
+
+  // don't count if the vocab was answered wrong today
+  if (isToday(vocabularyCard.lastQuery)) {
+    return;
+  }
+
+  // find existing entry for today and specific package
+  const packageProgress = await PackageProgress.findOne({
+    where: {
+      userId,
+      languagePackageId: vocabularyCard.languagePackageId,
+      date: new Date(),
+    },
+  });
+
+  if (packageProgress) {
+    // increment if entry exists for today and package
+    await packageProgress.increment(correct ? 'learnedTodayCorrect' : 'learnedTodayWrong', { by: 1 });
+  } else {
+    // create new entry
+    await PackageProgress.create({
+      userId,
+      languagePackageId: vocabularyCard.languagePackageId,
+      ...(correct ? { learnedTodayCorrect: 1 } : { learnedTodayWrong: 1 }),
+    });
   }
 }
 
@@ -170,6 +205,13 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
   // check if vocab can be learned due to last query date
   checkCanBeLearned(vocabularyCard);
 
+  // count card as correct queried today
+  await countLearned({
+    userId,
+    vocabularyCard,
+    correct: true,
+  });
+
   // push vocabulary card one drawer up
   // get drawer id from stage
   const drawer = await Drawer.findOne({
@@ -188,15 +230,17 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
 
   // update drawerId for vocabulary card
   const lastQuery = new Date();
+  const lastQueryCorrect = new Date();
   const drawerId = drawer.id;
 
   await vocabularyCard.update(
-    { lastQuery, drawerId },
+    { lastQuery, lastQueryCorrect, drawerId },
     {
-      fields: ['lastQuery', 'drawerId'],
+      fields: ['lastQuery', 'lastQueryCorrect', 'drawerId'],
     }
   );
-  return false;
+
+  return vocabularyCard;
 }
 
 // function to handle wrong query
@@ -222,6 +266,13 @@ async function handleWrongQuery(userId, vocabularyCardId) {
   // check if vocab can be learned due to last query date
   checkCanBeLearned(vocabularyCard);
 
+  // count card as wrong queried today
+  await countLearned({
+    userId,
+    vocabularyCard,
+    correct: false,
+  });
+
   const drawer = await Drawer.findOne({
     attributes: ['id'],
     where: {
@@ -241,7 +292,8 @@ async function handleWrongQuery(userId, vocabularyCardId) {
       fields: ['lastQuery', 'drawerId'],
     }
   );
-  return false;
+
+  return vocabularyCard;
 }
 
 module.exports = {

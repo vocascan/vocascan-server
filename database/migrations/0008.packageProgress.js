@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('vocabularyCards', {
+  await queryInterface.createTable('packageProgress', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -27,44 +27,16 @@ async function up({ context: queryInterface }) {
         as: 'languagePackageId',
       },
     },
-    groupId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'groups',
-        key: 'id',
-        as: 'groupId',
-      },
-    },
-    drawerId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'drawers',
-        key: 'id',
-        as: 'drawerId',
-      },
-    },
-    name: {
-      type: DataTypes.STRING,
+    date: {
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    description: {
-      type: DataTypes.STRING,
+    learnedTodayCorrect: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    lastQuery: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    lastQueryCorrect: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
+    learnedTodayWrong: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     createdAt: {
@@ -79,7 +51,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('vocabularyCards');
+  await queryInterface.dropTable('packageProgress');
 }
 
 module.exports = { up, down };
