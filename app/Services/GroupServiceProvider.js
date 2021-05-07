@@ -4,13 +4,15 @@ const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 
 // create language package
-async function createGroup({ name, active }, userId, languagePackageId) {
+async function createGroup({ name, description, active }, userId, languagePackageId) {
   const group = await Group.create({
     userId,
     languagePackageId,
     name,
+    description,
     active,
   });
+
   return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], group.toJSON());
 }
 
@@ -28,7 +30,7 @@ async function getGroups(userId, languagePackageId) {
   }
 
   const groups = await Group.findAll({
-    attributes: ['id', 'name', 'active'],
+    attributes: ['id', 'name', 'description', 'active'],
     where: {
       userId,
       languagePackageId,
@@ -55,7 +57,7 @@ async function destroyGroup(userId, groupId) {
 
 async function updateGroup(group, userId, groupId) {
   const counter = await Group.update(group, {
-    fields: ['name', 'active'],
+    fields: ['name', 'description', 'active'],
     where: {
       userId,
       id: groupId,

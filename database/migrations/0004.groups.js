@@ -31,6 +31,10 @@ async function up({ context: queryInterface }) {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

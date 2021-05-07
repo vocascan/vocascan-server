@@ -25,7 +25,7 @@ async function getLanguagePackages(userId, groups) {
   // Get user with email from database
   const languagePackages = await LanguagePackage.findAll({
     // if groups is true, return groups to every language package
-    include: groups ? [{ model: Group, attributes: ['id', 'name', 'active'] }] : [],
+    include: groups ? [{ model: Group, attributes: ['id', 'name', 'description', 'active'] }] : [],
     attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
       userId,
