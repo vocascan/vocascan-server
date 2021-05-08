@@ -135,14 +135,15 @@
       },
 
       "get": {
-        "summary": "Get vocabulary for query",
+        "summary": "Get all language packages",
         "tags": ["GET"],
         "operationId": "getLanguagePackage",
-        "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/authorization"}
+          {"$ref": "#/components/parameters/groups"},
+          {"$ref": "#/components/parameters/stats"}
 
         ],
+        "security": [],
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetLanguagePackage"
@@ -159,9 +160,31 @@
         }
       }
     },
+    "/api/user/stats": {
+      "get": {
+        "summary": "Get stats about user",
+        "tags": ["GET"],
+        "operationId": "getUserStats",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetUserStats"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
     "/api/languagePackage/{languagePackageId}/group": {
       "post": {
-        "summary": "Create group for language pacakge",
+        "summary": "Create group for language package",
         "tags": ["create"],
         "operationId": "createGroup",
         "security": [],
@@ -193,7 +216,6 @@
         "operationId": "getGroups",
         "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/authorization"},
           {"$ref": "#/components/parameters/languagePackageId"}
 
         ],
@@ -471,6 +493,46 @@
           }
         }
       },
+      "Stats": {
+        "description": "Stats",
+        "type": "object",
+        "properties": {
+          "vocabularies": {
+            "type": "object",
+            "properties": {
+              "all": {
+                "type": "integer"
+              },
+              "active": {
+                "type": "integer"
+              },
+              "inactive": {
+                "type": "integer"
+              },
+              "unresolved": {
+                "type": "integer"
+              },
+              "unactivated": {
+                "type": "integer"
+              },
+              "learnedToday": {
+                "type": "object",
+                "properties": {
+                  "dueToday": {
+                    "type": "integer"
+                  },
+                  "correct": {
+                    "type": "integer"
+                  },
+                  "wrong": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "Vocabulary": {
         "description": "Vocabulary",
         "type": "object",
@@ -536,16 +598,21 @@
           "type": "number"
         }
       },
-      "authorization": {
-        "in": "header",
-        "name": "Authorization",
-        "description": "Put JWT in Authorization header in order to validate request",
-        "required": true,
+      "groups": {
+        "in": "query",
+        "name": "groups",
+        "description": "decides if groups are included in response",
         "schema": {
-          "type": "string",
-          "format": "bearer"
+          "type": "boolean"
         }
-
+      },
+      "stats": {
+        "in": "query",
+        "name": "stats",
+        "description": "decides if stats are included in response",
+        "schema": {
+          "type": "boolean"
+        }
       }
     },
     "requestBodies": {
@@ -757,33 +824,14 @@
         "content": {
           "application/json": {
             "schema": {
-            "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "foreignWordLanguage": {
-                  "type": "string"
-                },
-                "translatedWordLanguage": {
-                  "type": "string"
-                },
-                "vocabsPerDay": {
-                  "type": "number"
-                },
-                "rightWords": {
-                  "type": "number"
-                },
-                "unresolvedVocabularies": {
-                  "type": "number"
-                },
-                "unactivatedVocabularies": {
-                  "type": "number"
-                }
+            "type": "array",
+              "items": {
+                "type": "object",
+                "properties": [
+                  {"$ref": "#/components/schemas/LanguagePackage"},
+                  {"$ref": "#/components/schemas/Group"},
+                  {"$ref": "#/components/schemas/Stats"}
+                ]
               }
             }
           }
@@ -810,6 +858,74 @@
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/Vocabulary"
+              }
+            }
+          }
+        }
+      },
+      "GetUserStats": {
+        "description": "Returns info about all the stats from a user",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "languagePackages": {
+                  "type": "object",
+                  "properties": {
+                    "all": {
+                      "type": "integer"
+                    } 
+                  }
+                },
+                "groups": {
+                  "type": "object",
+                  "properties": {
+                    "all": {
+                      "type": "integer"
+                    },
+                    "active": {
+                      "type": "integer"
+                    },
+                    "inactive": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "vocabularies": {
+                  "type": "object",
+                  "properties": {
+                    "all": {
+                      "type": "integer"
+                    },
+                    "active": {
+                      "type": "integer"
+                    },
+                    "inactive": {
+                      "type": "integer"
+                    },
+                    "unresolved": {
+                      "type": "integer"
+                    },
+                    "unactivated": {
+                      "type": "integer"
+                    },
+                    "learnedToday": {
+                      "type": "object",
+                      "properties": {
+                        "dueToday": {
+                          "type": "integer"
+                        },
+                        "correct": {
+                          "type": "integer"
+                        },
+                        "wrong": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
