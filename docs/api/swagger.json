@@ -363,6 +363,27 @@
             "$ref": "#/components/responses/404"
           }
         }
+      },
+      "put": {
+        "summary": "Modify vocabulary card",
+        "tags": ["MODIFY"],
+        "operationId": "modifyVocabulary",
+        "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/vocabularyId"}],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
       }
     },
     "/api/group/{groupId}": {
@@ -370,6 +391,27 @@
         "summary": "Delete group",
         "tags": ["delete"],
         "operationId": "deleteGroup",
+        "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/groupId"}],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "put": {
+        "summary": "Modify group",
+        "tags": ["MODIFY"],
+        "operationId": "modifyGroup",
         "security": [],
         "parameters": [{ "$ref": "#/components/parameters/groupId"}],
         "responses": {
@@ -398,6 +440,52 @@
         "responses": {
           "204": {
             "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "put": {
+        "summary": "Modify a language package",
+        "tags": ["MODIFY"],
+        "operationId": "modifyLanguagePackage",
+        "parameters": [
+          {"$ref": "#/components/parameters/languagePackageId"}
+
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/api/info": {
+      "get": {
+        "summary": "Get server info",
+        "tags": ["INFO"],
+        "operationId": "getServerInfo",
+        "security": [],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/GetServerInfo"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -563,6 +651,21 @@
           }        
         }
       },
+      "Info": {
+        "description": "Info",
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "commitRef": {
+            "type": "string"
+          }
+        }
+      }
     },    
     "parameters": {
       "languagePackageId": {
@@ -1018,6 +1121,16 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Progress"
+            }
+          }
+        }
+      },
+      "GetServerInfo": {
+        "description": "Returns information about server",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Info"
             }
           }
         }
