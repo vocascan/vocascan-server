@@ -32,11 +32,12 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
     name,
     description,
     lastQuery: yesterday,
+    lastQueryCorrect: yesterday,
     active,
   });
 
   const formatted = deleteKeysFromObject(
-    ['userId', 'lastQuery', 'updatedAt', 'createdAt', 'languagePackageId', 'groupId', 'drawerId'],
+    ['userId', 'lastQuery', 'lastQueryCorrect', 'updatedAt', 'createdAt', 'languagePackageId', 'groupId', 'drawerId'],
     vocabularyCard.toJSON()
   );
   return formatted;

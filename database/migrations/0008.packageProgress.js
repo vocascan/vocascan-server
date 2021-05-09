@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('groups', {
+  await queryInterface.createTable('packageProgress', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -27,16 +27,16 @@ async function up({ context: queryInterface }) {
         as: 'languagePackageId',
       },
     },
-    name: {
-      type: DataTypes.STRING,
+    date: {
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    description: {
-      type: DataTypes.STRING,
+    learnedTodayCorrect: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    active: {
-      type: DataTypes.BOOLEAN,
+    learnedTodayWrong: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     createdAt: {
@@ -51,7 +51,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('groups');
+  await queryInterface.dropTable('packageProgress');
 }
 
 module.exports = { up, down };

@@ -46,8 +46,9 @@ module.exports = (sequelize) => {
 
     LanguagePackage.hasMany(db.Drawer, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
     LanguagePackage.hasMany(db.Group, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
-    LanguagePackage.hasMany(db.VocabularyCard, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
+    LanguagePackage.hasMany(db.PackageProgress, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
     LanguagePackage.hasMany(db.Translation, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
+    LanguagePackage.hasMany(db.VocabularyCard, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
   };
 
   return LanguagePackage;
