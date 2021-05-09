@@ -252,7 +252,7 @@
         },
         "responses": {
           "204": {
-            "$ref": "#/components/responses/204"
+            "$ref": "#/components/responses/CreateVocabulary"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -297,33 +297,8 @@
         "security": [],
         "parameters": [
           {"$ref": "#/components/parameters/languagePackageId"},
-          {"$ref": "#/components/parameters/limit"}
-
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/startQuery"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          }
-        }
-      }
-    },
-    "/api/languagePackage/{languagePackageId}/query/staged": {
-      "get": {
-        "summary": "Get all vocabulary that that have been added, but have not been activated yet.",
-        "tags": ["QUERY"],
-        "operationId": "startQueryStaged",
-        "security": [],
-        "parameters": [
-          {"$ref": "#/components/parameters/languagePackageId"}
+          {"$ref": "#/components/parameters/limit"},
+          {"$ref": "#/components/parameters/staged"}
 
         ],
         "responses": {
@@ -364,20 +339,19 @@
           }
         }
       },
-      "post": {
+      "patch": {
         "summary": "Handles your result. moves vocabulary in the drawers depending on whether they were answered correctly or incorrectly",
         "tags": ["VALIDATION"],
         "operationId": "checkVocabulary",
         "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/vocabularyId"}
+          {"$ref": "#/components/parameters/vocabularyId"},
+          {"$ref": "#/components/parameters/answer"},
+          {"$ref": "#/components/parameters/progress"}
         ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/CheckVocabulary"
-        },
         "responses": {
           "204": {
-            "$ref": "#/components/responses/204"
+            "$ref": "#/components/responses/CheckQuery"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -543,6 +517,9 @@
         "description": "Vocabulary",
         "type": "object",
         "properties": {
+          "stage": {
+            "type": "integer"
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -552,9 +529,6 @@
           },
           "description": {
             "type": "string"
-          },
-          "active": {
-            "type": "boolean"
           },
           "Translations": {
             "type": "array",
@@ -568,8 +542,28 @@
             }
           }
         }
-      }
-    },
+      },
+      "Progress": {
+        "description": "Progress",
+        "type": "object",
+        "properties": {
+          "queryProgress": {
+            "type": "object",
+            "properties": {
+              "dueToday": {
+                "type": "string"
+              },
+              "correct": {
+                "type": "string"
+              },
+              "wrong": {
+                "type": "string"
+              }
+            }
+          }        
+        }
+      },
+    },    
     "parameters": {
       "languagePackageId": {
         "in": "path",
@@ -604,7 +598,7 @@
       "limit": {
         "in": "query",
         "name": "limit",
-        "description": "Limit defines the number of returned vocabulary from a request",
+        "description": "Limit defines the number of returned vocabulary from a request. Staged queries don't need a limit. Standart Limit: 100",
         "required": true,
         "schema": {
           "type": "number"
@@ -636,8 +630,32 @@
       },
       "activate": {
         "in": "query",
-        "name": "stats",
+        "name": "activate",
         "description": "decides if vocabs need to be activated before putting them into query drawers",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "staged": {
+        "in": "query",
+        "name": "staged",
+        "description": "If true, all unactivated vocabs will be returned",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "answer": {
+        "in": "query",
+        "name": "answer",
+        "description": "type in whether your answer was right or wrong",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "progress": {
+        "in": "query",
+        "name": "progress",
+        "description": "If true, the progress will be returned",
         "schema": {
           "type": "boolean"
         }
@@ -686,23 +704,6 @@
                 "password": {
                   "type": "string",
                   "format": "password"
-                }
-              }
-            }
-          }
-        }
-      },
-      "CheckVocabulary": {
-        "description": "Type in you result of the vocabulary card. True will move your card one drawer up. False will move it in drawer 1",
-        "content": {
-          "application/json": {
-            "schema": {
-              "description": "result details",
-              "type": "object",
-              "required": ["answer"],
-              "properties": {
-                "answer": {
-                  "type": "boolean"
                 }
               }
             }
@@ -847,6 +848,16 @@
           "application/json": {
             "schema": {
                 "$ref": "#/components/schemas/Group"
+            }
+          }
+        }
+      },
+      "CreateVocabulary": {
+        "description": "Create vocabulary",
+        "content": {
+          "application/json": {
+            "schema": {
+                "$ref": "#/components/schemas/Vocabulary"
             }
           }
         }
@@ -997,6 +1008,16 @@
               "items": {
                 "$ref": "#/components/schemas/Vocabulary"
               }
+            }
+          }
+        }
+      },
+      "CheckQuery": {
+        "description": "If progress = true: Progress gets returned",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Progress"
             }
           }
         }
