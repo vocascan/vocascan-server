@@ -28,7 +28,7 @@
     "/api/user/register": {
       "post": {
         "summary": "Register new user",
-        "tags": ["auth"],
+        "tags": ["AUTH"],
         "operationId": "userRegister",
         "security": [],
         "requestBody": {
@@ -47,7 +47,7 @@
     "/api/user/login": {
       "post": {
         "summary": "Login user",
-        "tags": ["auth"],
+        "tags": ["AUTH"],
         "operationId": "userLogin",
         "security": [],
         "requestBody": {
@@ -72,7 +72,7 @@
     "/api/user": {
       "get": {
         "summary": "Get own profile",
-        "tags": ["auth"],
+        "tags": ["AUTH"],
         "operationId": "getUserProfile",
         "responses": {
           "200": {
@@ -89,7 +89,7 @@
 
       "delete": {
         "summary": "Delete user",
-        "tags": ["delete"],
+        "tags": ["DELETE"],
         "operationId": "deleteUser",
         "security": [],
         "description": "Nothing needed. UserId gets parsed from JWT",
@@ -112,7 +112,7 @@
     "/api/languagePackage": {
       "post": {
         "summary": "Create language package for user",
-        "tags": ["create"],
+        "tags": ["CREATE"],
         "operationId": "createLanguagePackage",
         "security": [],
         "requestBody": {
@@ -185,7 +185,7 @@
     "/api/languagePackage/{languagePackageId}/group": {
       "post": {
         "summary": "Create group for language package",
-        "tags": ["create"],
+        "tags": ["CREATE"],
         "operationId": "createGroup",
         "security": [],
         "parameters": [
@@ -238,7 +238,7 @@
     "/api/languagePackage/{languagePackageId}/group/{groupId}/vocabulary": {
       "post": {
         "summary": "Create vocabulary card",
-        "tags": ["create"],
+        "tags": ["CREATE"],
         "operationId": "createVocabulary",
         "security": [],
         "parameters": [
@@ -303,7 +303,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/startQuery"
+            "$ref": "#/components/responses/StartQuery"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -320,7 +320,7 @@
     "/api/vocabulary/{vocabularyId}": {
       "delete": {
         "summary": "Delete vocabulary card",
-        "tags": ["delete"],
+        "tags": ["DELETE"],
         "operationId": "deleteVocabulary",
         "security": [],
         "parameters": [{ "$ref": "#/components/parameters/vocabularyId"}],
@@ -389,7 +389,7 @@
     "/api/group/{groupId}": {
       "delete": {
         "summary": "Delete group",
-        "tags": ["delete"],
+        "tags": ["DELETE"],
         "operationId": "deleteGroup",
         "security": [],
         "parameters": [{ "$ref": "#/components/parameters/groupId"}],
@@ -433,7 +433,7 @@
     "/api/languagePackage/{languagePackageId}": {
       "delete": {
         "summary": "Delete language package",
-        "tags": ["delete"],
+        "tags": ["DELETE"],
         "operationId": "deleteLanguagePackage",
         "security": [],
         "parameters": [{ "$ref": "#/components/parameters/languagePackageId"}],
@@ -1102,7 +1102,7 @@
           }
         }
       },
-      "startQuery": {
+      "StartQuery": {
         "description": "returns vocabulary with limit",
         "content": {
           "application/json": {
