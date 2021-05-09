@@ -243,7 +243,9 @@
         "security": [],
         "parameters": [
           {"$ref": "#/components/parameters/languagePackageId"},
-          {"$ref": "#/components/parameters/groupId"}
+          {"$ref": "#/components/parameters/groupId"},
+          {"$ref": "#/components/parameters/active"},
+          {"$ref": "#/components/parameters/activate"}
         ],
         "requestBody": {
           "$ref": "#/components/requestBodies/CreateVocabulary"
@@ -488,6 +490,10 @@
           "name": {
             "type": "string"
           },
+          "description": {
+            "type": "string",
+            "format": "uuid"
+          },
           "active": {
             "type": "boolean"
           }
@@ -543,6 +549,12 @@
           },
           "name": {
             "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
           },
           "Translations": {
             "type": "array",
@@ -610,6 +622,22 @@
         "in": "query",
         "name": "stats",
         "description": "decides if stats are included in response",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "active": {
+        "in": "query",
+        "name": "active",
+        "description": "decides if this part gets included in querys",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "activate": {
+        "in": "query",
+        "name": "stats",
+        "description": "decides if vocabs need to be activated before putting them into query drawers",
         "schema": {
           "type": "boolean"
         }
@@ -694,20 +722,16 @@
                   "type": "string"
                 },
                 "foreignWordLanguage": {
-                  "type": "string",
-                  "format": "password"
+                  "type": "string"
                 },
                 "translatedWordLanguage": {
-                  "type": "string",
-                  "format": "password"
+                  "type": "string"
                 },
                 "vocabsPerDay": {
-                  "type": "integer",
-                  "format": "password"
+                  "type": "integer"
                 },
                 "rightWords": {
-                  "type": "integer",
-                  "format": "password"
+                  "type": "integer"
                 }
               }
             }
@@ -726,9 +750,11 @@
                 "name": {
                   "type": "string"
                 },
+                "description": {
+                  "type": "string"
+                },
                 "active": {
-                  "type": "boolean",
-                  "format": "password"
+                  "type": "boolean"
                 }
               }
             }
@@ -746,6 +772,12 @@
               "properties": {
                 "name": {
                   "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "boolean"
                 },
                 "translations": {
                   "type": "array",
@@ -827,11 +859,36 @@
             "type": "array",
               "items": {
                 "type": "object",
-                "properties": [
-                  {"$ref": "#/components/schemas/LanguagePackage"},
-                  {"$ref": "#/components/schemas/Group"},
-                  {"$ref": "#/components/schemas/Stats"}
-                ]
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "foreignWordLanguage": {
+                      "type": "string"
+                    },
+                    "translatedWordLanguage": {
+                      "type": "string"
+                    },
+                    "vocabsPerDay": {
+                      "type": "integer"
+                    },
+                    "rightWords": {
+                      "type": "integer"
+                    },
+                    "Groups": { 
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Group"
+                      }
+                    },
+                    "stats": {"$ref": "#/components/schemas/Stats"}
+                  }
+                  
+                  
               }
             }
           }
