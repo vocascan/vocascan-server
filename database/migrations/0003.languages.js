@@ -12,7 +12,7 @@ async function up({ context: queryInterface }) {
       allowNull: false,
     },
     nativeNames: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     rtl: {
