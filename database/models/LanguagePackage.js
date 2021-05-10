@@ -43,6 +43,8 @@ module.exports = (sequelize) => {
 
   LanguagePackage.associate = (db) => {
     LanguagePackage.belongsTo(db.User, { foreignKey: 'userId' });
+    LanguagePackage.belongsTo(db.Language, { foreignKey: 'foreignWordLanguage', as: 'ForeignWordLanguage' });
+    LanguagePackage.belongsTo(db.Language, { foreignKey: 'translatedWordLanguage', as: 'TranslatedWordLanguage' });
 
     LanguagePackage.hasMany(db.Drawer, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
     LanguagePackage.hasMany(db.Group, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
