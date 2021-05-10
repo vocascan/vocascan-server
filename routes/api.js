@@ -9,6 +9,7 @@ const LanguagePackageController = require('../app/Controllers/LanguagePackageCon
 const GroupController = require('../app/Controllers/GroupController.js');
 const VocabularyController = require('../app/Controllers/VocabularyController.js');
 const QueryController = require('../app/Controllers/QueryController.js');
+const LanguageController = require('../app/Controllers/LanguageController.js');
 const DocsController = require('../app/Controllers/DocsController.js');
 const StatsController = require('../app/Controllers/StatsController.js');
 const InfoController = require('../app/Controllers/InfoController.js');
@@ -56,6 +57,9 @@ router.put('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.
 router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);
 
 router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
+
+// Language
+router.get('/language', ProtectMiddleware, LanguageController.sendLanguages);
 
 // Docs
 router.get('/swagger.json', DocsController.document);
