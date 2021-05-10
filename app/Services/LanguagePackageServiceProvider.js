@@ -1,3 +1,4 @@
+const { ForeignKeyConstraintError } = require('sequelize');
 const { LanguagePackage, Group } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
 const ApiError = require('../utils/ApiError.js');
@@ -8,16 +9,24 @@ async function createLanguagePackage(
   { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
   userId
 ) {
-  const languagePackage = await LanguagePackage.create({
-    userId,
-    name,
-    foreignWordLanguage,
-    translatedWordLanguage,
-    vocabsPerDay,
-    rightWords,
-  });
+  try {
+    const languagePackage = await LanguagePackage.create({
+      userId,
+      name,
+      foreignWordLanguage,
+      translatedWordLanguage,
+      vocabsPerDay,
+      rightWords,
+    });
 
-  return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
+    return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
+  } catch (error) {
+    if (error instanceof ForeignKeyConstraintError) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'foreign or translated language not found');
+    }
+
+    throw error;
+  }
 }
 
 // get language package
@@ -50,18 +59,27 @@ async function destroyLanguagePackage(userId, languagePackageId) {
 }
 
 async function updateLanguagePackage(package, userId, languagePackageId) {
-  const counter = await LanguagePackage.update(package, {
-    fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
-    where: {
-      id: languagePackageId,
-      userId,
-    },
-  });
+  try {
+    const counter = await LanguagePackage.update(package, {
+      fields: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
+      where: {
+        id: languagePackageId,
+        userId,
+      },
+    });
 
-  if (counter[0] === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
+    if (counter[0] === 0) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
+    }
+
+    return false;
+  } catch (error) {
+    if (error instanceof ForeignKeyConstraintError) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'foreign or translated language not found');
+    }
+
+    throw error;
   }
-  return false;
 }
 
 module.exports = {
