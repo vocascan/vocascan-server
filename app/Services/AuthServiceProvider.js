@@ -19,6 +19,11 @@ function validateAuth(req) {
 async function validateRegister(req, res) {
   validateAuth(req, res);
 
+  // check if email address is valid
+  if (!req.body.email.match(/^\S+@\S+\.\S+$/)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'email is not valid');
+  }
+
   // Check if email address already exists
   const emailHash = crypto.createHash('sha256').update(req.body.email).digest('base64');
 
