@@ -129,7 +129,7 @@ async function checkPasswordValid(id, password) {
 
 async function changePassword(id, oldPassword, newPassword) {
   if (checkPasswordValid(id, oldPassword)) {
-    // hash password
+    // Hash password
     const hash = await bcrypt.hash(newPassword, +process.env.SALT_ROUNDS);
     const counter = await User.update(
       { password: hash },
