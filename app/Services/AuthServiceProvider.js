@@ -123,12 +123,10 @@ async function checkPasswordValid(id, password) {
   if (!isPasswordValid) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password');
   }
-
-  return true;
 }
 
 async function changePassword(id, oldPassword, newPassword) {
-  if (checkPasswordValid(id, oldPassword)) {
+  if (await checkPasswordValid(id, oldPassword)) {
     // Hash password
     const hash = await bcrypt.hash(newPassword, +process.env.SALT_ROUNDS);
     const counter = await User.update(
