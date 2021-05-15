@@ -80,7 +80,8 @@ async function getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, use
   });
 
   if (drawers.length === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist');
+    return 0;
+    // throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist');
   }
 
   let number = 0;
