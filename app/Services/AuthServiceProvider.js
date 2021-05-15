@@ -123,6 +123,7 @@ async function checkPasswordValid(id, password) {
   if (!isPasswordValid) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password');
   }
+  return true;
 }
 
 async function changePassword(id, oldPassword, newPassword) {
