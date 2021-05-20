@@ -19,6 +19,7 @@ const router = express.Router();
 // Auth
 router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
+router.patch('/user/reset-password', ProtectMiddleware, AuthController.resetPassword);
 
 // User
 router.get('/user', ProtectMiddleware, AuthController.profile);
