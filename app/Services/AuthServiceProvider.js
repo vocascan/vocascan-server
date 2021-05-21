@@ -21,7 +21,7 @@ async function validateRegister(req, res) {
 
   // check if email address is valid
   if (!req.body.email.match(/^\S+@\S+\.\S+$/)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'email is not valid');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'email is not valid', 'email');
   }
 
   // Check if email address already exists
@@ -34,7 +34,18 @@ async function validateRegister(req, res) {
       },
     })
   ) {
-    throw new ApiError(httpStatus.CONFLICT, 'email already exists');
+    throw new ApiError(httpStatus.CONFLICT, 'email already exists', 'email');
+  }
+
+  // check if username is duplicate
+  if (
+    await User.count({
+      where: {
+        username: req.body.username,
+      },
+    })
+  ) {
+    throw new ApiError(httpStatus.CONFLICT, 'username already exists', 'username');
   }
 
   return true;
@@ -87,7 +98,7 @@ async function loginUser({ email, password }) {
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password', 'unauthorized');
   }
 
   return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
@@ -101,7 +112,7 @@ async function destroyUser(userId) {
     },
   });
   if (counter === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found', 'not-found');
   }
 }
 
@@ -114,14 +125,14 @@ async function checkPasswordValid(id, password) {
   });
 
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found', 'not-found');
   }
 
   // Check password
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password', 'password');
   }
   return true;
 }
