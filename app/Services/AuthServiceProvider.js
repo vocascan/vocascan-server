@@ -98,7 +98,7 @@ async function loginUser({ email, password }) {
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password', 'unauthorized');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password', 'password');
   }
 
   return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
