@@ -32,12 +32,13 @@ const errorConverter = (err, _req, _res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, _req, res, _next) => {
-  const { statusCode, message } = err;
+  const { statusCode, field, message } = err;
 
   res.locals.errorMessage = err.message;
 
   const response = {
     code: statusCode,
+    ...(field ? { field: field } : null),
     message,
     ...(process.env.DEBUG === 'true' && { stack: err.stack }),
   };

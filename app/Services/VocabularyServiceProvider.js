@@ -18,7 +18,7 @@ async function createVocabularyCard({ languagePackageId, groupId }, name, descri
   });
 
   if (!drawer) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id');
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id', 'drawer');
   }
   // create date the day before yesterday so it will appear in the inbox for querying
   const date = new Date();
@@ -67,7 +67,7 @@ async function getGroupVocabulary(userId, groupId) {
   });
 
   if (group === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no vocabulary cards found, because the group does not exist');
+    throw new ApiError(httpStatus.NOT_FOUND, 'no vocabulary cards found, because the group does not exist', 'group');
   }
 
   const vocabulary = await VocabularyCard.findAll({
@@ -96,7 +96,7 @@ async function destroyVocabularyCard(userId, vocabularyCardId) {
   });
 
   if (counter === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found', 'vocab');
   }
   return false;
 }
@@ -119,7 +119,7 @@ async function updateVocabulary({ translations, ...card }, userId, vocabularyCar
   });
 
   if (!vocabulary) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found', 'vocab');
   }
 
   // change values from foreign Word
