@@ -79,7 +79,7 @@ async function getNumberOfUnresolvedVocabulary({ languagePackageId, groupId, use
     },
   });
 
-  if (drawers.length === 0) {
+  if (languagePackageId && drawers.length === 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist');
   }
 
@@ -152,7 +152,7 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
     },
   });
 
-  if (!languagePackage) {
+  if (languagePackageId && !languagePackage) {
     throw new ApiError(httpStatus.NOT_FOUND, 'languagePackage not found');
   }
 
