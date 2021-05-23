@@ -38,8 +38,12 @@ const errorHandler = (err, _req, res, _next) => {
 
   const response = {
     code: statusCode,
-    ...(field ? { field: field } : null),
-    message,
+    fields: [
+      {
+        ...(field ? { field: field } : null),
+        message,
+      },
+    ],
     ...(process.env.DEBUG === 'true' && { stack: err.stack }),
   };
 
