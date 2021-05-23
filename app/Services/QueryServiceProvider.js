@@ -229,12 +229,17 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
   }
 
   // update drawerId for vocabulary card
-  const lastQuery = new Date();
-  const lastQueryCorrect = new Date();
-  const drawerId = drawer.id;
-
   await vocabularyCard.update(
-    { lastQuery, lastQueryCorrect, drawerId },
+    {
+      // only count as correct if it wasn't in staged drawer
+      ...(vocabularyCard.Drawer.stage > 0
+        ? {
+            lastQuery: new Date(),
+            lastQueryCorrect: new Date(),
+          }
+        : {}),
+      drawerId: drawer.id,
+    },
     {
       fields: ['lastQuery', 'lastQueryCorrect', 'drawerId'],
     }
@@ -278,16 +283,21 @@ async function handleWrongQuery(userId, vocabularyCardId) {
     where: {
       userId,
       languagePackageId: vocabularyCard.languagePackageId,
-      stage: 1,
+      stage: vocabularyCard.Drawer.stage > 0 ? 1 : 0,
     },
   });
 
   // update drawerId for vocabulary card
-  const lastQuery = new Date();
-  const drawerId = drawer.id;
-
   await vocabularyCard.update(
-    { lastQuery, drawerId },
+    {
+      // only count as correct if it wasn't in staged drawer
+      ...(vocabularyCard.Drawer.stage > 0
+        ? {
+            lastQuery: new Date(),
+          }
+        : {}),
+      drawerId: drawer.id,
+    },
     {
       fields: ['lastQuery', 'drawerId'],
     }
