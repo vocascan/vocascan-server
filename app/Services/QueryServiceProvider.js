@@ -19,7 +19,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
   });
 
   if (drawers.length === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist', 'drawer');
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawers found, because the language package does not exist');
   }
 
   const allVocabulary = [];
@@ -93,7 +93,7 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
   });
 
   if (!drawer) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id', 'drawer');
+    throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id');
   }
 
   // return every vocabulary in drawer 0
@@ -199,7 +199,7 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
   });
 
   if (!vocabularyCard) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found', 'vocab');
+    throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
   }
 
   // check if vocab can be learned due to last query date
@@ -265,7 +265,7 @@ async function handleWrongQuery(userId, vocabularyCardId) {
   });
 
   if (!vocabularyCard) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Vocabulary card not found', 'vocab');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Vocabulary card not found');
   }
 
   // check if vocab can be learned due to last query date

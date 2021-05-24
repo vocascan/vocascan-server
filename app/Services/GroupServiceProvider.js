@@ -49,7 +49,7 @@ async function destroyGroup(userId, groupId) {
   });
 
   if (counter === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Group not found', 'group');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Group not found');
   }
 
   return false;
@@ -65,7 +65,7 @@ async function updateGroup(group, userId, groupId) {
   });
 
   if (counter[0] === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Group not found', 'group');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Group not found');
   }
   return false;
 }

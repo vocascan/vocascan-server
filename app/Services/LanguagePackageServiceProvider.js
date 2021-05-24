@@ -22,7 +22,7 @@ async function createLanguagePackage(
     return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
   } catch (error) {
     if (error instanceof ForeignKeyConstraintError) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'foreign or translated language not found', 'language');
+      throw new ApiError(httpStatus.BAD_REQUEST, 'foreign or translated language not found');
     }
 
     throw error;
@@ -53,7 +53,7 @@ async function destroyLanguagePackage(userId, languagePackageId) {
   });
 
   if (counter === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found', 'package');
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
   }
   return false;
 }
@@ -69,13 +69,13 @@ async function updateLanguagePackage(package, userId, languagePackageId) {
     });
 
     if (counter[0] === 0) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'language package not found', 'package');
+      throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
     }
 
     return false;
   } catch (error) {
     if (error instanceof ForeignKeyConstraintError) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'foreign or translated language not found', 'language');
+      throw new ApiError(httpStatus.BAD_REQUEST, 'foreign or translated language not found');
     }
 
     throw error;

@@ -112,7 +112,7 @@ async function destroyUser(userId) {
     },
   });
   if (counter === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found', 'not-found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
   }
 }
 
