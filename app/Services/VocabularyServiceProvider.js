@@ -67,7 +67,7 @@ async function getGroupVocabulary(userId, groupId) {
   });
 
   if (group === 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'no vocabulary cards found, because the group does not exist', 'group');
+    throw new ApiError(httpStatus.NOT_FOUND, 'no vocabulary cards found, because the group does not exist');
   }
 
   const vocabulary = await VocabularyCard.findAll({

@@ -34,7 +34,7 @@ async function validateRegister(req, res) {
       },
     })
   ) {
-    throw new ApiError(httpStatus.CONFLICT, 'email already exists', 'email');
+    throw new ApiError(httpStatus.CONFLICT, 'email already in use', 'email');
   }
 
   // check if username is duplicate
@@ -45,7 +45,7 @@ async function validateRegister(req, res) {
       },
     })
   ) {
-    throw new ApiError(httpStatus.CONFLICT, 'username already exists', 'username');
+    throw new ApiError(httpStatus.CONFLICT, 'username is already taken', 'username');
   }
 
   return true;
@@ -125,7 +125,7 @@ async function checkPasswordValid(id, password) {
   });
 
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found', 'not-found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found', 'email');
   }
 
   // Check password

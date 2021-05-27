@@ -145,7 +145,7 @@ function checkCanBeLearned(vocabularyCard) {
   if (now.getTime() < queryDate.getTime()) {
     const diff = dayDateDiff(now, queryDate);
 
-    throw new ApiError(httpStatus.FORBIDDEN, `vocabulary card can be learned only in ${diff} days`, 'vocab');
+    throw new ApiError(httpStatus.FORBIDDEN, `vocabulary card can be learned only in ${diff} days`);
   }
 }
 
