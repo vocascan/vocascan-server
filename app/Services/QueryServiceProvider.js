@@ -255,7 +255,7 @@ async function handleWrongQuery(userId, vocabularyCardId) {
     include: [
       {
         model: Drawer,
-        attributes: ['queryInterval'],
+        attributes: ['queryInterval', 'stage'],
       },
     ],
     where: {
