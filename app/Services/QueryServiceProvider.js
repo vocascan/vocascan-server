@@ -202,21 +202,6 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'vocabulary card not found');
   }
 
-  // check if vocab got queried wrong before to see if it is only the repeated vocab in the query
-  // -> just set lastQueryCorrect without changing stages or progress counts
-  if (isToday(vocabularyCard.lastQuery)) {
-    await vocabularyCard.update(
-      {
-        lastQuery: new Date(),
-        lastQueryCorrect: new Date(),
-      },
-      {
-        fields: ['lastQuery', 'lastQueryCorrect'],
-      }
-    );
-    return vocabularyCard;
-  }
-
   // check if vocab can be learned due to last query date
   checkCanBeLearned(vocabularyCard);
 
@@ -253,7 +238,9 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
             lastQueryCorrect: new Date(),
           }
         : {}),
-      drawerId: drawer.id,
+
+      // check if vocab already has been queried today -> don't move into another stage
+      ...(!isToday(vocabularyCard.lastQuery) ? { drawerId: drawer.id } : null),
     },
     {
       fields: ['lastQuery', 'lastQueryCorrect', 'drawerId'],
