@@ -21,10 +21,12 @@ module.exports = (sequelize) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [1, 55] },
       },
       description: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [1, 255] },
       },
       active: {
         type: DataTypes.BOOLEAN,

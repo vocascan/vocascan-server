@@ -17,6 +17,7 @@ module.exports = (sequelize) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [1, 55] },
       },
       foreignWordLanguage: {
         type: DataTypes.STRING,
@@ -29,10 +30,12 @@ module.exports = (sequelize) => {
       vocabsPerDay: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: { min: 1, max: 255 },
       },
       rightWords: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: { min: 1, max: 10 },
       },
     },
     {
