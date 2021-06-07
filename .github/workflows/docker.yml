@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - v*
-    branches: [ main, experimental, development ]
+    branches: [ main, experimental ]
     paths-ignore: [ '**.md' ]
   workflow_dispatch:
 
