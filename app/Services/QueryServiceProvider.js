@@ -238,7 +238,9 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
             lastQueryCorrect: new Date(),
           }
         : {}),
-      drawerId: drawer.id,
+
+      // check if vocab already has been queried today -> don't move into another stage
+      ...(!isToday(vocabularyCard.lastQuery) ? { drawerId: drawer.id } : null),
     },
     {
       fields: ['lastQuery', 'lastQueryCorrect', 'drawerId'],
@@ -255,7 +257,7 @@ async function handleWrongQuery(userId, vocabularyCardId) {
     include: [
       {
         model: Drawer,
-        attributes: ['queryInterval'],
+        attributes: ['queryInterval', 'stage'],
       },
     ],
     where: {
