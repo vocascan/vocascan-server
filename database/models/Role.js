@@ -1,14 +1,14 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
   const Role = sequelize.define(
     'Role',
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: UUIDV4,
       },
       name: {
         type: DataTypes.STRING,
@@ -26,7 +26,7 @@ module.exports = (sequelize) => {
   );
 
   Role.associate = (db) => {
-    Role.hasMany(db.User, { foreignKey: 'roleId' });
+    Role.hasMany(db.User, { foreignKey: 'roleId', onDelete: 'cascade', hooks: true });
   };
 
   return Role;

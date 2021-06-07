@@ -12,21 +12,24 @@ module.exports = (sequelize) => {
       },
       username: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
         validate: { len: [2, 32] },
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        validate: { isEmail: true },
+        validate: { len: [1, 255] },
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [8, 255] },
       },
       roleId: {
-        type: DataTypes.INTEGER,
-        defaultValue: 1,
+        type: DataTypes.UUID,
+        allowNull: false,
       },
     },
     {
@@ -38,11 +41,12 @@ module.exports = (sequelize) => {
   User.associate = (db) => {
     User.belongsTo(db.Role, { foreignKey: 'roleId' });
 
-    User.hasMany(db.LanguagePackage);
-    User.hasMany(db.Group);
-    User.hasMany(db.Drawer);
-    User.hasMany(db.ForeignWord);
-    User.hasMany(db.TranslatedWord);
+    User.hasMany(db.Drawer, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.Group, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.LanguagePackage, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.PackageProgress, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.Translation, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
+    User.hasMany(db.VocabularyCard, { foreignKey: 'userId', onDelete: 'cascade', hooks: true });
   };
 
   return User;

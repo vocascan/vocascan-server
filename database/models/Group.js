@@ -21,6 +21,12 @@ module.exports = (sequelize) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [1, 55] },
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: { len: [0, 255] },
       },
       active: {
         type: DataTypes.BOOLEAN,
@@ -32,6 +38,13 @@ module.exports = (sequelize) => {
       tableName: 'groups',
     }
   );
+
+  Group.associate = (db) => {
+    Group.belongsTo(db.User, { foreignKey: 'userId' });
+    Group.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+
+    Group.hasMany(db.VocabularyCard, { foreignKey: 'groupId', onDelete: 'cascade', hooks: true });
+  };
 
   return Group;
 };

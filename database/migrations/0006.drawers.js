@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('languagePackages', {
+  await queryInterface.createTable('drawers', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -10,28 +10,28 @@ async function up({ context: queryInterface }) {
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'users',
         key: 'id',
+        as: 'userId',
       },
     },
-    name: {
-      type: DataTypes.STRING,
+    languagePackageId: {
+      type: DataTypes.UUID,
       allowNull: false,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'languagePackages',
+        key: 'id',
+        as: 'languagePackageId',
+      },
     },
-    foreignWordLanguage: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    translatedWordLanguage: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    vocabsPerDay: {
+    stage: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    rightWords: {
+    queryInterval: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -47,7 +47,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('languagePackages');
+  await queryInterface.dropTable('drawers');
 }
 
 module.exports = { up, down };

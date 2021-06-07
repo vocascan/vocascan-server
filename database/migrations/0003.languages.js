@@ -1,34 +1,23 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('users', {
-    id: {
-      type: DataTypes.UUID,
+  await queryInterface.createTable('languages', {
+    code: {
+      type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
     },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    roleId: {
-      type: DataTypes.UUID,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'roles',
-        key: 'id',
-        as: 'roleId',
-      },
+    nativeNames: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    rtl: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -42,7 +31,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('users');
+  await queryInterface.dropTable('languages');
 }
 
 module.exports = { up, down };

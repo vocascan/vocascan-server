@@ -1,8 +1,8 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Drawer = sequelize.define(
-    'Drawer',
+  const PackageProgress = sequelize.define(
+    'PackageProgress',
     {
       id: {
         type: DataTypes.UUID,
@@ -18,27 +18,32 @@ module.exports = (sequelize) => {
         type: DataTypes.UUID,
         allowNull: false,
       },
-      stage: {
-        type: DataTypes.INTEGER,
+      date: {
+        type: DataTypes.DATEONLY,
+        defaultValue: new Date(),
         allowNull: false,
       },
-      queryInterval: {
+      learnedTodayCorrect: {
         type: DataTypes.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+      },
+      learnedTodayWrong: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
     },
     {
       sequelize,
-      tableName: 'drawers',
+      tableName: 'packageProgress',
     }
   );
 
-  Drawer.associate = (db) => {
-    Drawer.belongsTo(db.User, { foreignKey: 'userId' });
-    Drawer.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
-
-    Drawer.hasMany(db.VocabularyCard, { foreignKey: 'drawerId', onDelete: 'cascade', hooks: true });
+  PackageProgress.associate = (db) => {
+    PackageProgress.belongsTo(db.User, { foreignKey: 'userId' });
+    PackageProgress.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
   };
 
-  return Drawer;
+  return PackageProgress;
 };

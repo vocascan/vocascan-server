@@ -1,8 +1,8 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const ForeignWord = sequelize.define(
-    'ForeignWord',
+  const Translation = sequelize.define(
+    'Translation',
     {
       id: {
         type: DataTypes.UUID,
@@ -11,6 +11,10 @@ module.exports = (sequelize) => {
         primaryKey: true,
       },
       userId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      vocabularyCardId: {
         type: DataTypes.UUID,
         allowNull: false,
       },
@@ -18,28 +22,23 @@ module.exports = (sequelize) => {
         type: DataTypes.UUID,
         allowNull: false,
       },
-      groupId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-      },
-      drawerId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [1, 255] },
       },
     },
     {
       sequelize,
-      tableName: 'foreignWords',
+      tableName: 'translations',
     }
   );
 
-  ForeignWord.associate = (db) => {
-    ForeignWord.hasMany(db.LanguagePackage);
+  Translation.associate = (db) => {
+    Translation.belongsTo(db.User, { foreignKey: 'userId' });
+    Translation.belongsTo(db.VocabularyCard, { foreignKey: 'vocabularyCardId' });
+    Translation.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
   };
 
-  return ForeignWord;
+  return Translation;
 };

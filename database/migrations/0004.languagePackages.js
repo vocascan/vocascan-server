@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.createTable('groups', {
+  await queryInterface.createTable('languagePackages', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -10,25 +10,41 @@ async function up({ context: queryInterface }) {
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'users',
         key: 'id',
-      },
-    },
-    languagePackageId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'languagePackages',
-        key: 'id',
+        as: 'userId',
       },
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    active: {
-      type: DataTypes.BOOLEAN,
+    foreignWordLanguage: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      references: {
+        model: 'languages',
+        key: 'code',
+        as: 'foreignWordLanguage',
+      },
+    },
+    translatedWordLanguage: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      references: {
+        model: 'languages',
+        key: 'code',
+        as: 'translatedWordLanguage',
+      },
+    },
+    vocabsPerDay: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    rightWords: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     createdAt: {
@@ -43,7 +59,7 @@ async function up({ context: queryInterface }) {
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.dropTable('groups');
+  await queryInterface.dropTable('languagePackages');
 }
 
 module.exports = { up, down };

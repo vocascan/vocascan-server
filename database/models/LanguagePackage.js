@@ -17,6 +17,7 @@ module.exports = (sequelize) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [1, 55] },
       },
       foreignWordLanguage: {
         type: DataTypes.STRING,
@@ -29,10 +30,12 @@ module.exports = (sequelize) => {
       vocabsPerDay: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: { min: 1, max: 255 },
       },
       rightWords: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: { min: 1, max: 10 },
       },
     },
     {
@@ -42,10 +45,15 @@ module.exports = (sequelize) => {
   );
 
   LanguagePackage.associate = (db) => {
-    LanguagePackage.hasMany(db.Drawer);
-    LanguagePackage.hasMany(db.Group);
-    LanguagePackage.hasMany(db.ForeignWord);
-    LanguagePackage.hasMany(db.TranslatedWord);
+    LanguagePackage.belongsTo(db.User, { foreignKey: 'userId' });
+    LanguagePackage.belongsTo(db.Language, { foreignKey: 'foreignWordLanguage', as: 'ForeignWordLanguage' });
+    LanguagePackage.belongsTo(db.Language, { foreignKey: 'translatedWordLanguage', as: 'TranslatedWordLanguage' });
+
+    LanguagePackage.hasMany(db.Drawer, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
+    LanguagePackage.hasMany(db.Group, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
+    LanguagePackage.hasMany(db.PackageProgress, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
+    LanguagePackage.hasMany(db.Translation, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
+    LanguagePackage.hasMany(db.VocabularyCard, { foreignKey: 'languagePackageId', onDelete: 'cascade', hooks: true });
   };
 
   return LanguagePackage;

@@ -1,32 +1,24 @@
-const jwt = require('jsonwebtoken');
-
-const { getJWT } = require('../utils');
+const { parseTokenUserId } = require('../utils');
 const { User } = require('../../database');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
+const catchAsync = require('../utils/catchAsync');
 
 // Check for Authorization header and add user attribute to request object
-async function ProtectMiddleware(req, res, next) {
+const ProtectMiddleware = catchAsync(async (req, _res, next) => {
   // Break if no Authorization header is set
   if (!req.header('Authorization')) {
-    return res.status(401).send('Not authorized');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Not Authorized');
   }
-
-  const token = getJWT(req);
 
   let userId;
 
   try {
     // Read userId from token
-    userId = await new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-        if (error) {
-          reject();
-        }
-        resolve(decoded.id);
-      });
-    });
+    userId = await parseTokenUserId(req);
   } catch (err) {
     // Handle broken token
-    return res.status(400).send('Invalid auth token');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid auth token');
   }
 
   // Get user from database
@@ -37,13 +29,13 @@ async function ProtectMiddleware(req, res, next) {
   });
 
   if (!user) {
-    return res.status(400).send('Invalid auth token');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid auth token');
   }
 
   // Inject user into request object
   req.user = user;
 
   next();
-}
+});
 
 module.exports = ProtectMiddleware;

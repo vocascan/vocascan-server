@@ -1,21 +1,25 @@
-const { createUser, loginUser, validateRegister, validateLogin } = require('../Services/AuthServiceProvider');
+const {
+  createUser,
+  loginUser,
+  validateRegister,
+  validateLogin,
+  destroyUser,
+  changePassword,
+} = require('../Services/AuthServiceProvider');
 const { generateJWT, deleteKeysFromObject } = require('../utils');
+const catchAsync = require('../utils/catchAsync');
 
-async function register(req, res) {
-  if (!(await validateRegister(req, res))) {
-    return;
-  }
+const register = catchAsync(async (req, res) => {
+  await validateRegister(req, res);
 
   const user = await createUser(req.body);
   const token = generateJWT({ id: user.id });
 
   res.send({ token, user });
-}
+});
 
-async function login(req, res) {
-  if (!validateLogin(req, res)) {
-    return;
-  }
+const login = catchAsync(async (req, res) => {
+  validateLogin(req, res);
 
   const user = await loginUser(req.body, res);
 
@@ -25,14 +29,35 @@ async function login(req, res) {
 
     res.send({ token, user });
   }
-}
+});
 
-async function profile(req, res) {
+const profile = catchAsync(async (req, res) => {
   res.send(deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], req.user.toJSON()));
-}
+});
+
+const deleteUser = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+
+  await destroyUser(userId);
+
+  res.status(204).end();
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+  const { oldPassword, newPassword } = req.body;
+
+  await changePassword(userId, oldPassword, newPassword);
+
+  res.status(204).end();
+});
 
 module.exports = {
   register,
   login,
   profile,
+  deleteUser,
+  resetPassword,
 };
