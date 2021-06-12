@@ -1,39 +1,63 @@
-const { createUser, loginUser, validateRegister, validateLogin, generateToken } = require("../Services/AuthServiceProvider.js")
+const {
+  createUser,
+  loginUser,
+  validateRegister,
+  validateLogin,
+  destroyUser,
+  changePassword,
+} = require('../Services/AuthServiceProvider');
+const { generateJWT, deleteKeysFromObject } = require('../utils');
+const catchAsync = require('../utils/catchAsync');
 
-async function register(req, res) {
-    console.log("called");
-    if(!(await validateRegister(req, res))) {
-        return
-    }
+const register = catchAsync(async (req, res) => {
+  await validateRegister(req, res);
 
-    const user = await createUser(req.body)
+  const user = await createUser(req.body);
+  const token = generateJWT({ id: user.id });
 
-    const token = generateToken(user)
+  res.send({ token, user });
+});
 
-    res.send({ token, user })
-    res.end()
-}
+const login = catchAsync(async (req, res) => {
+  validateLogin(req, res);
 
-async function login(req, res) {
-    if(!validateLogin(req, res)) {
-        return
-    }
+  const user = await loginUser(req.body, res);
 
-    const user = await loginUser(req.body, res)
+  if (user) {
+    // generate JWT with userId
+    const token = generateJWT({ id: user.id });
 
-    if(user) {
-        const token = generateToken(user)
+    res.send({ token, user });
+  }
+});
 
-        res.send({ token, user })
-    }
-}
+const profile = catchAsync(async (req, res) => {
+  res.send(deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], req.user.toJSON()));
+});
 
-async function profile(req, res) {
-    res.send(req.user)
-}
+const deleteUser = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+
+  await destroyUser(userId);
+
+  res.status(204).end();
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+  const { oldPassword, newPassword } = req.body;
+
+  await changePassword(userId, oldPassword, newPassword);
+
+  res.status(204).end();
+});
 
 module.exports = {
-    register,
-    login,
-    profile
-}
+  register,
+  login,
+  profile,
+  deleteUser,
+  resetPassword,
+};

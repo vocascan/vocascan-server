@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   vocascan:
     image: vocascan/vocascan-server
@@ -7,15 +7,15 @@ services:
     depends_on:
       - db
     environment:
-      POSTGRES_IP_ADDRESS: 'db'
-      POSTGRES_DB_NAME: 'vocascan'
-      POSTGRES_USERNAME: 'vocascan'
-      POSTGRES_PASSWORD: 'vocascan'
-      POSTGRES_PORT: '5432'
-      SERVER_IP_ADDRESS: '0.0.0.0'
-      SERVER_PORT: '8000'
-      SERVER_DEBUG: 'false'
-      SECRET_KEY: ''
+      PORT: '8000'
+      DB_DIALECT: 'postgres'
+      DB_HOST: 'db'
+      DB_PORT: '5432'
+      DB_USERNAME: 'vocascan'
+      DB_PASSWORD: 'vocascan'
+      DB_DATABASE: 'vocascan'
+      SALT_ROUNDS: '10'
+      JWT_SECRET: ''
     ports:
       - '8000:8000'
   db:

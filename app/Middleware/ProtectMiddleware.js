@@ -1,57 +1,41 @@
-const jwt = require("jsonwebtoken")
-require('dotenv').config()
-
-const User = require("../../database/models/users.js")
-const { queryAsync, getJWT } = require("../utils")
+const { parseTokenUserId } = require('../utils');
+const { User } = require('../../database');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
+const catchAsync = require('../utils/catchAsync');
 
 // Check for Authorization header and add user attribute to request object
-async function ProtectMiddleware(req, res, next) {
-    // Break if no Authorization header is set
-    if(!req.header("Authorization")) {
-        res.status(401)
-        res.send("Not authorized")
-        return
-    }
+const ProtectMiddleware = catchAsync(async (req, _res, next) => {
+  // Break if no Authorization header is set
+  if (!req.header('Authorization')) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Not Authorized');
+  }
 
-    const token = getJWT(req);
+  let userId;
 
-    let userId
-    
-    try {
-        // Read userId from token
-        userId = await new Promise((resolve, reject) => {
-            jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-                if (error) reject()
-                resolve(decoded.id)
-            })
-        })
-    } catch {
-        // Handle broken token
-        res.status(400)
-        res.send("Invalid auth token")
-        return
-    }
+  try {
+    // Read userId from token
+    userId = await parseTokenUserId(req);
+  } catch (err) {
+    // Handle broken token
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid auth token');
+  }
 
-    // Get user from database
-    const row = await db.users.findAll({
-        where: {
-            id: userId
-        }
-    })
+  // Get user from database
+  const user = await User.findOne({
+    where: {
+      id: userId,
+    },
+  });
 
-    if(!row) {
-        res.status(400)
-        res.send("Invalid auth token")
-        return
-    }
-    
-    // Create user model
-    //const user = new User(row)
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid auth token');
+  }
 
-    // Inject user into request object
-    req.user = row[0]
+  // Inject user into request object
+  req.user = user;
 
-    next()
-}
+  next();
+});
 
-module.exports = ProtectMiddleware 
+module.exports = ProtectMiddleware;

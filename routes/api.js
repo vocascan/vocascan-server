@@ -1,41 +1,72 @@
+const express = require('express');
 
-const express = require("express")
+// MIDDLEWARE
+const ProtectMiddleware = require('../app/Middleware/ProtectMiddleware');
 
-const ProtectMiddleware = require("../app/Middleware/ProtectMiddleware.js")
+// CONTROLLER
+const AuthController = require('../app/Controllers/AuthController.js');
+const LanguagePackageController = require('../app/Controllers/LanguagePackageController.js');
+const GroupController = require('../app/Controllers/GroupController.js');
+const VocabularyController = require('../app/Controllers/VocabularyController.js');
+const QueryController = require('../app/Controllers/QueryController.js');
+const LanguageController = require('../app/Controllers/LanguageController.js');
+const DocsController = require('../app/Controllers/DocsController.js');
+const StatsController = require('../app/Controllers/StatsController.js');
+const InfoController = require('../app/Controllers/InfoController.js');
 
-const AuthController = require("../app/Controllers/AuthController.js")
-const CategoryController = require("../app/Controllers/CategoryController.js")
-const RecipeController = require("../app/Controllers/RecipeController.js")
-const PortionController = require("../app/Controllers/PortionController.js");
-const IngredientController = require("../app/Controllers/IngredientController.js");
-const ProfileController = require("../app/Controllers/ProfileController.js")
+const router = express.Router();
 
-const router = express.Router()
+// Auth
+router.post('/user/register', AuthController.register);
+router.post('/user/login', AuthController.login);
+router.patch('/user/reset-password', ProtectMiddleware, AuthController.resetPassword);
 
-router.post("/auth/register", AuthController.register)
-router.post("/auth/login", AuthController.login)
+// User
+router.get('/user', ProtectMiddleware, AuthController.profile);
+router.delete('/user', ProtectMiddleware, AuthController.deleteUser);
 
-router.get("/profile", ProtectMiddleware, ProfileController.sendProfile)
-router.get("/profile/recipes", ProtectMiddleware, RecipeController.sendOwnRecipes)
-router.get("/:userId/avatar", ProtectMiddleware, ProfileController.sendAvatar)
+// Stats
+router.get('/user/stats', ProtectMiddleware, StatsController.sendAccountStats);
 
-router.get("/search/profile", ProtectMiddleware, ProfileController.sendProfiles)
+// Language package
+router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
+router.get('/languagePackage', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
+router.delete(
+  '/languagePackage/:languagePackageId',
+  ProtectMiddleware,
+  LanguagePackageController.deleteLanguagePackage
+);
+router.put('/languagePackage/:languagePackageId', ProtectMiddleware, LanguagePackageController.modifyLanguagePackage);
 
-router.get("/category", ProtectMiddleware, CategoryController.sendCategories)
+// Group
+router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
+router.get('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
+router.delete('/group/:groupId', ProtectMiddleware, GroupController.deleteGroup);
+router.put('/group/:groupId', ProtectMiddleware, GroupController.modifyGroup);
 
-router.post("/recipe/add", ProtectMiddleware, RecipeController.addRecipe)
-router.get("/recipes", ProtectMiddleware, RecipeController.sendProfileRecipes)
-//return recipe with portions and ingredients
-router.get("/recipe/:userId/:recipeId", ProtectMiddleware, RecipeController.sendRecipe)
+// Vocabulary
+router.post(
+  '/languagePackage/:languagePackageId/group/:groupId/vocabulary',
+  ProtectMiddleware,
+  VocabularyController.addVocabularyCard
+);
+router.delete('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.deleteVocabularyCard);
+router.get('/group/:groupId/vocabulary', ProtectMiddleware, VocabularyController.sendGroupVocabulary);
+router.put('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.modifyVocabulary);
 
-router.post("/portion/add", ProtectMiddleware, PortionController.addPortion)
-router.get("/portions", ProtectMiddleware, PortionController.sendPortions)
+// Query
+router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);
 
-router.post("/ingredient/add", ProtectMiddleware, IngredientController.addIngredient)
-router.get("/ingredients", ProtectMiddleware, IngredientController.sendIngredients)
-router.put("/ingredient/update", ProtectMiddleware, IngredientController.sendUpdate)
+router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
 
+// Language
+router.get('/language', ProtectMiddleware, LanguageController.sendLanguages);
 
+// Docs
+router.get('/swagger.json', DocsController.document);
+router.use('/swagger', DocsController.swagger);
 
+// Info
+router.get('/info', InfoController.sendInfo);
 
-module.exports = router
+module.exports = router;

@@ -1,22 +1,19 @@
+FROM node:14-alpine as builder
+
+RUN apk add --no-cache build-base python
+
+WORKDIR /build
+
+COPY ./package*.json ./
+
+RUN npm i --only=production --sqlite
+
 FROM node:14-alpine
 
-RUN apk add --no-cache --update curl bash
 WORKDIR /app
 
-ARG NODE_ENV=development
-ARG PORT=3000
-ENV PORT=$PORT
-
-COPY package* ./
-# Install the npm packages
-RUN npm install && npm update
+COPY --from=builder /build/node_modules /app/node_modules
 
 COPY . .
-
-# Run the image as a non-root user
-RUN adduser -D myuser
-USER myuser
-
-EXPOSE $PORT
 
 CMD ["npm", "run", "start"]

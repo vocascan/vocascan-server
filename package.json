@@ -1,35 +1,49 @@
 {
-  "name": "skitchen-server",
+  "name": "vocascan-server",
   "version": "1.0.0",
-  "description": "Easily share your recipes",
+  "description": "A highly configurable vocabulary trainer",
   "main": "server.js",
   "scripts": {
-    "client-install": "cd client && npm install",
     "start": "node server.js",
-    "server": "nodemon server.js",
-    "client": "npm start --prefix client"
+    "dev": "nodemon server.js",
+    "test": "npm run lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "jwt-secret": "node ./scripts/jwt-secret.js",
+    "swagger": "swagger-ui-watcher -p 3200 ./docs/api/swagger.json",
+    "postinstall": "node -e \"process.exit(process.env.npm_config_sqlite === 'true')\" || npm i --no-save --no-package-lock sqlite3"
   },
   "author": "Noctera",
   "license": "MIT",
   "devDependencies": {
-    "nodemon": "^1.14.6",
-    "sequelize-cli": "^6.2.0"
+    "eslint": "^7.23.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
+    "sequelize-cli": "^6.2.0",
+    "swagger-ui-watcher": "^2.1.11"
   },
   "dependencies": {
-    "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
-    "concurrently": "^3.5.1",
-    "cors": "^2.8.5",
+    "chalk": "^4.1.0",
     "dotenv": "^8.1.0",
     "express": "^4.16.2",
-    "express-formidable": "^1.2.0",
-    "express-session": "^1.17.1",
+    "http-status": "^1.5.0",
     "jsonwebtoken": "^8.5.1",
-    "pg": "^7.7.1",
+    "mariadb": "^2.5.3",
+    "mysql2": "^2.2.5",
+    "pg": "^8.5.1",
     "pg-hstore": "^2.3.2",
-    "react-is": "^17.0.1",
-    "sequelize": "^4.44.4",
-    "tslib": "^2.1.0",
-    "umzug": "^2.3.0"
+    "sequelize": "^6.6.2",
+    "swagger-ui-express": "^4.1.6",
+    "umzug": "^3.0.0-beta.15",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=12.0.0"
   }
 }

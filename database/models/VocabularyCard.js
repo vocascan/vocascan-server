@@ -1,0 +1,68 @@
+const { DataTypes, UUIDV4 } = require('sequelize');
+
+module.exports = (sequelize) => {
+  const VocabularyCard = sequelize.define(
+    'VocabularyCard',
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: UUIDV4,
+        allowNull: false,
+        primaryKey: true,
+      },
+      userId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      languagePackageId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      groupId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      drawerId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: { len: [1, 255] },
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: { len: [0, 255] },
+      },
+      lastQuery: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      lastQueryCorrect: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      tableName: 'vocabularyCards',
+    }
+  );
+
+  VocabularyCard.associate = (db) => {
+    VocabularyCard.belongsTo(db.User, { foreignKey: 'userId' });
+    VocabularyCard.belongsTo(db.LanguagePackage, { foreignKey: 'languagePackageId' });
+    VocabularyCard.belongsTo(db.Group, { foreignKey: 'groupId' });
+    VocabularyCard.belongsTo(db.Drawer, { foreignKey: 'drawerId' });
+
+    VocabularyCard.hasMany(db.Translation, { foreignKey: 'vocabularyCardId', onDelete: 'cascade', hooks: true });
+  };
+
+  return VocabularyCard;
+};
