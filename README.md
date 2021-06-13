@@ -12,7 +12,7 @@ Server for Vocascan
 
 ## Table of Contents
 
-Vocascan is a highly configurable vocabulary trainer. You can learn your vocabulary synchronized via computer and smartphone at any time. But why Vocascan? There are many ways to adapt the trainer to your preferences and learning strategies, for example by adjusting the time spans of the individual boxes or by determining how many correct translations you need to make the pair
+Finally the time has come. The first release of Vocascan is ready. Vocascan is a server-client vocabulary trainer that is intended to give the user many setting options so that he can adapt it to his personal learning strategies and habits. All the basic functions of a vocabulary trainer are currently built in, making it fully functional. However, there are still many more features to come. Due to the data protection guidelines, we cannot yet provide a public server, which means that you currently have to host it yourself. But we are working as quickly as possible to use the trainer offline.
 
 
 
@@ -31,7 +31,7 @@ Vocascan is a highly configurable vocabulary trainer. You can learn your vocabul
 ## Installation
 
 
-For a detailed installation guide visit the [wiki](https://github.com/vocascan/vocascan-server/wiki/Installation)
+For a detailed installation guide refer to our [docs](https://vocascan.github.io/documentation/#/vocascan-server/installation)
 
 ## Usage
 
