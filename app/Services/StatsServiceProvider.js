@@ -168,7 +168,7 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
         ],
     where: {
       userId,
-      date: new Date(),
+      date: new Date().setHours(0, 0, 0, 0),
       ...(languagePackageId ? { languagePackageId } : {}),
     },
   });
@@ -177,7 +177,7 @@ async function getNumberOfLearnedTodayVocabulary({ languagePackageId = null, use
     const progress = number.toJSON();
 
     if (progress.correct !== null && progress.wrong !== null) {
-      const dueToday = languagePackage.vocabsPerDay - progress.correct;
+      const dueToday = languagePackage.vocabsPerDay - progress.correct - progress.wrong;
 
       return {
         dueToday: dueToday > 0 ? dueToday : 0,
