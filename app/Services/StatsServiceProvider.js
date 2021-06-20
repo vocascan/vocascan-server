@@ -17,7 +17,7 @@ async function getNumberOfGroups({ userId, active = null }) {
   const number = await Group.count({
     where: {
       userId,
-      ...(active ? { active: true } : {}),
+      ...(active === null ? {} : { active }),
     },
   });
   return number;
