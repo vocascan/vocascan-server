@@ -1,6 +1,4 @@
 const { VocabularyCard, Translation, Group, LanguagePackage } = require('../../database');
-const ApiError = require('../utils/ApiError.js');
-const httpStatus = require('http-status');
 
 // get every vocabulary of a group
 async function getAllGroupVocabulary(userId, groupId) {
