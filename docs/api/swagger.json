@@ -15,7 +15,9 @@
     "/swagger.json": {
       "get": {
         "summary": "Returns this RAW swagger.json file",
-        "tags": ["miscellaneous"],
+        "tags": [
+          "miscellaneous"
+        ],
         "operationId": "getSwaggerFile",
         "security": [],
         "responses": {
@@ -25,10 +27,12 @@
         }
       }
     },
-    "/api/user/register": {
+    "/user/register": {
       "post": {
         "summary": "Register new user",
-        "tags": ["AUTH"],
+        "tags": [
+          "auth"
+        ],
         "operationId": "userRegister",
         "security": [],
         "requestBody": {
@@ -44,10 +48,12 @@
         }
       }
     },
-    "/api/user/login": {
+    "/user/login": {
       "post": {
         "summary": "Login user",
-        "tags": ["AUTH"],
+        "tags": [
+          "auth"
+        ],
         "operationId": "userLogin",
         "security": [],
         "requestBody": {
@@ -69,10 +75,12 @@
         }
       }
     },
-    "/api/user": {
+    "/user": {
       "get": {
         "summary": "Get own profile",
-        "tags": ["AUTH"],
+        "tags": [
+          "user"
+        ],
         "operationId": "getUserProfile",
         "responses": {
           "200": {
@@ -86,10 +94,11 @@
           }
         }
       },
-
       "delete": {
         "summary": "Delete user",
-        "tags": ["DELETE"],
+        "tags": [
+          "user"
+        ],
         "operationId": "deleteUser",
         "security": [],
         "description": "Nothing needed. UserId gets parsed from JWT",
@@ -109,10 +118,40 @@
         }
       }
     },
-    "/api/languagePackage": {
+    "/user/password/reset": {
+      "post": {
+        "summary": "Reset user password",
+        "tags": [
+          "auth"
+        ],
+        "operationId": "resetPassword",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ResetPassword"
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/languagePackage": {
       "post": {
         "summary": "Create language package for user",
-        "tags": ["CREATE"],
+        "description": "foreignWordLanguage and translatedWordLanguage have to be the exact language keys as you get from /api/language",
+        "tags": [
+          "language package"
+        ],
         "operationId": "createLanguagePackage",
         "security": [],
         "requestBody": {
@@ -133,15 +172,19 @@
           }
         }
       },
-
       "get": {
         "summary": "Get all language packages",
-        "tags": ["GET"],
+        "tags": [
+          "language package"
+        ],
         "operationId": "getLanguagePackage",
         "parameters": [
-          {"$ref": "#/components/parameters/groups"},
-          {"$ref": "#/components/parameters/stats"}
-
+          {
+            "$ref": "#/components/parameters/groups"
+          },
+          {
+            "$ref": "#/components/parameters/stats"
+          }
         ],
         "security": [],
         "responses": {
@@ -160,10 +203,12 @@
         }
       }
     },
-    "/api/user/stats": {
+    "/user/stats": {
       "get": {
         "summary": "Get stats about user",
-        "tags": ["GET"],
+        "tags": [
+          "stats"
+        ],
         "operationId": "getUserStats",
         "security": [],
         "responses": {
@@ -182,14 +227,18 @@
         }
       }
     },
-    "/api/languagePackage/{languagePackageId}/group": {
+    "/languagePackage/{languagePackageId}/group": {
       "post": {
         "summary": "Create group for language package",
-        "tags": ["CREATE"],
+        "tags": [
+          "group"
+        ],
         "operationId": "createGroup",
         "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/languagePackageId"}
+          {
+            "$ref": "#/components/parameters/languagePackageId"
+          }
         ],
         "requestBody": {
           "$ref": "#/components/requestBodies/CreateGroup"
@@ -209,15 +258,17 @@
           }
         }
       },
-
       "get": {
         "summary": "Get groups belonging to language package",
-        "tags": ["GET"],
+        "tags": [
+          "group"
+        ],
         "operationId": "getGroups",
         "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/languagePackageId"}
-
+          {
+            "$ref": "#/components/parameters/languagePackageId"
+          }
         ],
         "responses": {
           "200": {
@@ -235,17 +286,27 @@
         }
       }
     },
-    "/api/languagePackage/{languagePackageId}/group/{groupId}/vocabulary": {
+    "/languagePackage/{languagePackageId}/group/{groupId}/vocabulary": {
       "post": {
         "summary": "Create vocabulary card",
-        "tags": ["CREATE"],
+        "tags": [
+          "vocabulary"
+        ],
         "operationId": "createVocabulary",
         "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/languagePackageId"},
-          {"$ref": "#/components/parameters/groupId"},
-          {"$ref": "#/components/parameters/active"},
-          {"$ref": "#/components/parameters/activate"}
+          {
+            "$ref": "#/components/parameters/languagePackageId"
+          },
+          {
+            "$ref": "#/components/parameters/groupId"
+          },
+          {
+            "$ref": "#/components/parameters/active"
+          },
+          {
+            "$ref": "#/components/parameters/activate"
+          }
         ],
         "requestBody": {
           "$ref": "#/components/requestBodies/CreateVocabulary"
@@ -266,13 +327,19 @@
         }
       }
     },
-    "/api/group/{groupId}/vocabulary": {
+    "/group/{groupId}/vocabulary": {
       "get": {
         "summary": "Get all vocabulary belonging to specific group",
-        "tags": ["GET"],
+        "tags": [
+          "vocabulary"
+        ],
         "operationId": "getGroupVocabulary",
         "security": [],
-        "parameters": [{ "$ref": "#/components/parameters/groupId"}],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/groupId"
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetGroupVocabulary"
@@ -289,17 +356,24 @@
         }
       }
     },
-    "/api/languagePackage/{languagePackageId}/query": {
+    "/languagePackage/{languagePackageId}/query": {
       "get": {
         "summary": "Get vocabulary where timer from last query expired. Only as many words are returned as specified in the limit.",
-        "tags": ["QUERY"],
+        "tags": [
+          "query"
+        ],
         "operationId": "startQuery",
         "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/languagePackageId"},
-          {"$ref": "#/components/parameters/limit"},
-          {"$ref": "#/components/parameters/staged"}
-
+          {
+            "$ref": "#/components/parameters/languagePackageId"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/staged"
+          }
         ],
         "responses": {
           "200": {
@@ -317,13 +391,46 @@
         }
       }
     },
-    "/api/vocabulary/{vocabularyId}": {
+    "/vocabulary/{vocabularyId}": {
       "delete": {
         "summary": "Delete vocabulary card",
-        "tags": ["DELETE"],
+        "tags": [
+          "vocabulary"
+        ],
         "operationId": "deleteVocabulary",
         "security": [],
-        "parameters": [{ "$ref": "#/components/parameters/vocabularyId"}],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/vocabularyId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "put": {
+        "summary": "Modify vocabulary card",
+        "tags": [
+          "vocabulary"
+        ],
+        "operationId": "modifyVocabulary",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/vocabularyId"
+          }
+        ],
         "responses": {
           "204": {
             "$ref": "#/components/responses/204"
@@ -341,13 +448,21 @@
       },
       "patch": {
         "summary": "Handles your result. moves vocabulary in the drawers depending on whether they were answered correctly or incorrectly",
-        "tags": ["VALIDATION"],
+        "tags": [
+          "query"
+        ],
         "operationId": "checkVocabulary",
         "security": [],
         "parameters": [
-          {"$ref": "#/components/parameters/vocabularyId"},
-          {"$ref": "#/components/parameters/answer"},
-          {"$ref": "#/components/parameters/progress"}
+          {
+            "$ref": "#/components/parameters/vocabularyId"
+          },
+          {
+            "$ref": "#/components/parameters/answer"
+          },
+          {
+            "$ref": "#/components/parameters/progress"
+          }
         ],
         "responses": {
           "204": {
@@ -363,36 +478,21 @@
             "$ref": "#/components/responses/404"
           }
         }
-      },
-      "put": {
-        "summary": "Modify vocabulary card",
-        "tags": ["MODIFY"],
-        "operationId": "modifyVocabulary",
-        "security": [],
-        "parameters": [{ "$ref": "#/components/parameters/vocabularyId"}],
-        "responses": {
-          "204": {
-            "$ref": "#/components/responses/204"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          }
-        }
       }
     },
-    "/api/group/{groupId}": {
+    "/group/{groupId}": {
       "delete": {
         "summary": "Delete group",
-        "tags": ["DELETE"],
+        "tags": [
+          "group"
+        ],
         "operationId": "deleteGroup",
         "security": [],
-        "parameters": [{ "$ref": "#/components/parameters/groupId"}],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/groupId"
+          }
+        ],
         "responses": {
           "204": {
             "$ref": "#/components/responses/204"
@@ -410,10 +510,16 @@
       },
       "put": {
         "summary": "Modify group",
-        "tags": ["MODIFY"],
+        "tags": [
+          "group"
+        ],
         "operationId": "modifyGroup",
         "security": [],
-        "parameters": [{ "$ref": "#/components/parameters/groupId"}],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/groupId"
+          }
+        ],
         "responses": {
           "204": {
             "$ref": "#/components/responses/204"
@@ -430,13 +536,19 @@
         }
       }
     },
-    "/api/languagePackage/{languagePackageId}": {
+    "/languagePackage/{languagePackageId}": {
       "delete": {
         "summary": "Delete language package",
-        "tags": ["DELETE"],
+        "tags": [
+          "language package"
+        ],
         "operationId": "deleteLanguagePackage",
         "security": [],
-        "parameters": [{ "$ref": "#/components/parameters/languagePackageId"}],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/languagePackageId"
+          }
+        ],
         "responses": {
           "204": {
             "$ref": "#/components/responses/204"
@@ -454,11 +566,14 @@
       },
       "put": {
         "summary": "Modify a language package",
-        "tags": ["MODIFY"],
+        "tags": [
+          "language package"
+        ],
         "operationId": "modifyLanguagePackage",
         "parameters": [
-          {"$ref": "#/components/parameters/languagePackageId"}
-
+          {
+            "$ref": "#/components/parameters/languagePackageId"
+          }
         ],
         "security": [],
         "responses": {
@@ -477,15 +592,55 @@
         }
       }
     },
-    "/api/info": {
+    "/info": {
       "get": {
         "summary": "Get server info",
-        "tags": ["INFO"],
+        "tags": [
+          "info"
+        ],
         "operationId": "getServerInfo",
         "security": [],
         "responses": {
           "204": {
             "$ref": "#/components/responses/GetServerInfo"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/language": {
+      "get": {
+        "summary": "Get available languages and their specific country code",
+        "tags": [
+          "util"
+        ],
+        "operationId": "getLanguages",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/name"
+          },
+          {
+            "$ref": "#/components/parameters/code"
+          },
+          {
+            "$ref": "#/components/parameters/nativeNames"
+          },
+          {
+            "$ref": "#/components/parameters/rtl"
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetLanguage"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -626,7 +781,6 @@
                   "type": "string"
                 }
               }
-                
             }
           }
         }
@@ -648,7 +802,7 @@
                 "type": "string"
               }
             }
-          }        
+          }
         }
       },
       "Info": {
@@ -665,8 +819,31 @@
             "type": "string"
           }
         }
+      },
+      "Language": {
+        "description": "Language",
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nativeNames": {
+            "type": "array",
+            "items": {
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "rtl": {
+            "type": "boolean"
+          }
+        }
       }
-    },    
+    },
     "parameters": {
       "languagePackageId": {
         "in": "path",
@@ -762,6 +939,38 @@
         "schema": {
           "type": "boolean"
         }
+      },
+      "name": {
+        "in": "query",
+        "name": "name",
+        "description": "decides if name gets returned",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "code": {
+        "in": "query",
+        "name": "code",
+        "description": "decides if code gets returned",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "nativeNames": {
+        "in": "query",
+        "name": "nativeNames",
+        "description": "decides if nativeNames gets returned",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "rtl": {
+        "in": "query",
+        "name": "rtl",
+        "description": "decides if rtl gets returned. Rtl describes if a language is a rigth-to-left language or not",
+        "schema": {
+          "type": "boolean"
+        }
       }
     },
     "requestBodies": {
@@ -772,7 +981,10 @@
             "schema": {
               "description": "Register User details",
               "type": "object",
-              "required": ["email", "password"],
+              "required": [
+                "email",
+                "password"
+              ],
               "properties": {
                 "email": {
                   "type": "string",
@@ -791,6 +1003,30 @@
           }
         }
       },
+      "ResetPassword": {
+        "description": "New password details. No verification so we still have to type in the old password to replace it. This is does not work if you forgot your password",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "password details",
+              "type": "object",
+              "required": [
+                "password"
+              ],
+              "properties": {
+                "oldPassword": {
+                  "type": "string",
+                  "format": "password"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "format": "password"
+                }
+              }
+            }
+          }
+        }
+      },
       "UserLogin": {
         "description": "Login User details",
         "content": {
@@ -798,7 +1034,10 @@
             "schema": {
               "description": "Login User details",
               "type": "object",
-              "required": ["email", "password"],
+              "required": [
+                "email",
+                "password"
+              ],
               "properties": {
                 "email": {
                   "type": "string",
@@ -820,7 +1059,13 @@
             "schema": {
               "description": "Create language package details",
               "type": "object",
-              "required": ["name", "foreignWordLanguage", "translatedWordLanguage", "vocabsPerDay", "rightWords"],
+              "required": [
+                "name",
+                "foreignWordLanguage",
+                "translatedWordLanguage",
+                "vocabsPerDay",
+                "rightWords"
+              ],
               "properties": {
                 "name": {
                   "type": "string"
@@ -849,7 +1094,10 @@
             "schema": {
               "description": "Create group details",
               "type": "object",
-              "required": ["name", "active"],
+              "required": [
+                "name",
+                "active"
+              ],
               "properties": {
                 "name": {
                   "type": "string"
@@ -872,7 +1120,10 @@
             "schema": {
               "description": "Create vocabulary details",
               "type": "object",
-              "required": ["name", "active"],
+              "required": [
+                "name",
+                "active"
+              ],
               "properties": {
                 "name": {
                   "type": "string"
@@ -893,7 +1144,6 @@
                     }
                   }
                 }
-                
               }
             }
           }
@@ -908,7 +1158,9 @@
             "schema": {
               "type": "object",
               "properties": {
-                "user": { "$ref": "#/components/schemas/User" },
+                "user": {
+                  "$ref": "#/components/schemas/User"
+                },
                 "token": {
                   "type": "string"
                 }
@@ -940,7 +1192,7 @@
         "content": {
           "application/json": {
             "schema": {
-                "$ref": "#/components/schemas/LanguagePackage"
+              "$ref": "#/components/schemas/LanguagePackage"
             }
           }
         }
@@ -950,7 +1202,7 @@
         "content": {
           "application/json": {
             "schema": {
-                "$ref": "#/components/schemas/Group"
+              "$ref": "#/components/schemas/Group"
             }
           }
         }
@@ -960,7 +1212,7 @@
         "content": {
           "application/json": {
             "schema": {
-                "$ref": "#/components/schemas/Vocabulary"
+              "$ref": "#/components/schemas/Vocabulary"
             }
           }
         }
@@ -970,39 +1222,39 @@
         "content": {
           "application/json": {
             "schema": {
-            "type": "array",
+              "type": "array",
               "items": {
                 "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "foreignWordLanguage": {
-                      "type": "string"
-                    },
-                    "translatedWordLanguage": {
-                      "type": "string"
-                    },
-                    "vocabsPerDay": {
-                      "type": "integer"
-                    },
-                    "rightWords": {
-                      "type": "integer"
-                    },
-                    "Groups": { 
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Group"
-                      }
-                    },
-                    "stats": {"$ref": "#/components/schemas/Stats"}
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "foreignWordLanguage": {
+                    "type": "string"
+                  },
+                  "translatedWordLanguage": {
+                    "type": "string"
+                  },
+                  "vocabsPerDay": {
+                    "type": "integer"
+                  },
+                  "rightWords": {
+                    "type": "integer"
+                  },
+                  "Groups": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Group"
+                    }
+                  },
+                  "stats": {
+                    "$ref": "#/components/schemas/Stats"
                   }
-                  
-                  
+                }
               }
             }
           }
@@ -1046,7 +1298,7 @@
                   "properties": {
                     "all": {
                       "type": "integer"
-                    } 
+                    }
                   }
                 },
                 "groups": {
@@ -1141,6 +1393,19 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "GetLanguage": {
+        "description": "Returns supported languages and the country code",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Language"
+              }
             }
           }
         }
