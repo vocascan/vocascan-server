@@ -76,24 +76,6 @@
       }
     },
     "/user": {
-      "get": {
-        "summary": "Get own profile",
-        "tags": [
-          "user"
-        ],
-        "operationId": "getUserProfile",
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/User"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
-          }
-        }
-      },
       "delete": {
         "summary": "Delete user",
         "tags": [
@@ -148,7 +130,6 @@
     "/languagePackage": {
       "post": {
         "summary": "Create language package for user",
-        "description": "foreignWordLanguage and translatedWordLanguage have to be the exact language keys as you get from /api/language",
         "tags": [
           "language package"
         ],
@@ -302,9 +283,6 @@
             "$ref": "#/components/parameters/groupId"
           },
           {
-            "$ref": "#/components/parameters/active"
-          },
-          {
             "$ref": "#/components/parameters/activate"
           }
         ],
@@ -431,6 +409,9 @@
             "$ref": "#/components/parameters/vocabularyId"
           }
         ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ModifyVocabulary"
+        },
         "responses": {
           "204": {
             "$ref": "#/components/responses/204"
@@ -465,8 +446,11 @@
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "$ref": "#/components/responses/CheckQuery"
+          },
+          "204": {
+            "$ref": "#/components/responses/204"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -520,6 +504,9 @@
             "$ref": "#/components/parameters/groupId"
           }
         ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ModifyGroup"
+        },
         "responses": {
           "204": {
             "$ref": "#/components/responses/204"
@@ -575,9 +562,12 @@
             "$ref": "#/components/parameters/languagePackageId"
           }
         ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ModifyLanguagePackage"
+        },
         "security": [],
         "responses": {
-          "200": {
+          "204": {
             "$ref": "#/components/responses/204"
           },
           "400": {
@@ -704,6 +694,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "languagePackageId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "name": {
             "type": "string"
           },
@@ -760,9 +754,6 @@
         "description": "Vocabulary",
         "type": "object",
         "properties": {
-          "stage": {
-            "type": "integer"
-          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -773,7 +764,39 @@
           "description": {
             "type": "string"
           },
-          "Translations": {
+          "active": {
+            "type": "boolean"
+          },
+          "translations": {
+            "type": "array",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VocabularyQueried": {
+        "description": "Vocabulary",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "translations": {
             "type": "array",
             "items": {
               "properties": {
@@ -1053,36 +1076,23 @@
         }
       },
       "CreateLanguagePackage": {
-        "description": "Create language package details",
+        "description": "foreignWordLanguage and translatedWordLanguage have to be the exact country codes as you get from /api/language",
         "content": {
           "application/json": {
             "schema": {
               "description": "Create language package details",
-              "type": "object",
-              "required": [
-                "name",
-                "foreignWordLanguage",
-                "translatedWordLanguage",
-                "vocabsPerDay",
-                "rightWords"
-              ],
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "foreignWordLanguage": {
-                  "type": "string"
-                },
-                "translatedWordLanguage": {
-                  "type": "string"
-                },
-                "vocabsPerDay": {
-                  "type": "integer"
-                },
-                "rightWords": {
-                  "type": "integer"
-                }
-              }
+              "$ref": "#/components/schemas/LanguagePackage"
+            }
+          }
+        }
+      },
+      "ModifyLanguagePackage": {
+        "description": "foreignWordLanguage and translatedWordLanguage have to be the exact country codes as you get from /api/language",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create language package details",
+              "$ref": "#/components/schemas/LanguagePackage"
             }
           }
         }
@@ -1113,7 +1123,69 @@
           }
         }
       },
+      "ModifyGroup": {
+        "description": "Modify group details",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Modify group details",
+              "type": "object",
+              "required": [
+                "name",
+                "active"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
       "CreateVocabulary": {
+        "description": "add foreign word and translations",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create vocabulary details",
+              "type": "object",
+              "required": [
+                "name",
+                "active"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "translations": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ModifyVocabulary": {
         "description": "add foreign word and translations",
         "content": {
           "application/json": {
@@ -1361,7 +1433,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/components/schemas/Vocabulary"
+                "$ref": "#/components/schemas/VocabularyQueried"
               }
             }
           }
