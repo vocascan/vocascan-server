@@ -12,16 +12,20 @@ module.exports = (sequelize) => {
       },
       username: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
         validate: { len: [2, 32] },
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: { len: [1, 255] },
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: { len: [8, 255] },
       },
       roleId: {
         type: DataTypes.UUID,

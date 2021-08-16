@@ -165,7 +165,7 @@ async function countLearned({ userId, vocabularyCard, correct }) {
     where: {
       userId,
       languagePackageId: vocabularyCard.languagePackageId,
-      date: new Date(),
+      date: new Date().setHours(0, 0, 0, 0),
     },
   });
 
@@ -229,12 +229,19 @@ async function handleCorrectQuery(userId, vocabularyCardId) {
   }
 
   // update drawerId for vocabulary card
-  const lastQuery = new Date();
-  const lastQueryCorrect = new Date();
-  const drawerId = drawer.id;
-
   await vocabularyCard.update(
-    { lastQuery, lastQueryCorrect, drawerId },
+    {
+      // only count as correct if it wasn't in staged drawer
+      ...(vocabularyCard.Drawer.stage > 0
+        ? {
+            lastQuery: new Date(),
+            lastQueryCorrect: new Date(),
+          }
+        : {}),
+
+      // check if vocab already has been queried today -> don't move into another stage
+      ...(!isToday(vocabularyCard.lastQuery) ? { drawerId: drawer.id } : null),
+    },
     {
       fields: ['lastQuery', 'lastQueryCorrect', 'drawerId'],
     }
@@ -250,7 +257,7 @@ async function handleWrongQuery(userId, vocabularyCardId) {
     include: [
       {
         model: Drawer,
-        attributes: ['queryInterval'],
+        attributes: ['queryInterval', 'stage'],
       },
     ],
     where: {
@@ -278,16 +285,21 @@ async function handleWrongQuery(userId, vocabularyCardId) {
     where: {
       userId,
       languagePackageId: vocabularyCard.languagePackageId,
-      stage: 1,
+      stage: vocabularyCard.Drawer.stage > 0 ? 1 : 0,
     },
   });
 
   // update drawerId for vocabulary card
-  const lastQuery = new Date();
-  const drawerId = drawer.id;
-
   await vocabularyCard.update(
-    { lastQuery, drawerId },
+    {
+      // only count as correct if it wasn't in staged drawer
+      ...(vocabularyCard.Drawer.stage > 0
+        ? {
+            lastQuery: new Date(),
+          }
+        : {}),
+      drawerId: drawer.id,
+    },
     {
       fields: ['lastQuery', 'drawerId'],
     }

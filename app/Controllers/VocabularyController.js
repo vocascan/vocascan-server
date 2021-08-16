@@ -52,9 +52,9 @@ const modifyVocabulary = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { vocabularyId } = req.params;
 
-  const vocabulary = await updateVocabulary(req.body, userId, vocabularyId);
+  await updateVocabulary(req.body, userId, vocabularyId);
 
-  res.send(vocabulary);
+  res.status(204).send();
 });
 
 module.exports = {

@@ -24,10 +24,20 @@ async function up({ context: queryInterface }) {
     foreignWordLanguage: {
       type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: 'languages',
+        key: 'code',
+        as: 'foreignWordLanguage',
+      },
     },
     translatedWordLanguage: {
       type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: 'languages',
+        key: 'code',
+        as: 'translatedWordLanguage',
+      },
     },
     vocabsPerDay: {
       type: DataTypes.INTEGER,

@@ -4,6 +4,7 @@ const {
   validateRegister,
   validateLogin,
   destroyUser,
+  changePassword,
 } = require('../Services/AuthServiceProvider');
 const { generateJWT, deleteKeysFromObject } = require('../utils');
 const catchAsync = require('../utils/catchAsync');
@@ -43,9 +44,20 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(204).end();
 });
 
+const resetPassword = catchAsync(async (req, res) => {
+  // get userId from request
+  const userId = req.user.id;
+  const { oldPassword, newPassword } = req.body;
+
+  await changePassword(userId, oldPassword, newPassword);
+
+  res.status(204).end();
+});
+
 module.exports = {
   register,
   login,
   profile,
   deleteUser,
+  resetPassword,
 };
