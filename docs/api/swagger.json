@@ -25,6 +25,29 @@
                 }
             }
         },
+        "/info": {
+            "get": {
+                "summary": "Get server info",
+                "tags": [
+                    "miscellaneous"
+                ],
+                "operationId": "getServerInfo",
+                "responses": {
+                    "204": {
+                        "$ref": "#/components/responses/GetServerInfo"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                }
+            }
+        },
         "/user/register": {
             "post": {
                 "summary": "Register new user",
@@ -528,29 +551,6 @@
                 "responses": {
                     "204": {
                         "$ref": "#/components/responses/204"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/400"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/401"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/404"
-                    }
-                }
-            }
-        },
-        "/info": {
-            "get": {
-                "summary": "Get server info",
-                "tags": [
-                    "info"
-                ],
-                "operationId": "getServerInfo",
-                "responses": {
-                    "204": {
-                        "$ref": "#/components/responses/GetServerInfo"
                     },
                     "400": {
                         "$ref": "#/components/responses/400"
