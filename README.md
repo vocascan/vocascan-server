@@ -7,6 +7,7 @@ Server for Vocascan
 ![Github forks](https://img.shields.io/github/forks/vocascan/Vocascan-server?style=flat-square)
 ![Github downloads](https://img.shields.io/github/downloads/vocascan/Vocascan-server/total?label=Downloads)
 ![Docker Image](https://img.shields.io/github/workflow/status/vocascan/vocascan-server/docker?label=Build&style=flat-square)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2bdac6387ec9a81d64a1/maintainability)](https://codeclimate.com/github/vocascan/vocascan-server/maintainability)
 
 ![cover](./images/vocascan-server-cover.png)
 
