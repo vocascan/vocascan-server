@@ -5,10 +5,20 @@
         "description": "A highly configurable vocabulary trainer.",
         "version": "1.0.0"
     },
-    "servers": [{
-        "description": "localhost",
-        "url": "http://localhost:5000/api"
-    }],
+    "servers": [
+        {
+            "description": "current",
+            "url": "/api"
+        },
+        {
+            "description": "localhost",
+            "url": "http://localhost:5000/api"
+        }
+    ],
+    "externalDocs": {
+        "url": "https://docs.vocascan.com",
+        "description": "Vocascan Documentation"
+    },
     "paths": {
         "/swagger.json": {
             "get": {
