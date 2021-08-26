@@ -16,6 +16,23 @@ function validateAuth(req) {
   return true;
 }
 
+// check if user is an admin or not
+const checkIfAdmin = async (id) => {
+  const user = await User.findOne({
+    include: [
+      {
+        model: Role,
+        attributes: ['adminRights'],
+      },
+    ],
+    where: {
+      id,
+    },
+  });
+
+  return user.Role.adminRights;
+};
+
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   // if server is locked check for invite codes
@@ -178,4 +195,5 @@ module.exports = {
   destroyUser,
   changePassword,
   checkPasswordValid,
+  checkIfAdmin,
 };

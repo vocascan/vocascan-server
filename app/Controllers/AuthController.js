@@ -5,6 +5,7 @@ const {
   validateLogin,
   destroyUser,
   changePassword,
+  checkIfAdmin,
 } = require('../Services/AuthServiceProvider');
 const { generateJWT, deleteKeysFromObject } = require('../utils');
 const catchAsync = require('../utils/catchAsync');
@@ -13,7 +14,7 @@ const register = catchAsync(async (req, res) => {
   await validateRegister(req, res);
 
   const user = await createUser(req.body);
-  const token = generateJWT({ id: user.id });
+  const token = generateJWT({ id: user.id, isAdmin: checkIfAdmin(user.id) });
 
   res.send({ token, user });
 });
@@ -25,7 +26,7 @@ const login = catchAsync(async (req, res) => {
 
   if (user) {
     // generate JWT with userId
-    const token = generateJWT({ id: user.id });
+    const token = generateJWT({ id: user.id, isAdmin: await checkIfAdmin(user.id) });
 
     res.send({ token, user });
   }
