@@ -20,15 +20,15 @@ const validateInviteCode = async (code) => {
   });
 
   if (!inviteCode) {
-    throw new ApiError(httpStatus.CONFLICT, 'Invite code does not exist');
+    throw new ApiError(httpStatus.CONFLICT, 'Invite code does not exist', 'notExisting');
   }
 
   if (inviteCode.maxUses !== null && inviteCode.maxUses - inviteCode.used === 0) {
-    throw new ApiError(httpStatus.CONFLICT, 'No invites left');
+    throw new ApiError(httpStatus.CONFLICT, 'No invites left', 'used');
   }
 
   if (inviteCode.expirationDate !== null && inviteCode.expirationDate >= new Date()) {
-    throw new ApiError(httpStatus.CONFLICT, 'Invite code expired');
+    throw new ApiError(httpStatus.CONFLICT, 'Invite code expired', 'expired');
   }
 
   return true;
