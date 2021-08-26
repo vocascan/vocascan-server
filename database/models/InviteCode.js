@@ -24,12 +24,8 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
       expirationDate: {
-        type: DataTypes.Date,
+        type: DataTypes.DATE,
         allowNull: true,
-      },
-      active: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
       },
     },
     {
