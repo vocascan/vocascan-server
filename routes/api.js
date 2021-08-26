@@ -75,5 +75,6 @@ router.get('/info', InfoController.sendInfo);
 router.post('/inviteCode', AdminMiddleware, InviteCodeController.addInviteCode);
 router.delete('/inviteCode/:inviteCode', AdminMiddleware, InviteCodeController.deleteInviteCode);
 router.get('/inviteCode', AdminMiddleware, InviteCodeController.sendInviteCodes);
+router.get('/inviteCode/:inviteCode', InviteCodeController.checkInviteCode);
 
 module.exports = router;

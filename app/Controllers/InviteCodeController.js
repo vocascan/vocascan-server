@@ -1,4 +1,9 @@
-const { createInviteCode, destroyInviteCode, getInviteCodes } = require('../Services/InviteCodeProvider.js');
+const {
+  createInviteCode,
+  destroyInviteCode,
+  getInviteCodes,
+  validateInviteCode,
+} = require('../Services/InviteCodeProvider.js');
 const catchAsync = require('../utils/catchAsync');
 
 const addInviteCode = catchAsync(async (req, res) => {
@@ -24,8 +29,15 @@ const sendInviteCodes = catchAsync(async (req, res) => {
   res.send(inviteCodes);
 });
 
+const checkInviteCode = catchAsync(async (req, res) => {
+  const usable = await validateInviteCode(req.params.inviteCode);
+
+  res.send(usable);
+});
+
 module.exports = {
   addInviteCode,
   deleteInviteCode,
   sendInviteCodes,
+  checkInviteCode,
 };
