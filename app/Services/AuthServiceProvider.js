@@ -105,7 +105,11 @@ async function createUser({ username, email, password }) {
     roleId: role.id,
   });
 
-  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
+  // add flag if user is admin
+  const isAdmin = await checkIfAdmin(user.id);
+  const tempUser = { ...user.toJSON(), isAdmin };
+
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], tempUser);
 }
 
 // Log user in
@@ -130,8 +134,11 @@ async function loginUser({ email, password }) {
   if (!isPasswordValid) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password', 'password');
   }
+  // add flag if user is admin
+  const isAdmin = await checkIfAdmin(user.id);
+  const tempUser = { ...user.toJSON(), isAdmin };
 
-  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
+  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], tempUser);
 }
 
 async function destroyUser(userId) {
