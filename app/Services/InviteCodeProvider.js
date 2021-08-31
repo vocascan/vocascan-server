@@ -8,7 +8,7 @@ const createInviteCode = async ({ maxUses, expirationDate }) => {
   const inviteCode = await InviteCode.create({
     used: 0,
     maxUses,
-    expirationDate,
+    ...(expirationDate === 'never' ? null : expirationDate),
   });
   return deleteKeysFromObject(['createdAt', 'updatedAt'], inviteCode.toJSON());
 };
