@@ -5,10 +5,11 @@ const { deleteKeysFromObject } = require('../utils');
 const { Sequelize } = require('sequelize');
 
 const createInviteCode = async ({ maxUses, expirationDate }) => {
+  // if expiration date is lower than actuall date
   const inviteCode = await InviteCode.create({
     used: 0,
     maxUses,
-    ...(expirationDate === 'never' ? null : expirationDate),
+    expirationDate: expirationDate < new Date() ? null : expirationDate,
   });
   return deleteKeysFromObject(['createdAt', 'updatedAt'], inviteCode.toJSON());
 };
