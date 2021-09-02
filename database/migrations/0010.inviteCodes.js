@@ -8,10 +8,10 @@ async function up({ context: queryInterface }) {
       primaryKey: true,
     },
     code: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    used: {
+    uses: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

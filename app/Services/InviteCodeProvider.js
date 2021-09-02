@@ -7,7 +7,7 @@ const { Sequelize } = require('sequelize');
 const createInviteCode = async ({ maxUses, expirationDate }) => {
   // if expiration date is lower than actuall date
   const inviteCode = await InviteCode.create({
-    used: 0,
+    uses: 0,
     maxUses,
     expirationDate: expirationDate < new Date() ? null : expirationDate,
   });
@@ -24,11 +24,11 @@ const validateInviteCode = async (code) => {
     throw new ApiError(httpStatus.CONFLICT, 'Invite code does not exist', 'notExisting');
   }
 
-  if (inviteCode.maxUses !== null && inviteCode.maxUses - inviteCode.used === 0) {
+  if (inviteCode.maxUses !== null && inviteCode.maxUses - inviteCode.uses === 0) {
     throw new ApiError(httpStatus.CONFLICT, 'No invites left', 'used');
   }
 
-  if (inviteCode.expirationDate !== null && inviteCode.expirationDate >= new Date()) {
+  if (inviteCode.expirationDate !== null && inviteCode.expirationDate <= new Date()) {
     throw new ApiError(httpStatus.CONFLICT, 'Invite code expired', 'expired');
   }
 
@@ -37,7 +37,7 @@ const validateInviteCode = async (code) => {
 
 const useInviteCode = async (code) => {
   const counter = await InviteCode.update(
-    { used: Sequelize.literal('used + 1') },
+    { uses: Sequelize.literal('uses + 1') },
     {
       where: {
         code,
@@ -67,7 +67,7 @@ const destroyInviteCode = async (code) => {
 
 async function getInviteCodes() {
   const inviteCodes = await InviteCode.findAll({
-    attributes: ['id', 'code', 'used', 'maxUses', 'expirationDate'],
+    attributes: ['id', 'code', 'uses', 'maxUses', 'expirationDate'],
   });
 
   return inviteCodes;

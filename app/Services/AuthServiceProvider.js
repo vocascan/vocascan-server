@@ -5,7 +5,7 @@ const { deleteKeysFromObject } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
-const { validateInviteCode, useInviteCode } = require('../Services/InviteCodeProvider.js');
+const { validateInviteCode } = require('../Services/InviteCodeProvider.js');
 
 // Validate inputs from /register and /login route
 function validateAuth(req) {
@@ -36,7 +36,7 @@ const checkIfAdmin = async (id) => {
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   // if server is locked check for invite codes
-  if (process.env.LOCKED) {
+  if (process.env.REGISTRATION_LOCKED) {
     if (!req.query.inviteCode) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Locked Server! Invite Code is missing');
     }
@@ -72,10 +72,6 @@ async function validateRegister(req, res) {
     })
   ) {
     throw new ApiError(httpStatus.CONFLICT, 'username is already taken', 'username');
-  }
-  // after everything is registered redeem the code
-  if (process.env.LOCKED) {
-    await useInviteCode(req.query.inviteCode);
   }
 
   return true;

@@ -72,9 +72,9 @@ router.use('/swagger', DocsController.swagger);
 router.get('/info', InfoController.sendInfo);
 
 // Admin
-router.post('/inviteCode', AdminMiddleware, InviteCodeController.addInviteCode);
-router.delete('/inviteCode/:inviteCode', AdminMiddleware, InviteCodeController.deleteInviteCode);
-router.get('/inviteCode', AdminMiddleware, InviteCodeController.sendInviteCodes);
+router.post('/inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.addInviteCode);
+router.delete('/inviteCode/:inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.deleteInviteCode);
+router.get('/inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.sendInviteCodes);
 router.get('/inviteCode/:inviteCode', InviteCodeController.checkInviteCode);
 
 module.exports = router;
