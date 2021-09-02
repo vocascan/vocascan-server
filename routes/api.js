@@ -65,10 +65,10 @@ router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.che
 router.get('/language', ProtectMiddleware, LanguageController.sendLanguages);
 
 // Import / Export
-router.get('/export/group/:groupId', ProtectMiddleware, ExportController.exportGroup);
-router.get('/export/languagePackage/:languagePackageId', ProtectMiddleware, ExportController.exportLanguagePackage);
-router.post('/import/group/', ProtectMiddleware, ImportController.importGroup);
-router.post('/import/languagePackage/', ProtectMiddleware, ImportController.importLanguagePackage);
+router.get('/group/:groupId/export', ProtectMiddleware, ExportController.exportGroup);
+router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware, ExportController.exportLanguagePackage);
+router.post('/group/import', ProtectMiddleware, ImportController.importGroup);
+router.post('/languagePackage/import', ProtectMiddleware, ImportController.importLanguagePackage);
 
 // Docs
 router.get('/swagger.json', DocsController.document);

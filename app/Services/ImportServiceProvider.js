@@ -23,19 +23,21 @@ async function storeGroupVocabulary(
       active,
     });
 
-    VocabularyCards.forEach(async (vocabularyCard) => {
-      const createdCard = await createVocabularyCard(
-        languagePackageId,
-        group.id,
-        vocabularyCard.name,
-        vocabularyCard.description,
-        userId,
-        active,
-        activate
-      );
-      // parse vocabulary card id from response and create translations
-      createTranslations(vocabularyCard.Translations, userId, languagePackageId, createdCard.id);
-    });
+    await Promise.all(
+      VocabularyCards.map(async (vocabularyCard) => {
+        const createdCard = await createVocabularyCard(
+          languagePackageId,
+          group.id,
+          vocabularyCard.name,
+          vocabularyCard.description,
+          userId,
+          active,
+          activate
+        );
+        // parse vocabulary card id from response and create translations
+        createTranslations(vocabularyCard.Translations, userId, languagePackageId, createdCard.id);
+      })
+    );
   } catch (error) {
     if (error instanceof ForeignKeyConstraintError) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Error importing vocabs');
@@ -65,29 +67,33 @@ async function storeLanguagePackageVocabulary(
     // store drawers for language package in database
     await createDrawers(drawers, createdLanguagePackage.id, userId);
 
-    Groups.forEach(async (group, index) => {
-      const createdGroup = await Group.create({
-        userId,
-        languagePackageId: createdLanguagePackage.id,
-        name: group.name,
-        description: group.description,
-        active,
-      });
-
-      Groups[index].VocabularyCards.forEach(async (vocabularyCard) => {
-        const createdCard = await createVocabularyCard(
-          createdLanguagePackage.id,
-          createdGroup.id,
-          vocabularyCard.name,
-          vocabularyCard.description,
+    await Promise.all(
+      Groups.map(async (group, index) => {
+        const createdGroup = await Group.create({
           userId,
+          languagePackageId: createdLanguagePackage.id,
+          name: group.name,
+          description: group.description,
           active,
-          activate
+        });
+
+        await Promise.all(
+          Groups[index].VocabularyCards.map(async (vocabularyCard) => {
+            const createdCard = await createVocabularyCard(
+              createdLanguagePackage.id,
+              createdGroup.id,
+              vocabularyCard.name,
+              vocabularyCard.description,
+              userId,
+              active,
+              activate
+            );
+            // parse vocabulary card id from response and create translations
+            createTranslations(vocabularyCard.Translations, userId, createdLanguagePackage.id, createdCard.id);
+          })
         );
-        // parse vocabulary card id from response and create translations
-        createTranslations(vocabularyCard.Translations, userId, createdLanguagePackage.id, createdCard.id);
-      });
-    });
+      })
+    );
   } catch (error) {
     if (error instanceof ForeignKeyConstraintError) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Error importing vocabs');
