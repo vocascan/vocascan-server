@@ -25,15 +25,15 @@ async function storeGroupVocabulary(
 
     await Promise.all(
       VocabularyCards.map(async (vocabularyCard) => {
-        const createdCard = await createVocabularyCard(
+        const createdCard = await createVocabularyCard({
           languagePackageId,
-          group.id,
-          vocabularyCard.name,
-          vocabularyCard.description,
+          groupId: group.id,
+          name: vocabularyCard.name,
+          description: vocabularyCard.description,
           userId,
           active,
-          activate
-        );
+          activate,
+        });
         // parse vocabulary card id from response and create translations
         createTranslations(vocabularyCard.Translations, userId, languagePackageId, createdCard.id);
       })

@@ -17,15 +17,15 @@ const addVocabularyCard = catchAsync(async (req, res) => {
   const activate = req.query.activate === 'true';
 
   // create vocabulary card
-  const vocabularyCard = await createVocabularyCard(
+  const vocabularyCard = await createVocabularyCard({
     languagePackageId,
     groupId,
     name,
     description,
     userId,
     active,
-    activate
-  );
+    activate,
+  });
 
   // parse vocabulary card id from response and create translations
   await createTranslations(translations, userId, languagePackageId, vocabularyCard.id);
