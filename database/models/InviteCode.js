@@ -8,7 +8,6 @@ module.exports = (sequelize) => {
       id: {
         type: DataTypes.UUID,
         defaultValue: UUIDV4,
-        unique: true,
         allowNull: false,
         primaryKey: true,
       },
@@ -20,6 +19,7 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         defaultValue: new RandExp(/^[a-zA-Z0-9]{8}$/).gen(),
         allowNull: false,
+        unique: true,
       },
       uses: {
         type: DataTypes.INTEGER,
