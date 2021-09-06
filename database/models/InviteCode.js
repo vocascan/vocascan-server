@@ -8,8 +8,13 @@ module.exports = (sequelize) => {
       id: {
         type: DataTypes.UUID,
         defaultValue: UUIDV4,
+        unique: true,
         allowNull: false,
         primaryKey: true,
+      },
+      userId: {
+        type: DataTypes.UUID,
+        allowNull: false,
       },
       code: {
         type: DataTypes.STRING,
@@ -34,6 +39,10 @@ module.exports = (sequelize) => {
       tableName: 'inviteCodes',
     }
   );
+
+  InviteCode.associate = (db) => {
+    InviteCode.belongsTo(db.User, { foreignKey: 'userId' });
+  };
 
   return InviteCode;
 };

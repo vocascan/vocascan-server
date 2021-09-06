@@ -7,9 +7,20 @@ async function up({ context: queryInterface }) {
       allowNull: false,
       primaryKey: true,
     },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'user',
+        key: 'id',
+        as: 'userId',
+      },
+    },
     code: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     uses: {
       type: DataTypes.INTEGER,
