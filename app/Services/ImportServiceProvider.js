@@ -97,8 +97,11 @@ async function storeLanguagePackageVocabulary(
               // when drawers are imported too, put new vocabs in imported stages
 
               drawerId: queryStatus
-                ? createdDrawers.find(
-                    (drawer) => drawer.stage === Drawers.find((element) => element.id === vocabularyCard.drawerId).stage
+                ? (
+                    createdDrawers.find(
+                      (drawer) =>
+                        drawer.stage === (Drawers.find((element) => element.id === vocabularyCard.drawerId) || {}).stage
+                    ) || {}
                   ).id
                 : null,
               userId,
