@@ -19,8 +19,9 @@ const exportLanguagePackage = catchAsync(async (req, res) => {
 
   // get language package id from params
   const { languagePackageId } = req.params;
+  const queryStatus = (req.query.queryStatus || 'false') === 'true';
 
-  const languagePackage = await getAllLanguagePackageVocabulary(userId, languagePackageId);
+  const languagePackage = await getAllLanguagePackageVocabulary({ userId, languagePackageId, queryStatus });
 
   res.send(languagePackage);
 });

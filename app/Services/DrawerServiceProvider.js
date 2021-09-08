@@ -13,11 +13,14 @@ async function createDrawer(languagePackageId, stage, queryInterval, userId) {
 }
 
 async function createDrawers(drawers, languagePackageId, userId) {
+  const allDrawers = [];
   await Promise.all(
     drawers.map(async (drawer) => {
-      await createDrawer(languagePackageId, drawer.stage, drawer.queryInterval, userId);
+      allDrawers.push(await createDrawer(languagePackageId, drawer.stage, drawer.queryInterval, userId));
     })
   );
+
+  return allDrawers;
 }
 
 module.exports = {

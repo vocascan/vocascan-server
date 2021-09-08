@@ -48,24 +48,34 @@ async function storeGroupVocabulary(
 }
 
 async function storeLanguagePackageVocabulary(
-  { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords, Groups },
+  { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords, Groups, Drawers },
   userId,
   active,
-  activate
+  activate,
+  queryStatus
 ) {
   // ------------------------------------------//
   // TO DO: ADD THESE TWO FUNCTIONS TOGETHER
   // ------------------------------------------//
 
   try {
+    if (!Drawers && queryStatus) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'No exported drawers found');
+    }
     // create language Package
     const createdLanguagePackage = await createLanguagePackage(
       { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
       userId
     );
 
+    let createdDrawers = [];
+
+    if (queryStatus) {
+      createdDrawers = await createDrawers(Drawers, createdLanguagePackage.id, userId);
+    } else {
+      createdDrawers = await createDrawers(drawers, createdLanguagePackage.id, userId);
+    }
     // store drawers for language package in database
-    await createDrawers(drawers, createdLanguagePackage.id, userId);
 
     await Promise.all(
       Groups.map(async (group, index) => {
@@ -79,15 +89,22 @@ async function storeLanguagePackageVocabulary(
 
         await Promise.all(
           Groups[index].VocabularyCards.map(async (vocabularyCard) => {
-            const createdCard = await createVocabularyCard(
-              createdLanguagePackage.id,
-              createdGroup.id,
-              vocabularyCard.name,
-              vocabularyCard.description,
+            const createdCard = await createVocabularyCard({
+              languagePackageId: createdLanguagePackage.id,
+              groupId: createdGroup.id,
+              name: vocabularyCard.name,
+              description: vocabularyCard.description,
+              // when drawers are imported too, put new vocabs in imported stages
+
+              drawerId: queryStatus
+                ? createdDrawers.find(
+                    (drawer) => drawer.stage === Drawers.find((element) => element.id === vocabularyCard.drawerId).stage
+                  ).id
+                : null,
               userId,
               active,
-              activate
-            );
+              activate,
+            });
             // parse vocabulary card id from response and create translations
             createTranslations(vocabularyCard.Translations, userId, createdLanguagePackage.id, createdCard.id);
           })

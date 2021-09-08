@@ -1,4 +1,4 @@
-const { VocabularyCard, Translation, Group, LanguagePackage } = require('../../database');
+const { VocabularyCard, Translation, Group, LanguagePackage, Drawer } = require('../../database');
 
 // get every vocabulary of a group
 async function getAllGroupVocabulary(userId, groupId) {
@@ -24,28 +24,51 @@ async function getAllGroupVocabulary(userId, groupId) {
   return group;
 }
 
-async function getAllLanguagePackageVocabulary(userId, languagePackageId) {
+async function getAllLanguagePackageVocabulary({ userId, languagePackageId, queryStatus }) {
   // Get user with email from database
   const languagePackage = await LanguagePackage.findOne({
     // if groups is true, return groups to every language package
-    include: [
-      {
-        model: Group,
-        attributes: ['name', 'description'],
-        include: [
+    include: queryStatus
+      ? [
           {
-            model: VocabularyCard,
+            model: Group,
             attributes: ['name', 'description'],
             include: [
               {
-                model: Translation,
-                attributes: ['name'],
+                model: VocabularyCard,
+                attributes: queryStatus ? ['name', 'description', 'drawerId'] : ['name', 'description'],
+                include: [
+                  {
+                    model: Translation,
+                    attributes: ['name'],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: Drawer,
+            attributes: ['id', 'stage', 'queryInterval'],
+          },
+        ]
+      : [
+          {
+            model: Group,
+            attributes: ['name', 'description'],
+            include: [
+              {
+                model: VocabularyCard,
+                attributes: queryStatus ? ['name', 'description', 'drawerId'] : ['name', 'description'],
+                include: [
+                  {
+                    model: Translation,
+                    attributes: ['name'],
+                  },
+                ],
               },
             ],
           },
         ],
-      },
-    ],
     attributes: ['name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
       userId,

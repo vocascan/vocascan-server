@@ -4,18 +4,32 @@ const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 
 // create language package
-async function createVocabularyCard({ languagePackageId, groupId, name, description, userId, active, activate }) {
+async function createVocabularyCard({
+  languagePackageId,
+  groupId,
+  name,
+  description,
+  userId,
+  active,
+  activate,
+  drawerId,
+}) {
   // if activate = false store vocabulary card in drawer 0 directly
 
-  // select drawer id depending on the activate state
-  const drawer = await Drawer.findOne({
-    attributes: ['id'],
-    where: {
-      stage: activate ? 1 : 0,
-      languagePackageId,
-      userId,
-    },
-  });
+  // select drawer id depending on the activate and drawerId state
+  let drawer = {};
+  if (drawerId) {
+    drawer.id = drawerId;
+  } else {
+    drawer = await Drawer.findOne({
+      attributes: ['id'],
+      where: {
+        stage: activate ? 1 : 0,
+        languagePackageId,
+        userId,
+      },
+    });
+  }
 
   if (!drawer) {
     throw new ApiError(httpStatus.NOT_FOUND, 'no drawer found due to wrong language package id');
