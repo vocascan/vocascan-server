@@ -1,5 +1,5 @@
 const { v4: uuid } = require('uuid');
-const { User, Role } = require('../../database');
+const { Role } = require('../../database');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
@@ -38,4 +38,7 @@ async function up({ context: queryInterface }) {
   await queryInterface.bulkInsert('users', await createAdminUser());
 }
 
-module.exports = { up };
+// eslint-disable-next-line no-empty-function
+async function down() {}
+
+module.exports = { up, down };
