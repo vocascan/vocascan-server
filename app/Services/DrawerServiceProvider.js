@@ -12,15 +12,18 @@ async function createDrawer(languagePackageId, stage, queryInterval, userId) {
   return drawer;
 }
 
-async function createDrawers(drawers, languagePackageId, userId) {
-  const allDrawers = [];
-  await Promise.all(
-    drawers.map(async (drawer) => {
-      allDrawers.push(await createDrawer(languagePackageId, drawer.stage, drawer.queryInterval, userId));
-    })
+async function createDrawers(drawers, languagePackageId, userId, transaction) {
+  const createdDrawers = await Drawer.bulkCreate(
+    drawers.map((drawer) => ({
+      userId,
+      languagePackageId,
+      stage: drawer.stage,
+      queryInterval: drawer.queryInterval,
+    })),
+    { transaction }
   );
 
-  return allDrawers;
+  return createdDrawers;
 }
 
 module.exports = {
