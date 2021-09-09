@@ -17,7 +17,7 @@ module.exports = (sequelize) => {
       },
       code: {
         type: DataTypes.STRING,
-        defaultValue: new RandExp(/^[a-zA-Z0-9]{8}$/).gen(),
+        defaultValue: () => new RandExp(/^[a-zA-Z0-9]{8}$/).gen(),
         allowNull: false,
         unique: true,
       },

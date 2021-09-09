@@ -11,7 +11,7 @@ const AdminMiddleware = catchAsync(async (req, _res, next) => {
     return next();
   }
 
-  throw new ApiError(httpStatus.BAD_REQUEST, 'Only Admins can use this function');
+  throw new ApiError(httpStatus.FORBIDDEN, 'user is not an admin');
 });
 
 module.exports = AdminMiddleware;

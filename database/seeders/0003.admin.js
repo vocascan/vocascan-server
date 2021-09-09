@@ -38,8 +38,4 @@ async function up({ context: queryInterface }) {
   await queryInterface.bulkInsert('users', await createAdminUser());
 }
 
-async function down({ context: queryInterface }) {
-  await queryInterface.bulkDelete('users', { username: User.map((u) => u.username) });
-}
-
-module.exports = { up, down };
+module.exports = { up };
