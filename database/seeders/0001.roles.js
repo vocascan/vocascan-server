@@ -4,14 +4,14 @@ const roles = [
   {
     id: uuid(),
     name: 'user',
-    adminRights: 'false',
+    adminRights: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: uuid(),
     name: 'admin',
-    adminRights: 'true',
+    adminRights: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
