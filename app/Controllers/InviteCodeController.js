@@ -7,11 +7,12 @@ const {
 const catchAsync = require('../utils/catchAsync');
 
 const addInviteCode = catchAsync(async (req, res) => {
-  const maxUses = req.query.maxUses || null;
+  const userId = req.user.id;
+  const maxUses = req.body.maxUses || null;
   // if no date is given, standart expiration date is 1 day
-  const expirationDate = new Date(req.query.expirationDate) || new Date().setDate(new Date().getDate() + 1);
+  const expirationDate = new Date(req.body.expirationDate) || new Date().setDate(new Date().getDate() + 1);
 
-  const inviteCode = await createInviteCode({ maxUses, expirationDate });
+  const inviteCode = await createInviteCode({ userId, maxUses, expirationDate });
 
   res.send(inviteCode);
 });

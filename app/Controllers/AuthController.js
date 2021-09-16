@@ -17,7 +17,7 @@ const register = catchAsync(async (req, res) => {
   const token = generateJWT({ id: user.id });
 
   // after everything is registered redeem the code
-  if (process.env.REGISTRATION_LOCKED) {
+  if (process.env.REGISTRATION_LOCKED === 'true') {
     await useInviteCode(req.query.inviteCode);
   }
 

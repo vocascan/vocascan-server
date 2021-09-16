@@ -36,7 +36,7 @@ const checkIfAdmin = async (id) => {
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   // if server is locked check for invite codes
-  if (process.env.REGISTRATION_LOCKED) {
+  if (process.env.REGISTRATION_LOCKED === 'true') {
     if (!req.query.inviteCode) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Locked Server! Invite Code is missing');
     }

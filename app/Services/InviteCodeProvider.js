@@ -4,9 +4,10 @@ const httpStatus = require('http-status');
 const { deleteKeysFromObject } = require('../utils');
 const { Sequelize } = require('sequelize');
 
-const createInviteCode = async ({ maxUses, expirationDate }) => {
+const createInviteCode = async ({ userId, maxUses, expirationDate }) => {
   // if expiration date is lower than actuall date
   const inviteCode = await InviteCode.create({
+    userId,
     uses: 0,
     maxUses,
     expirationDate: expirationDate < new Date() ? null : expirationDate,
