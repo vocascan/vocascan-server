@@ -4,7 +4,7 @@ const path = require('path');
 const chalk = require('chalk');
 const Joi = require('./joi');
 const { mergeDeep, mutateByPath } = require('../utils');
-const { logLevels } = require('../utils/constants');
+const { logLevels, loggingTransportTypes } = require('../utils/constants');
 
 const parseEnvConfig = (envs) => {
   return Object.entries(envs).reduce((parsed, [key, env]) => {
@@ -38,6 +38,35 @@ const configEnv = parseEnvConfig(process.env);
 // merge config
 const mergedConfig = mergeDeep(configFile, configEnv);
 
+// define logger transport schema
+const logSchema = Joi.object({
+  mode: Joi.string()
+    .valid(...Object.values(loggingTransportTypes))
+    .default('console'),
+  level: Joi.string()
+    .valid(...Object.keys(logLevels.levels))
+    .default('info'),
+  colorize: Joi.boolean().default(false),
+  enable_default_log: Joi.boolean().default(true),
+  enable_sql_log: Joi.boolean().default(false),
+  enable_router_log: Joi.boolean().default(false),
+  format_default: Joi.string().default('{{level}}: {{message}}'),
+  format_sql: Joi.string().default('{{message}}'),
+  format_router: Joi.string().default('{{level}}: {{message}}'),
+  json: Joi.boolean().default(false),
+
+  // specific for console mode
+  stderr_levels: Joi.stringArray()
+    .items(Joi.valid(...Object.keys(logLevels.levels)))
+    .when('mode', { is: 'console', otherwise: Joi.forbidden() }),
+
+  // specific for file mode
+  filename: Joi.string().when('mode', { is: 'file', then: Joi.required(), otherwise: Joi.forbidden() }),
+  max_size: Joi.number().min(1).when('mode', { is: 'file', otherwise: Joi.forbidden() }),
+  max_files: Joi.number().integer().min(1).when('mode', { is: 'file', otherwise: Joi.forbidden() }),
+  archive_logs: Joi.boolean().when('mode', { is: 'file', otherwise: Joi.forbidden() }),
+});
+
 // define config schema
 const configSchema = Joi.object({
   debug: Joi.boolean().default(false),
@@ -59,36 +88,23 @@ const configSchema = Joi.object({
     database: Joi.string(),
   }).required(),
 
-  log: Joi.object()
+  log: Joi.object({
+    // set console as default mode for log.console.*
+    console: logSchema.keys({
+      mode: Joi.string()
+        .valid(...Object.values(loggingTransportTypes))
+        .default('console'),
+    }),
+
+    // set file as default mode for log.file.*
+    file: logSchema.keys({
+      mode: Joi.string()
+        .valid(...Object.values(loggingTransportTypes))
+        .default('file'),
+    }),
+  })
     .unknown()
-    .pattern(
-      Joi.any(),
-      Joi.object({
-        mode: Joi.string().valid('console', 'file').default('console'),
-        level: Joi.string()
-          .valid(...Object.keys(logLevels.levels))
-          .default('info'),
-        colorize: Joi.boolean().default(false),
-        enable_default_log: Joi.boolean().default(true),
-        enable_sql_log: Joi.boolean().default(false),
-        enable_router_log: Joi.boolean().default(false),
-        format_default: Joi.string().default('{{level}}: {{message}}'),
-        format_sql: Joi.string().default('{{message}}'),
-        format_router: Joi.string().default('{{level}}: {{message}}'),
-        json: Joi.boolean().default(false),
-
-        // specific for console mode
-        stderr_levels: Joi.stringArray()
-          .items(Joi.valid(...Object.keys(logLevels.levels)))
-          .when('mode', { is: 'console', otherwise: Joi.forbidden() }),
-
-        // specific for file mode
-        filename: Joi.string().when('mode', { is: 'file', then: Joi.required(), otherwise: Joi.forbidden() }),
-        max_size: Joi.number().min(1).when('mode', { is: 'file', otherwise: Joi.forbidden() }),
-        max_files: Joi.number().integer().min(1).when('mode', { is: 'file', otherwise: Joi.forbidden() }),
-        archive_logs: Joi.boolean().when('mode', { is: 'file', otherwise: Joi.forbidden() }),
-      })
-    )
+    .pattern(Joi.invalid(...Object.values(loggingTransportTypes)), logSchema)
     .default({}),
 });
 

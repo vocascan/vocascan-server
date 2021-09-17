@@ -3,7 +3,7 @@ const Mustache = require('mustache');
 
 const config = require('../config');
 const NullTransport = require('./NullTransport');
-const { logLevels } = require('../../utils/constants');
+const { logLevels, loggingTransportTypes } = require('../../utils/constants');
 
 // Disable escaping mustache templates
 Mustache.escape = (value) => value;
@@ -53,14 +53,14 @@ for (const [name, options] of Object.entries(config.log)) {
   let Transport = null;
   let transportOptions = { name };
 
-  if (options.mode === 'console') {
+  if (options.mode === loggingTransportTypes.CONSOLE) {
     Transport = winston.transports.Console;
     transportOptions = {
       ...transportOptions,
       level: options.level,
       stderrLevels: options.stderr_levels,
     };
-  } else if (options.mode === 'file') {
+  } else if (options.mode === loggingTransportTypes.FILE) {
     Transport = winston.transports.File;
     transportOptions = {
       ...transportOptions,

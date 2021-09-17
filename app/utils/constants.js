@@ -29,7 +29,13 @@ const logLevels = {
   },
 };
 
+const loggingTransportTypes = {
+  FILE: 'file',
+  CONSOLE: 'console',
+};
+
 module.exports = {
   drawers,
   logLevels,
+  loggingTransportTypes,
 };
