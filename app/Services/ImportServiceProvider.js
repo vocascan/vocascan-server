@@ -119,7 +119,7 @@ async function storeLanguagePackageVocabulary(
       getDrawer = (oldId) => drawerMap[oldId];
     } else {
       const createdDrawers = await createDrawers(drawers, createdLanguagePackage.id, userId, transaction);
-      const drawer = createdDrawers.find((_drawer) => _drawer.stage === (activate ? '1' : '0'));
+      const drawer = createdDrawers.find((_drawer) => _drawer.stage === (activate ? 1 : 0));
 
       getDrawer = () => drawer;
     }
