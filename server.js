@@ -9,6 +9,7 @@ const httpStatus = require('http-status');
 
 const routes = require('./routes');
 const db = require('./database');
+const logger = require('./app/config/logger');
 
 const app = express();
 
@@ -39,6 +40,6 @@ Promise.resolve()
   // start server
   .then(() => {
     app.listen(config.server.port, () => {
-      console.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
+      logger.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
     });
   });
