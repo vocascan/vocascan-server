@@ -5,5 +5,5 @@
 .env
 *.sql
 *.sqlite
-
-
+vocascan.config.*
+!vocascan.config.example.*
