@@ -7,17 +7,21 @@ const httpStatus = require('http-status');
 // create language package
 async function createLanguagePackage(
   { name, foreignWordLanguage, translatedWordLanguage, vocabsPerDay, rightWords },
-  userId
+  userId,
+  transaction
 ) {
   try {
-    const languagePackage = await LanguagePackage.create({
-      userId,
-      name,
-      foreignWordLanguage,
-      translatedWordLanguage,
-      vocabsPerDay,
-      rightWords,
-    });
+    const languagePackage = await LanguagePackage.create(
+      {
+        userId,
+        name,
+        foreignWordLanguage,
+        translatedWordLanguage,
+        vocabsPerDay,
+        rightWords,
+      },
+      { transaction }
+    );
 
     return deleteKeysFromObject(['userId', 'createdAt', 'updatedAt'], languagePackage.toJSON());
   } catch (error) {
