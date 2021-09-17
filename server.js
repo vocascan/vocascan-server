@@ -1,4 +1,4 @@
-require('dotenv').config();
+const config = require('./app/config/config');
 
 const express = require('express');
 const chalk = require('chalk');
@@ -38,7 +38,7 @@ Promise.resolve()
 
   // start server
   .then(() => {
-    app.listen(process.env.PORT, () => {
-      console.info(chalk.yellow(`Server is running on port ${process.env.PORT}.`));
+    app.listen(config.server.port, () => {
+      console.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
     });
   });

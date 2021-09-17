@@ -2,28 +2,33 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const { Sequelize } = require('sequelize');
+const { highlight } = require('cli-highlight');
 const { Umzug, SequelizeStorage } = require('umzug');
 const { performance } = require('perf_hooks');
 
+const { sqlLogger } = require('../app/config/logger');
 const { round } = require('../app/utils');
+const config = require('../app/config/config');
 const basename = path.basename(__filename);
 
 const db = {};
 
 const sequelizeOptions = {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  dialect: process.env.DB_DIALECT,
-  storage: process.env.DB_STORAGE,
-  operatorsAliases: false,
+  host: config.database.host,
+  port: config.database.port,
+  username: config.database.username,
+  password: config.database.password,
+  database: config.database.database,
+  dialect: config.database.dialect,
+  storage: config.database.storage,
+  logging: (msg) => {
+    sqlLogger.log('sql', highlight(msg, { language: 'sql', ignoreIllegals: true }));
+  },
 };
 
 // initialize sequelize instance
-if (process.env.DB_CONNECTION_URL) {
-  db.sequelize = new Sequelize(process.env.DB_CONNECTION_URL, sequelizeOptions);
+if (config.database.connection_url) {
+  db.sequelize = new Sequelize(config.database.connection_url, sequelizeOptions);
 } else {
   db.sequelize = new Sequelize(sequelizeOptions);
 }

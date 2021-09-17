@@ -5,6 +5,7 @@ const { deleteKeysFromObject } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
+const config = require('../config/config');
 
 // Validate inputs from /register and /login route
 function validateAuth(req) {
@@ -58,7 +59,7 @@ function validateLogin(req, res) {
 // Create new user and store into database
 async function createUser({ username, email, password }) {
   // Hash password
-  const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
+  const hash = await bcrypt.hash(password, config.server.salt_rounds);
   const emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
   const role = await Role.findOne({
@@ -140,7 +141,7 @@ async function checkPasswordValid(id, password) {
 async function changePassword(id, oldPassword, newPassword) {
   if (await checkPasswordValid(id, oldPassword)) {
     // Hash password
-    const hash = await bcrypt.hash(newPassword, +process.env.SALT_ROUNDS);
+    const hash = await bcrypt.hash(newPassword, config.server.salt_rounds);
     const counter = await User.update(
       { password: hash },
       {
