@@ -1,12 +1,9 @@
 const winston = require('winston');
-const Mustache = require('mustache');
 
 const config = require('../config');
 const NullTransport = require('./NullTransport');
 const { logLevels, loggingTransportTypes } = require('../../utils/constants');
-
-// Disable escaping mustache templates
-Mustache.escape = (value) => value;
+const { parseChalkTemplate, template } = require('../../utils');
 
 // error formatter
 const enumerateErrorFormat = winston.format((info) => {
@@ -20,8 +17,9 @@ const enumerateErrorFormat = winston.format((info) => {
 const generateFormat = ({ colorize, format, json }) => {
   return winston.format.combine(
     enumerateErrorFormat(),
-    colorize ? winston.format.colorize() : winston.format.uncolorize(),
-    winston.format.printf((ctx) => Mustache.render(format, ctx)),
+    ...(colorize ? [winston.format.colorize()] : []),
+    winston.format.printf((ctx) => parseChalkTemplate(template(format, ctx))),
+    ...(!colorize ? [winston.format.uncolorize()] : []),
     ...(json ? [winston.format.json()] : [])
   );
 };

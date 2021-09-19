@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 
@@ -172,6 +173,29 @@ const mutateByPath = (source, path, value) => {
   }
 };
 
+/**
+ * Parse a chalk template
+ * @param {String} template
+ * @returns {String} colorized template
+ */
+const parseChalkTemplate = (template) => {
+  const tagArray = [template];
+  tagArray.raw = tagArray;
+  return chalk(tagArray);
+};
+
+// eslint-disable-next-line no-unused-vars
+const template = (templateString, _) => {
+  return templateString.replace(/{{ *(.*?) *}}/g, (__, match) => {
+    try {
+      // eslint-disable-next-line no-eval
+      return eval((match[0] === '.' ? '_' : '') + match);
+    } catch {
+      return '';
+    }
+  });
+};
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
@@ -186,4 +210,6 @@ module.exports = {
   isObject,
   mergeDeep,
   mutateByPath,
+  parseChalkTemplate,
+  template,
 };

@@ -4,6 +4,7 @@ const express = require('express');
 const chalk = require('chalk');
 
 const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
+const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
 const ApiError = require('./app/utils/ApiError.js');
 const httpStatus = require('http-status');
 
@@ -12,6 +13,9 @@ const db = require('./database');
 const logger = require('./app/config/logger');
 
 const app = express();
+
+// logging middleware
+app.use(LoggingMiddleware);
 
 // middleware
 app.use(express.json());
