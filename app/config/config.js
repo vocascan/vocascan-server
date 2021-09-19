@@ -3,7 +3,7 @@ require('dotenv').config();
 const path = require('path');
 const chalk = require('chalk');
 const Joi = require('./joi');
-const { mergeDeep, mutateByPath } = require('../utils');
+const { mergeDeep, mutateByPath, parseChalkTemplate } = require('../utils');
 const { logLevels, logTransportTypes } = require('../utils/constants');
 
 const parseEnvConfig = (envs) => {
@@ -37,6 +37,46 @@ const configEnv = parseEnvConfig(process.env);
 
 // merge config
 const mergedConfig = mergeDeep(configFile, configEnv);
+
+// log deprecated messages
+// TODO: remove the following in v2.0.0
+const deprecatedMap = {
+  PORT: 'server.port',
+  DB_CONNECTION_URL: 'db.connection_url',
+  DB_DIALECT: 'database.dialect',
+  DB_STORAGE: 'database.storage',
+  DB_HOST: 'database.host',
+  DB_PORT: 'database.port',
+  DB_USERNAME: 'database.username',
+  DB_PASSWORD: 'database.password',
+  DB_DATABASE: 'database.database',
+  JWT_SECRET: 'server.jwt_secret',
+  SALT_ROUNDS: 'server.salt_rounds',
+  DEBUG: 'debug',
+};
+
+const deprecatedEnvVars = Object.entries(deprecatedMap)
+  .filter(([envName, newPath]) => {
+    if (process.env[envName]) {
+      mutateByPath(mergedConfig, newPath.split('.'), process.env[envName]);
+      return true;
+    }
+
+    return false;
+  })
+  .map(([envName, newPath]) => `{yellow warning:} "${envName}" -> "${newPath}"`);
+
+if (deprecatedEnvVars.length > 0) {
+  console.log(
+    parseChalkTemplate(`{yellow.bold warning: ---------- DEPRECATED ----------}
+{yellow warning:} The following environment variables are deprecated and will be removed in the next major release. 
+{yellow warning:} Use the config file or env schema instead. For more help see the configuration guide.
+{yellow warning:} https://docs.vocascan.com/#/vocascan-server/configuration
+${deprecatedEnvVars.join('\n')}
+{yellow.bold warning: --------------------------------}
+`)
+  );
+}
 
 // define logger transport schema
 const logSchema = Joi.object({
