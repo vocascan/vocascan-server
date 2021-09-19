@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const morgan = require('morgan');
 const { routerLogger } = require('../config/logger');
 
@@ -42,7 +43,7 @@ const LoggingMiddleware = morgan((tokens, req, res) => {
         color = 'blue';
       }
 
-      return `{${color} ${statusCode}}`;
+      return chalk[color](statusCode);
     },
     get referrer() {
       return tokens.referrer(req, res);

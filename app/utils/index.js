@@ -1,6 +1,5 @@
 const chalk = require('chalk');
 const jwt = require('jsonwebtoken');
-const config = require('../config/config');
 
 /**
  * Generate JSON Web Token
@@ -8,8 +7,8 @@ const config = require('../config/config');
  * @param {*} input jwt payload
  * @returns {String} signed jwt token
  */
-function generateJWT(input) {
-  return jwt.sign(input, config.server.jwt_secret);
+function generateJWT(input, secret) {
+  return jwt.sign(input, secret);
 }
 
 /**
@@ -17,13 +16,13 @@ function generateJWT(input) {
  * @param {Express.Request} req request object
  * @returns {String} Bearer token
  */
-function parseTokenUserId(req) {
+function parseTokenUserId(req, secret) {
   // Get token from Authorization header
   const token = req.header('Authorization').split(' ')[1];
 
   // Read userId from token
   const userId = new Promise((resolve, reject) => {
-    jwt.verify(token, config.server.jwt_secret, (error, decoded) => {
+    jwt.verify(token, secret, (error, decoded) => {
       if (error) reject();
       resolve(decoded.id);
     });

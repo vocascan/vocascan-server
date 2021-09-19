@@ -1,9 +1,14 @@
 const winston = require('winston');
+const chalk = require('chalk');
+
+// disable node/no-extraneous-require because triple-beam is a dependency of winston
+// eslint-disable-next-line node/no-extraneous-require
+const { LEVEL, MESSAGE } = require('triple-beam');
 
 const config = require('../config');
 const NullTransport = require('./NullTransport');
 const { logLevels, logTransportTypes } = require('../../utils/constants');
-const { parseChalkTemplate, template } = require('../../utils');
+const { template } = require('../../utils');
 
 // error formatter
 const enumerateErrorFormat = winston.format((info) => {
@@ -13,12 +18,27 @@ const enumerateErrorFormat = winston.format((info) => {
   return info;
 });
 
+// remove all keys except level and message
+const removeUnknownKeys = winston.format((info) => {
+  return {
+    level: info.level || info[LEVEL],
+    message: info[MESSAGE],
+    [LEVEL]: info.level || info[LEVEL],
+    [MESSAGE]: info[MESSAGE],
+  };
+});
+
 // format factory helper
-const generateFormat = ({ colorize, format, json }) => {
+const generateFormat = ({ colorize, format, json, mode }) => {
   return winston.format.combine(
     enumerateErrorFormat(),
     ...(colorize ? [winston.format.colorize()] : []),
-    winston.format.printf((ctx) => parseChalkTemplate(template(format, ctx))),
+    winston.format.printf((ctx) => {
+      if (!ctx.message) ctx.message = ctx[MESSAGE];
+      const rendered = template(format, { chalk, ...ctx });
+      return rendered;
+    }),
+    ...(mode === 'router' ? [removeUnknownKeys()] : []), // remove log context if mode is router
     ...(!colorize ? [winston.format.uncolorize()] : []),
     ...(json ? [winston.format.json()] : [])
   );
@@ -78,7 +98,7 @@ for (const [name, options] of Object.entries(config.log)) {
   if (options.enable_default_log) {
     const transport = new Transport({
       ...transportOptions,
-      format: generateFormat({ ...basicFormatOptions, format: options.format_default }),
+      format: generateFormat({ ...basicFormatOptions, format: options.format_default, mode: 'default' }),
     });
 
     defaultLogger.add(transport);
@@ -87,7 +107,7 @@ for (const [name, options] of Object.entries(config.log)) {
   if (options.enable_sql_log) {
     const transport = new Transport({
       ...transportOptions,
-      format: generateFormat({ ...basicFormatOptions, format: options.format_sql }),
+      format: generateFormat({ ...basicFormatOptions, format: options.format_sql, mode: 'sql' }),
       level: 'sql',
     });
 
@@ -97,7 +117,7 @@ for (const [name, options] of Object.entries(config.log)) {
   if (options.enable_router_log) {
     const transport = new Transport({
       ...transportOptions,
-      format: generateFormat({ ...basicFormatOptions, format: options.format_router }),
+      format: generateFormat({ ...basicFormatOptions, format: options.format_router, mode: 'router' }),
       level: 'router',
     });
 

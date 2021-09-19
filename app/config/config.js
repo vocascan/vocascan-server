@@ -53,7 +53,7 @@ const logSchema = Joi.object({
   format_default: Joi.string().default('{{.level}}: {{.message}}'),
   format_sql: Joi.string().default('{{.message}}'),
   format_router: Joi.string().default(
-    '{{.tokens.remoteAddr}} - {{.req.user || "no user"}} {{.tokens.date("clf")}} "{{.tokens.method}} {{.tokens.url}}" {{.tokens.colorizedStatus}} {{.tokens.res("content-length")}} "{{.tokens.userAgent}}" - {{.tokens.responseTime(3)}}ms'
+    '{{.tokens.remoteAddr}} - "{{.req.user ? _.req.user.username : "no user"}}" {{.tokens.date("clf")}} "{{.tokens.method}} {{.tokens.url}}" {{.tokens.colorizedStatus}} {{.tokens.res("content-length")}} "{{.tokens.userAgent}}" - {{.tokens.responseTime(3)}}ms'
   ),
   json: Joi.boolean().default(false),
 

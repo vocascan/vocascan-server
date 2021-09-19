@@ -49,7 +49,7 @@ const errorHandler = (err, _req, res, _next) => {
   };
 
   if (config.debug || response.code >= 500) {
-    logger.error(err);
+    logger.error({ message: err });
   }
 
   return res.status(statusCode).send(response);
