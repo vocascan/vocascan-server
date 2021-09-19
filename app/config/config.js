@@ -19,7 +19,7 @@ const parseEnvConfig = (envs) => {
 };
 
 // parse config file
-const configPath = process.env.VOCASCAN_CONFIG;
+const configPath = process.env.VOCASCAN_CONFIG || './vocascan.config';
 let configFile = {};
 if (configPath) {
   const resolvedPath = path.resolve(configPath);
