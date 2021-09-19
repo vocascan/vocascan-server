@@ -56,6 +56,8 @@ const logSchema = Joi.object({
     '{{.tokens.remoteAddr}} - "{{.req.user ? _.req.user.username : "no user"}}" {{.tokens.date("clf")}} "{{.tokens.method}} {{.tokens.url}}" {{.tokens.colorizedStatus}} {{.tokens.res("content-length")}} "{{.tokens.userAgent}}" - {{.tokens.responseTime(3)}}ms'
   ),
   json: Joi.boolean().default(false),
+  handle_exceptions: Joi.boolean().default(true),
+  handle_rejections: Joi.boolean().default(true),
 
   // specific for console mode
   stderr_levels: Joi.stringArray()

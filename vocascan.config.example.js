@@ -31,10 +31,13 @@ module.exports = {
       enable_default_log: true,
       enable_sql_log: true,
       enable_router_log: true,
-      format_default: '{{level}}: {{message}}',
-      format_sql: '{{message}}',
-      format_router: '{{level}}: {{message}}',
+      format_default: '{{.level}}: {{.message}}',
+      format_sql: '{{.message}}',
+      format_router:
+        '{{.tokens.remoteAddr}} - "{{.req.user ? _.req.user.username : "no user"}}" {{.tokens.date("clf")}} "{{.tokens.method}} {{.tokens.url}}" {{.tokens.colorizedStatus}} {{.tokens.res("content-length")}} "{{.tokens.userAgent}}" - {{.tokens.responseTime(3)}}ms',
       json: false,
+      handle_exceptions: true,
+      handle_rejections: true,
       stderr_levels: ['error'],
     },
     file: {

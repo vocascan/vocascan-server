@@ -56,6 +56,7 @@ const loggers = new winston.Container();
 
 const defaultLogger = loggers.add('default', {
   levels: logLevels.levels,
+  exitOnError: false,
 });
 
 const sqlLogger = loggers.add('sql', {
@@ -98,6 +99,8 @@ for (const [name, options] of Object.entries(config.log)) {
   if (options.enable_default_log) {
     const transport = new Transport({
       ...transportOptions,
+      handleExceptions: options.handle_exceptions,
+      handleRejections: options.handle_rejections,
       format: generateFormat({ ...basicFormatOptions, format: options.format_default, mode: 'default' }),
     });
 
