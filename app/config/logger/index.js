@@ -2,7 +2,7 @@ const winston = require('winston');
 
 const config = require('../config');
 const NullTransport = require('./NullTransport');
-const { logLevels, loggingTransportTypes } = require('../../utils/constants');
+const { logLevels, logTransportTypes } = require('../../utils/constants');
 const { parseChalkTemplate, template } = require('../../utils');
 
 // error formatter
@@ -51,14 +51,14 @@ for (const [name, options] of Object.entries(config.log)) {
   let Transport = null;
   let transportOptions = { name };
 
-  if (options.mode === loggingTransportTypes.CONSOLE) {
+  if (options.mode === logTransportTypes.CONSOLE) {
     Transport = winston.transports.Console;
     transportOptions = {
       ...transportOptions,
       level: options.level,
       stderrLevels: options.stderr_levels,
     };
-  } else if (options.mode === loggingTransportTypes.FILE) {
+  } else if (options.mode === logTransportTypes.FILE) {
     Transport = winston.transports.File;
     transportOptions = {
       ...transportOptions,

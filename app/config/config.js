@@ -4,7 +4,7 @@ const path = require('path');
 const chalk = require('chalk');
 const Joi = require('./joi');
 const { mergeDeep, mutateByPath } = require('../utils');
-const { logLevels, loggingTransportTypes } = require('../utils/constants');
+const { logLevels, logTransportTypes } = require('../utils/constants');
 
 const parseEnvConfig = (envs) => {
   return Object.entries(envs).reduce((parsed, [key, env]) => {
@@ -41,7 +41,7 @@ const mergedConfig = mergeDeep(configFile, configEnv);
 // define logger transport schema
 const logSchema = Joi.object({
   mode: Joi.string()
-    .valid(...Object.values(loggingTransportTypes))
+    .valid(...Object.values(logTransportTypes))
     .default('console'),
   level: Joi.string()
     .valid(...Object.keys(logLevels.levels))
@@ -53,7 +53,7 @@ const logSchema = Joi.object({
   format_default: Joi.string().default('{{.level}}: {{.message}}'),
   format_sql: Joi.string().default('{{.message}}'),
   format_router: Joi.string().default(
-    '{{.tokens.remoteAddr}} - {{.req.user || "no user"}} {{.tokens.date("clf")}} "{{.tokens.method}} {{.tokens.url}}" {{.tokens.colorizedStatus}} {{.tokens.res("content-length")}} "{{.tokens.userAgent}}" - {{.tokens.totalTime(3)}}ms'
+    '{{.tokens.remoteAddr}} - {{.req.user || "no user"}} {{.tokens.date("clf")}} "{{.tokens.method}} {{.tokens.url}}" {{.tokens.colorizedStatus}} {{.tokens.res("content-length")}} "{{.tokens.userAgent}}" - {{.tokens.responseTime(3)}}ms'
   ),
   json: Joi.boolean().default(false),
 
@@ -91,22 +91,21 @@ const configSchema = Joi.object({
   }).required(),
 
   log: Joi.object({
-    // set console as default mode for log.console.*
-    console: logSchema.keys({
-      mode: Joi.string()
-        .valid(...Object.values(loggingTransportTypes))
-        .default('console'),
-    }),
-
-    // set file as default mode for log.file.*
-    file: logSchema.keys({
-      mode: Joi.string()
-        .valid(...Object.values(loggingTransportTypes))
-        .default('file'),
-    }),
+    // set transport as default mode for log.<transport>.*
+    ...Object.values(logTransportTypes).reduce(
+      (transports, transportName) => ({
+        ...transports,
+        [transportName]: logSchema.keys({
+          mode: Joi.string()
+            .valid(...Object.values(logTransportTypes))
+            .default(transportName),
+        }),
+      }),
+      {}
+    ),
   })
     .unknown()
-    .pattern(Joi.invalid(...Object.values(loggingTransportTypes)), logSchema)
+    .pattern(Joi.invalid(...Object.values(logTransportTypes)), logSchema)
     .default({}),
 });
 
