@@ -7,4 +7,5 @@
 *.sqlite
 vocascan.config.*
 !vocascan.config.example.*
+!docker/**/vocascan.config.*
 *.log

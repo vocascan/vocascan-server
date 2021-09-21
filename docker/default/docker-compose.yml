@@ -1,23 +1,17 @@
 version: '3.8'
 services:
   vocascan:
-    image: vocascan/vocascan-server
+    image: vocascan
     restart: always
     tty: true
     depends_on:
       - db
     environment:
-      PORT: '8000'
-      DB_DIALECT: 'postgres'
-      DB_HOST: 'db'
-      DB_PORT: '5432'
-      DB_USERNAME: 'vocascan'
-      DB_PASSWORD: 'vocascan'
-      DB_DATABASE: 'vocascan'
-      SALT_ROUNDS: '10'
-      JWT_SECRET: ''
+      VOCASCAN_CONFIG: '/etc/vocascan/vocascan.config.js'
     ports:
       - '8000:8000'
+    volumes:
+      - './vocascan.config.js:/etc/vocascan/vocascan.config.js:ro'
   db:
     image: postgres
     environment:
