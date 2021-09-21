@@ -8,4 +8,5 @@
 vocascan.config.*
 !vocascan.config.example.*
 !docker/**/vocascan.config.*
+docker/**/database
 *.log
