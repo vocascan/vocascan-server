@@ -1,5 +1,4 @@
 const { Group, VocabularyCard, Translation, Drawer, sequelize } = require('../../database');
-const { ForeignKeyConstraintError } = require('sequelize');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 const { createDrawers } = require('./DrawerServiceProvider.js');

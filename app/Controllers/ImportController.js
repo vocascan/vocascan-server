@@ -9,7 +9,6 @@ const importVocabs = catchAsync(async (req, res) => {
 
   const active = (req.query.active || 'true') === 'true';
   const activate = (req.query.activate || 'false') === 'true';
-  const { languagePackageId } = req.query;
 
   const { type } = req.body;
   // use different types of import to separate the functions
@@ -17,9 +16,9 @@ const importVocabs = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'imported data has no Vocascan structure');
   } else if (type === 'vocascan/package') {
     const queryStatus = (req.query.queryStatus || 'false') === 'true';
-
     await storeLanguagePackageVocabulary(req.body, userId, active, activate, queryStatus);
   } else if (type === 'vocascan/group') {
+    const { languagePackageId } = req.query;
     await storeGroupVocabulary(req.body, userId, languagePackageId, active, activate);
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'imported data type not recognized');
