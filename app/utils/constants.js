@@ -34,8 +34,11 @@ const logTransportTypes = {
   CONSOLE: 'console',
 };
 
+const DEFAULT_CONFIG_PATH = './vocascan.config';
+
 module.exports = {
   drawers,
   logLevels,
   logTransportTypes,
+  DEFAULT_CONFIG_PATH,
 };

@@ -7,11 +7,15 @@ services:
     depends_on:
       - db
     environment:
-      VOCASCAN_CONFIG: '/etc/vocascan/vocascan.config.js'
+      VOCASCAN__SERVER__PORT: '8000'
+      VOCASCAN__SERVER__JWT_SECRET: ''
+      VOCASCAN__DATABASE__CONNECTION_URL: 'postgres://vocascan:vocascan@db:5432/vocascan'
+      VOCASCAN__LOG__CONSOLE__COLORIZE: 'true'
+      VOCASCAN__LOG__CONSOLE__ENABLE_SQL_LOG: 'true'
+      VOCASCAN__LOG__CONSOLE__ENABLE_ROUTER_LOG: 'true'
+      VOCASCAN__LOG__CONSOLE__STDERR_LEVELS: 'error'
     ports:
       - '8000:8000'
-    volumes:
-      - './vocascan.config.js:/etc/vocascan/vocascan.config.js:ro'
   db:
     image: postgres
     environment:

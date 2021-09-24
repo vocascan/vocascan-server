@@ -4,7 +4,7 @@ const path = require('path');
 const chalk = require('chalk');
 const Joi = require('./joi');
 const { mergeDeep, mutateByPath, parseChalkTemplate } = require('../utils');
-const { logLevels, logTransportTypes } = require('../utils/constants');
+const { logLevels, logTransportTypes, DEFAULT_CONFIG_PATH } = require('../utils/constants');
 
 const parseEnvConfig = (envs) => {
   return Object.entries(envs).reduce((parsed, [key, env]) => {
@@ -19,7 +19,7 @@ const parseEnvConfig = (envs) => {
 };
 
 // parse config file
-const configPath = process.env.VOCASCAN_CONFIG || './vocascan.config';
+const configPath = process.env.VOCASCAN_CONFIG || DEFAULT_CONFIG_PATH;
 let configFile = {};
 if (configPath) {
   const resolvedPath = path.resolve(configPath);
@@ -28,7 +28,9 @@ if (configPath) {
     // eslint-disable-next-line global-require
     configFile = require(resolvedPath);
   } catch {
-    console.log(chalk`{yellow warn:} could not open config file "${resolvedPath}"`);
+    if (configPath !== DEFAULT_CONFIG_PATH) {
+      console.log(chalk`{yellow warn:} could not open config file "${resolvedPath}"\n`);
+    }
   }
 }
 
@@ -64,16 +66,16 @@ const deprecatedEnvVars = Object.entries(deprecatedMap)
 
     return false;
   })
-  .map(([envName, newPath]) => `{yellow warning:} "${envName}" -> "${newPath}"`);
+  .map(([envName, newPath]) => `{yellow warn:} "${envName}" -> "${newPath}"`);
 
 if (deprecatedEnvVars.length > 0) {
   console.log(
-    parseChalkTemplate(`{yellow.bold warning: ---------- DEPRECATED ----------}
-{yellow warning:} The following environment variables are deprecated and will be removed in the next major release. 
-{yellow warning:} Use the config file or env schema instead. For more help see the configuration guide.
-{yellow warning:} https://docs.vocascan.com/#/vocascan-server/configuration
+    parseChalkTemplate(`{yellow.bold warn: ---------- DEPRECATED ----------}
+{yellow warn:} The following environment variables are deprecated and will be removed in the next major release. 
+{yellow warn:} Use the config file or env schema instead. For more help see the configuration guide.
+{yellow warn:} https://docs.vocascan.com/#/vocascan-server/configuration
 ${deprecatedEnvVars.join('\n')}
-{yellow.bold warning: --------------------------------}
+{yellow.bold warn: --------------------------------}
 `)
   );
 }
