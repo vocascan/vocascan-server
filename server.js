@@ -1,16 +1,21 @@
-require('dotenv').config();
+const config = require('./app/config/config');
 
 const express = require('express');
 const chalk = require('chalk');
 
 const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
+const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
 const ApiError = require('./app/utils/ApiError.js');
 const httpStatus = require('http-status');
 
 const routes = require('./routes');
 const db = require('./database');
+const logger = require('./app/config/logger');
 
 const app = express();
+
+// logging middleware
+app.use(LoggingMiddleware);
 
 // middleware
 app.use(express.json());
@@ -38,7 +43,7 @@ Promise.resolve()
 
   // start server
   .then(() => {
-    app.listen(process.env.PORT, () => {
-      console.info(chalk.yellow(`Server is running on port ${process.env.PORT}.`));
+    app.listen(config.server.port, () => {
+      logger.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
     });
   });

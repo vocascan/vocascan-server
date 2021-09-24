@@ -10,6 +10,35 @@ const drawers = [
   { stage: '8', queryInterval: 90 },
 ];
 
+const logLevels = {
+  levels: {
+    error: 0,
+    warn: 1,
+    info: 2,
+    verbose: 3,
+    debug: 4,
+    silly: 5,
+  },
+  colors: {
+    error: 'red',
+    warn: 'yellow',
+    info: 'green',
+    verbose: 'cyan',
+    debug: 'blue',
+    silly: 'magenta',
+  },
+};
+
+const logTransportTypes = {
+  FILE: 'file',
+  CONSOLE: 'console',
+};
+
+const DEFAULT_CONFIG_PATH = './vocascan.config';
+
 module.exports = {
   drawers,
+  logLevels,
+  logTransportTypes,
+  DEFAULT_CONFIG_PATH,
 };

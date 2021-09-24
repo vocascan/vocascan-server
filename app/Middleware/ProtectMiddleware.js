@@ -3,6 +3,7 @@ const { User } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
+const config = require('../config/config');
 
 // Check for Authorization header and add user attribute to request object
 const ProtectMiddleware = catchAsync(async (req, _res, next) => {
@@ -15,7 +16,7 @@ const ProtectMiddleware = catchAsync(async (req, _res, next) => {
 
   try {
     // Read userId from token
-    userId = await parseTokenUserId(req);
+    userId = await parseTokenUserId(req, config.server.jwt_secret);
   } catch (err) {
     // Handle broken token
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid auth token');

@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const jwt = require('jsonwebtoken');
 
 /**
@@ -6,8 +7,8 @@ const jwt = require('jsonwebtoken');
  * @param {*} input jwt payload
  * @returns {String} signed jwt token
  */
-function generateJWT(input) {
-  return jwt.sign(input, process.env.JWT_SECRET);
+function generateJWT(input, secret) {
+  return jwt.sign(input, secret);
 }
 
 /**
@@ -15,13 +16,13 @@ function generateJWT(input) {
  * @param {Express.Request} req request object
  * @returns {String} Bearer token
  */
-function parseTokenUserId(req) {
+function parseTokenUserId(req, secret) {
   // Get token from Authorization header
   const token = req.header('Authorization').split(' ')[1];
 
   // Read userId from token
   const userId = new Promise((resolve, reject) => {
-    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    jwt.verify(token, secret, (error, decoded) => {
       if (error) reject();
       resolve(decoded.id);
     });
@@ -116,6 +117,84 @@ const isToday = (date) => {
   );
 };
 
+/**
+ * Simple object check.
+ * @param item
+ * @returns {boolean}
+ */
+const isObject = (item) => {
+  return item && typeof item === 'object' && !Array.isArray(item);
+};
+
+/**
+ * Deep merge two objects.
+ * @see https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
+ * @param target
+ * @param ...sources
+ */
+const mergeDeep = (target, ...sources) => {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources);
+};
+
+/**
+ * Mutate a object by path
+ * @param {Object} source
+ * @param {String[]} path
+ * @param {Any} value
+ */
+const mutateByPath = (source, path, value) => {
+  const key = path.shift();
+
+  if (!(key in source)) {
+    // eslint-disable-next-line no-param-reassign
+    source[key] = {};
+  }
+
+  if (path.length === 0) {
+    // eslint-disable-next-line no-param-reassign
+    source[key] = value;
+  } else {
+    mutateByPath(source[key], path, value);
+  }
+};
+
+/**
+ * Parse a chalk template
+ * @param {String} template
+ * @returns {String} colorized template
+ */
+const parseChalkTemplate = (template) => {
+  const tagArray = [template];
+  tagArray.raw = tagArray;
+  return chalk(tagArray);
+};
+
+// eslint-disable-next-line no-unused-vars
+const template = (templateString, _) => {
+  return templateString.replace(/{{ *(.*?) *}}/g, (__, match) => {
+    try {
+      // eslint-disable-next-line no-eval
+      return eval((match[0] === '.' ? '_' : '') + match);
+    } catch {
+      return '';
+    }
+  });
+};
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
@@ -127,4 +206,9 @@ module.exports = {
   shiftDate,
   dayDateDiff,
   isToday,
+  isObject,
+  mergeDeep,
+  mutateByPath,
+  parseChalkTemplate,
+  template,
 };
