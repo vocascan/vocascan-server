@@ -72,12 +72,7 @@ async function storeGroupVocabulary(
     await transaction.commit();
   } catch (error) {
     await transaction.rollback();
-
-    if (error instanceof ForeignKeyConstraintError) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Error importing vocabs');
-    }
-
-    throw error;
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Error importing vocabs');
   }
 }
 
@@ -119,7 +114,7 @@ async function storeLanguagePackageVocabulary(
       getDrawer = (oldId) => drawerMap[oldId];
     } else {
       const createdDrawers = await createDrawers(drawers, createdLanguagePackage.id, userId, transaction);
-      const drawer = createdDrawers.find((_drawer) => _drawer.stage === (activate ? 1 : 0));
+      const drawer = createdDrawers.find((_drawer) => +_drawer.stage === (activate ? 1 : 0));
 
       getDrawer = () => drawer;
     }
@@ -169,12 +164,7 @@ async function storeLanguagePackageVocabulary(
     await transaction.commit();
   } catch (error) {
     await transaction.rollback();
-
-    if (error instanceof ForeignKeyConstraintError) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Error importing vocabs');
-    }
-
-    throw error;
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Error importing vocabs');
   }
 }
 

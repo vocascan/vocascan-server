@@ -67,8 +67,7 @@ router.get('/language', ProtectMiddleware, LanguageController.sendLanguages);
 // Import / Export
 router.get('/group/:groupId/export', ProtectMiddleware, ExportController.exportGroup);
 router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware, ExportController.exportLanguagePackage);
-router.post('/group/import', ProtectMiddleware, ImportController.importGroup);
-router.post('/languagePackage/import', ProtectMiddleware, ImportController.importLanguagePackage);
+router.post('/import', ProtectMiddleware, ImportController.importVocabs);
 
 // Docs
 router.get('/swagger.json', DocsController.document);
