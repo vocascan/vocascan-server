@@ -1,12 +1,14 @@
+require('./app/config/config').parseConfig();
+
 const config = require('./app/config/config');
 
 const express = require('express');
 const chalk = require('chalk');
+const httpStatus = require('http-status');
 
 const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
 const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
 const ApiError = require('./app/utils/ApiError.js');
-const httpStatus = require('http-status');
 
 const routes = require('./routes');
 const db = require('./database');
