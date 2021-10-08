@@ -1,5 +1,6 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
-var RandExp = require('randexp');
+const ShortUniqueId = require('short-unique-id');
+const uid = new ShortUniqueId({ length: 10 });
 
 module.exports = (sequelize) => {
   const InviteCode = sequelize.define(
@@ -17,7 +18,7 @@ module.exports = (sequelize) => {
       },
       code: {
         type: DataTypes.STRING,
-        defaultValue: () => new RandExp(/^[a-zA-Z0-9]{8}$/).gen(),
+        defaultValue: uid(),
         allowNull: false,
         unique: true,
       },
