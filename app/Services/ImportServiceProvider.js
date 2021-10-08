@@ -1,4 +1,4 @@
-const { Group, VocabularyCard, Translation, Drawer, sequelize } = require('../../database');
+const { Group, LanguagePackage, VocabularyCard, Translation, Drawer, sequelize } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 const { createDrawers } = require('./DrawerServiceProvider.js');
@@ -13,6 +13,17 @@ async function storeGroupVocabulary(
   activate
 ) {
   const transaction = await sequelize.transaction();
+
+  const languagePackage = await LanguagePackage.findOne({
+    where: {
+      userId,
+      id: languagePackageId,
+    },
+  });
+
+  if (!languagePackage) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
+  }
 
   try {
     const group = await Group.create(
