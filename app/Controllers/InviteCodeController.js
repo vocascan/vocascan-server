@@ -5,12 +5,24 @@ const {
   validateInviteCode,
 } = require('../Services/InviteCodeProvider.js');
 const catchAsync = require('../utils/catchAsync');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 
 const addInviteCode = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const maxUses = req.body.maxUses && req.body.maxUses >= 0 ? req.body.maxUses : null;
+  const maxUses = Number(req.body.maxUses) || null;
+
+  if (maxUses <= 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'wrong input for maxUses');
+  }
   // if no date is given, standart expiration date is 1 day
   const expirationDate = new Date(req.body.expirationDate) || new Date().setDate(new Date().getDate() + 1);
+
+  console.log(expirationDate);
+
+  if (Number.isNaN(expirationDate.getTime())) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'wrong time format');
+  }
 
   const inviteCode = await createInviteCode({ userId, maxUses, expirationDate });
 
