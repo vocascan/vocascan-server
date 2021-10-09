@@ -27,6 +27,8 @@ const parseConfig = (path) => {
     console.log(
       chalk`{red error:} No config options detected, neither via the environment variables nor via a configuration file.`
     );
+
+    process.exit(1);
   }
 
   // define server and database key in merged Config, so that JOI output understandable error messages
