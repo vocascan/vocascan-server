@@ -1,8 +1,9 @@
 const { DataTypes, UUIDV4 } = require('sequelize');
 const ShortUniqueId = require('short-unique-id');
-const uid = new ShortUniqueId({ length: 10 });
+const uid = new ShortUniqueId({ length: 8 }).collisionProbability(1000 * 60 * 60 * 24 * 365 * 100, 8);
 
 module.exports = (sequelize) => {
+  // 1.019365018855e-8
   const InviteCode = sequelize.define(
     'InviteCode',
     {
@@ -18,7 +19,7 @@ module.exports = (sequelize) => {
       },
       code: {
         type: DataTypes.STRING,
-        defaultValue: uid(),
+        defaultValue: () => uid(),
         allowNull: false,
         unique: true,
       },
