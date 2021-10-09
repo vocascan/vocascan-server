@@ -22,8 +22,22 @@ const parseConfig = (path) => {
   // TODO: remove the deprecated config parser in v2.0.0
   parseDeprecatedConfig(mergedConfig);
 
+  // check if user haven't set any config option
+  if (Object.keys(mergedConfig).length === 0) {
+    console.log(
+      chalk`{red error:} No config options detected, neither via the environment variables nor via a configuration file.`
+    );
+  }
+
+  // define server and database key in merged Config, so that JOI output understandable error messages
+  const mergedConfigWithDefaultKeys = {
+    server: {},
+    database: {},
+    ...mergedConfig,
+  };
+
   // validate schema
-  const { value: parsedConfig, error: errors } = configSchema.validate(mergedConfig, {
+  const { value: parsedConfig, error: errors } = configSchema.validate(mergedConfigWithDefaultKeys, {
     abortEarly: false,
   });
 

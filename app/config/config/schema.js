@@ -46,14 +46,16 @@ const configSchema = Joi.object({
 
   database: Joi.object({
     connection_url: Joi.string(),
-    dialect: Joi.string(),
-    storage: Joi.string(),
-    host: Joi.string(),
-    port: Joi.string(),
-    username: Joi.string(),
-    password: Joi.string(),
-    database: Joi.string(),
-  }).required(),
+    dialect: Joi.string().valid('mysql', 'mariadb', 'postgres', 'sqlite'),
+    storage: Joi.string().when('dialect', { is: 'sqlite', then: Joi.required(), otherwise: Joi.forbidden() }),
+    host: Joi.string().when('dialect', { not: 'sqlite', then: Joi.required(), otherwise: Joi.forbidden() }),
+    port: Joi.string().when('dialect', { not: 'sqlite', then: Joi.required(), otherwise: Joi.forbidden() }),
+    username: Joi.string().when('dialect', { not: 'sqlite', then: Joi.required(), otherwise: Joi.forbidden() }),
+    password: Joi.string().when('dialect', { not: 'sqlite', then: Joi.required(), otherwise: Joi.forbidden() }),
+    database: Joi.string().when('dialect', { not: 'sqlite', then: Joi.required(), otherwise: Joi.forbidden() }),
+  })
+    .or('connection_url', 'dialect')
+    .required(),
 
   log: Joi.object({
     // set transport as default mode for log.<transport>.*
