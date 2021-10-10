@@ -12,8 +12,6 @@ async function storeGroupVocabulary(
   active,
   activate
 ) {
-  const transaction = await sequelize.transaction();
-
   const languagePackage = await LanguagePackage.findOne({
     where: {
       userId,
@@ -24,6 +22,8 @@ async function storeGroupVocabulary(
   if (!languagePackage) {
     throw new ApiError(httpStatus.NOT_FOUND, 'language package not found');
   }
+
+  const transaction = await sequelize.transaction();
 
   try {
     const group = await Group.create(
