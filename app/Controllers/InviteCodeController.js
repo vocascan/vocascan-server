@@ -7,21 +7,30 @@ const {
 const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
+const { shiftDate } = require('../utils/index.js');
 
 const addInviteCode = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const maxUses = Number(req.body.maxUses) || null;
+  let maxUses = null;
+  let expirationDate = null;
 
-  if (maxUses <= 0) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'wrong input for maxUses');
+  if (req.body.maxUses) {
+    maxUses = parseInt(req.body.maxUses, 10);
+
+    if (Number.isNaN(maxUses) || maxUses <= 0) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'invalid number', 'maxUses');
+    }
   }
-  // if no date is given, standart expiration date is 1 day
-  const expirationDate = new Date(req.body.expirationDate) || new Date().setDate(new Date().getDate() + 1);
 
-  console.log(expirationDate);
+  if (req.body.expirationDate) {
+    expirationDate = new Date(req.body.expirationDate);
 
-  if (Number.isNaN(expirationDate.getTime())) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'wrong time format');
+    if (Number.isNaN(expirationDate.getTime()) || expirationDate < new Date()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'invalid date', 'expirationDate');
+    }
+  } else {
+    // if no date is given, standard expiration date is 1 day
+    expirationDate = shiftDate(new Date(), 1);
   }
 
   const inviteCode = await createInviteCode({ userId, maxUses, expirationDate });
