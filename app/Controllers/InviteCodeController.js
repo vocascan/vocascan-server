@@ -7,7 +7,6 @@ const {
 const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
-const { shiftDate } = require('../utils/index.js');
 
 const addInviteCode = catchAsync(async (req, res) => {
   const userId = req.user.id;
@@ -28,9 +27,6 @@ const addInviteCode = catchAsync(async (req, res) => {
     if (Number.isNaN(expirationDate.getTime()) || expirationDate < new Date()) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'invalid date', 'expirationDate');
     }
-  } else {
-    // if no date is given, standard expiration date is 1 day
-    expirationDate = shiftDate(new Date(), 1);
   }
 
   const inviteCode = await createInviteCode({ userId, maxUses, expirationDate });
