@@ -14,6 +14,8 @@ const LanguageController = require('../app/Controllers/LanguageController.js');
 const DocsController = require('../app/Controllers/DocsController.js');
 const StatsController = require('../app/Controllers/StatsController.js');
 const InfoController = require('../app/Controllers/InfoController.js');
+const ImportController = require('../app/Controllers/ImportController.js');
+const ExportController = require('../app/Controllers/ExportController.js');
 const InviteCodeController = require('../app/Controllers/InviteCodeController.js');
 
 const router = express.Router();
@@ -63,6 +65,11 @@ router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.che
 
 // Language
 router.get('/language', ProtectMiddleware, LanguageController.sendLanguages);
+
+// Import / Export
+router.get('/group/:groupId/export', ProtectMiddleware, ExportController.exportGroup);
+router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware, ExportController.exportLanguagePackage);
+router.post('/import', ProtectMiddleware, ImportController.importVocabs);
 
 // Docs
 router.get('/swagger.json', DocsController.document);
