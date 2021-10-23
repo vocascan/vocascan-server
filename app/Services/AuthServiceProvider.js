@@ -5,6 +5,7 @@ const { deleteKeysFromObject } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
+const { validateInviteCode } = require('../Services/InviteCodeProvider.js');
 const config = require('../config/config');
 
 // Validate inputs from /register and /login route
@@ -16,8 +17,33 @@ function validateAuth(req) {
   return true;
 }
 
+// check if user is an admin or not
+const checkIfAdmin = async (id) => {
+  const user = await User.findOne({
+    include: [
+      {
+        model: Role,
+        attributes: ['adminRights'],
+      },
+    ],
+    where: {
+      id,
+    },
+  });
+
+  return user.Role.adminRights;
+};
+
 // Validate inputs from /register route
 async function validateRegister(req, res) {
+  // if server is locked check for invite codes
+  if (config.server.registration_locked) {
+    if (!req.query.inviteCode) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Locked Server! Invite Code is missing');
+    }
+    await validateInviteCode(req.query.inviteCode);
+  }
+
   validateAuth(req, res);
 
   // check if email address is valid
@@ -76,7 +102,11 @@ async function createUser({ username, email, password }) {
     roleId: role.id,
   });
 
-  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], user.toJSON());
+  // add flag if user is admin
+  const isAdmin = await checkIfAdmin(user.id);
+  const tempUser = { ...user.toJSON(), isAdmin };
+
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], tempUser);
 }
 
 // Log user in
@@ -101,8 +131,11 @@ async function loginUser({ email, password }) {
   if (!isPasswordValid) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid password', 'password');
   }
+  // add flag if user is admin
+  const isAdmin = await checkIfAdmin(user.id);
+  const tempUser = { ...user.toJSON(), isAdmin };
 
-  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], user.toJSON());
+  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], tempUser);
 }
 
 async function destroyUser(userId) {
@@ -166,4 +199,5 @@ module.exports = {
   destroyUser,
   changePassword,
   checkPasswordValid,
+  checkIfAdmin,
 };

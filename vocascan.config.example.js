@@ -10,6 +10,7 @@ module.exports = {
     port: 5000,
     jwt_secret: '',
     salt_rounds: 10,
+    registration_locked: false,
   },
 
   database: {

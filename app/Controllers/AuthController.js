@@ -7,6 +7,7 @@ const {
   destroyUser,
   changePassword,
 } = require('../Services/AuthServiceProvider');
+const { useInviteCode } = require('../Services/InviteCodeProvider');
 const { generateJWT, deleteKeysFromObject } = require('../utils');
 const catchAsync = require('../utils/catchAsync');
 
@@ -15,6 +16,11 @@ const register = catchAsync(async (req, res) => {
 
   const user = await createUser(req.body);
   const token = generateJWT({ id: user.id }, config.server.jwt_secret);
+
+  // after everything is registered redeem the code
+  if (config.server.registration_locked) {
+    await useInviteCode(req.query.inviteCode);
+  }
 
   res.send({ token, user });
 });
