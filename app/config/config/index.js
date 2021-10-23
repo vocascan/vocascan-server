@@ -35,6 +35,7 @@ const parseConfig = (path) => {
   const mergedConfigWithDefaultKeys = {
     server: {},
     database: {},
+    api: {},
     ...mergedConfig,
   };
 

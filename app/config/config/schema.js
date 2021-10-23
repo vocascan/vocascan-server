@@ -75,6 +75,10 @@ const configSchema = Joi.object({
     .unknown()
     .pattern(Joi.invalid(...Object.values(logTransportTypes)), logSchema)
     .default({}),
+
+  api: Joi.object({
+    swagger: Joi.boolean().default(true),
+  }).default({}),
 });
 
 module.exports = configSchema;
