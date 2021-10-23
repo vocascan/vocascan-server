@@ -724,6 +724,11 @@
         "summary": "Get all invite codes. 'null' means no restrictions regarding this property",
         "tags": ["invite code"],
         "operationId": "getInviteCodes",
+        "security": [
+          {
+            "bearerAuthAdmin": []
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetInviteCodes"
@@ -743,6 +748,11 @@
         "summary": "Create an invite code for locked servers",
         "tags": ["invite code"],
         "operationId": "createInviteCode",
+        "security": [
+          {
+            "bearerAuthAdmin": []
+          }
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/CreateInviteCode"
         },
@@ -767,6 +777,11 @@
         "summary": "Delete specific invite code",
         "tags": ["invite code"],
         "operationId": "deleteInviteCode",
+        "security": [
+          {
+            "bearerAuthAdmin": []
+          }
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/pathInviteCode"
@@ -791,6 +806,7 @@
         "summary": "check if invite code is still valid",
         "tags": ["invite code"],
         "operationId": "checkInviteCode",
+        "security": [],
         "parameters": [
           {
             "$ref": "#/components/parameters/pathInviteCode"
@@ -1119,9 +1135,9 @@
         "in": "query",
         "name": "active",
         "description": "decides if vocabulary cards/groups get included in querys",
-        "default": true,
         "schema": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       },
       "activate": {
@@ -2067,6 +2083,12 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "bearerAuthAdmin": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Your account needs needs admin rights"
       }
     }
   },
