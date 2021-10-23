@@ -649,6 +649,76 @@
         }
       }
     },
+    "/import": {
+      "post": {
+        "summary": "import language package",
+        "tags": ["import/export"],
+        "operationId": "importLanguagePackage",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/active"
+          },
+          {
+            "$ref": "#/components/parameters/activate"
+          },
+          {
+            "$ref": "#/components/parameters/queryStatus"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ImportLanguagePackage"
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/import‎": {
+      "post": {
+        "summary": "Import group",
+        "tags": ["import/export"],
+        "operationId": "importGroup",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/active"
+          },
+          {
+            "$ref": "#/components/parameters/activate"
+          },
+          {
+            "$ref": "#/components/parameters/languagePackageId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ImportGroup"
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
     "/inviteCode": {
       "get": {
         "summary": "Get all invite codes. 'null' means no restrictions regarding this property",
@@ -699,7 +769,7 @@
         "operationId": "deleteInviteCode",
         "parameters": [
           {
-            "$ref": "#/components/parameters/inviteCode"
+            "$ref": "#/components/parameters/pathInviteCode"
           }
         ],
         "responses": {
@@ -723,7 +793,7 @@
         "operationId": "checkInviteCode",
         "parameters": [
           {
-            "$ref": "#/components/parameters/inviteCode"
+            "$ref": "#/components/parameters/pathInviteCode"
           }
         ],
         "responses": {
@@ -1048,7 +1118,8 @@
       "active": {
         "in": "query",
         "name": "active",
-        "description": "decides if this part gets included in querys",
+        "description": "decides if vocabulary cards/groups get included in querys",
+        "default": true,
         "schema": {
           "type": "boolean"
         }
@@ -1136,6 +1207,15 @@
       },
       "inviteCode": {
         "in": "query",
+        "name": "inviteCode",
+        "required": true,
+        "description": "invite code consisting of 8 random letters",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pathInviteCode": {
+        "in": "path",
         "name": "inviteCode",
         "required": true,
         "description": "invite code consisting of 8 random letters",
@@ -1371,6 +1451,146 @@
                 "expirationDate": {
                   "type": "string",
                   "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ImportLanguagePackage": {
+        "description": "imported languagePackage information",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create vocabulary details",
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "default": "vocascan/package"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "foreignWordLanguage": {
+                  "type": "string"
+                },
+                "translatedWordLanguage": {
+                  "type": "string"
+                },
+                "vocabsPerDay": {
+                  "type": "integer"
+                },
+                "rightWords": {
+                  "type": "integer"
+                },
+                "Groups": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "drawerId": {
+                        "type": "string"
+                      },
+                      "VocabularyCards": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "Translations": {
+                              "type": "array",
+                              "items": {
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "Drawers": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "stage": {
+                        "type": "string"
+                      },
+                      "queryInterval": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ImportGroup": {
+        "description": "imported group information",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create vocabulary details",
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "default": "vocascan/group"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "VocabularyCards": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "Translations": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
