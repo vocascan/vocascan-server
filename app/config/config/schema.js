@@ -13,10 +13,10 @@ const logSchema = Joi.object({
   enable_default_log: Joi.boolean().default(true),
   enable_sql_log: Joi.boolean().default(false),
   enable_router_log: Joi.boolean().default(false),
-  format_default: Joi.string().default('{{.level}}: {{.message}}'),
-  format_sql: Joi.string().default('{{.message}}'),
+  format_default: Joi.string().default('{{level}}: {{message}}'),
+  format_sql: Joi.string().default('{{message}}'),
   format_router: Joi.string().default(
-    '{{.tokens.remoteAddr}} - "{{.req.user ? _.req.user.username : "no user"}}" {{.tokens.date("clf")}} "{{.tokens.method}} {{.tokens.url}}" {{.tokens.colorizedStatus}} {{.tokens.res("content-length")}} "{{.tokens.userAgent}}" - {{.tokens.responseTime(3)}}ms'
+    '{{tokens.remoteAddr}} - "{{req.user ? req.user.username : "no user"}}" {{tokens.date("clf")}} "{{tokens.method}} {{tokens.url}}" {{tokens.colorizedStatus}} {{tokens.res("content-length")}} "{{tokens.userAgent}}" - {{tokens.responseTime(3)}}ms'
   ),
   json: Joi.boolean().default(false),
   handle_exceptions: Joi.boolean().default(true),

@@ -183,16 +183,60 @@ const parseChalkTemplate = (template) => {
   return chalk(tagArray);
 };
 
-// eslint-disable-next-line no-unused-vars
-const template = (templateString, _) => {
-  return templateString.replace(/{{ *(.*?) *}}/g, (__, match) => {
-    try {
-      // eslint-disable-next-line no-eval
-      return eval((match[0] === '.' ? '_' : '') + match);
-    } catch {
-      return '';
-    }
+/**
+ * Escapes template literal breaking characters
+ * @param {String} string string
+ * @returns {String} escaped string
+ */
+const escapeString = (string) => {
+  const stringEscapes = {
+    '\\': '\\',
+    '`': '`',
+    '\n': 'n',
+    '\r': 'r',
+    '\u2028': 'u2028',
+    '\u2029': 'u2029',
+  };
+
+  return string.replace(/[`\n\r\u2028\u2029\\]/g, (chr) => {
+    return '\\' + stringEscapes[chr];
   });
+};
+
+/**
+ * Render mustache like templates
+ * @param {String} templateString template string
+ * @returns {Function} compiled template function to call with context
+ */
+const template = (templateString) => {
+  let templateLiteralString = '';
+  let lastOffset = 0;
+
+  templateString.replace(/{{(.*?)}}/g, (match, value, offset) => {
+    templateLiteralString += escapeString(templateString.slice(lastOffset, offset));
+
+    templateLiteralString += `\${(() => {
+      try {
+        return ${value} || "";
+      } catch {
+        return '';
+      }
+    })()}`;
+
+    lastOffset = offset + match.length;
+  });
+
+  templateLiteralString += escapeString(templateString.slice(lastOffset, templateLiteralString.length - 1));
+
+  const functionStr = `with(ctx) {
+    return \`${templateLiteralString}\`;
+  }`;
+
+  // eslint-disable-next-line no-new-func
+  const compiledFunction = new Function('ctx', functionStr);
+  compiledFunction.source = functionStr;
+
+  return compiledFunction;
 };
 
 module.exports = {
@@ -210,5 +254,6 @@ module.exports = {
   mergeDeep,
   mutateByPath,
   parseChalkTemplate,
+  escapeString,
   template,
 };

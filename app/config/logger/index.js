@@ -30,12 +30,14 @@ const removeUnknownKeys = winston.format((info) => {
 
 // format factory helper
 const generateFormat = ({ colorize, format, json, mode }) => {
+  const compiledTemplate = template(format);
+
   return winston.format.combine(
     enumerateErrorFormat(),
     ...(colorize ? [winston.format.colorize()] : []),
     winston.format.printf((ctx) => {
       if (!ctx.message) ctx.message = ctx[MESSAGE];
-      const rendered = template(format, { chalk, ...ctx });
+      const rendered = compiledTemplate({ chalk, ...ctx });
       return rendered;
     }),
     ...(mode === 'router' ? [removeUnknownKeys()] : []), // remove log context if mode is router
