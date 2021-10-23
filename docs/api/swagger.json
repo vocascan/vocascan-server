@@ -60,6 +60,11 @@
         "tags": ["auth"],
         "operationId": "userRegister",
         "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/registerInviteCode"
+          }
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UserRegister"
         },
@@ -643,6 +648,99 @@
           }
         }
       }
+    },
+    "/inviteCode": {
+      "get": {
+        "summary": "Get all invite codes. 'null' means no restrictions regarding this property",
+        "tags": ["invite code"],
+        "operationId": "getInviteCodes",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetInviteCodes"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an invite code for locked servers",
+        "tags": ["invite code"],
+        "operationId": "createInviteCode",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateInviteCode"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CreateInviteCode"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/inviteCode/{inviteCode}": {
+      "delete": {
+        "summary": "Delete specific invite code",
+        "tags": ["invite code"],
+        "operationId": "deleteInviteCode",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/inviteCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "get": {
+        "summary": "check if invite code is still valid",
+        "tags": ["invite code"],
+        "operationId": "checkInviteCode",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/inviteCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CheckInviteCode"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -863,6 +961,29 @@
             "type": "boolean"
           }
         }
+      },
+      "InviteCode": {
+        "description": "InviteCode",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "uses": {
+            "type": "integer"
+          },
+          "maxUses": {
+            "type": "integer"
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
       }
     },
     "parameters": {
@@ -1011,6 +1132,23 @@
         "schema": {
           "type": "boolean",
           "default": false
+        }
+      },
+      "inviteCode": {
+        "in": "query",
+        "name": "inviteCode",
+        "required": true,
+        "description": "invite code consisting of 8 random letters",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "registerInviteCode": {
+        "in": "query",
+        "name": "inviteCode",
+        "description": "invite code consisting of 8 random letters. Only needed if server is locked",
+        "schema": {
+          "type": "string"
         }
       }
     },
@@ -1213,6 +1351,26 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateInviteCode": {
+        "description": "information about max uses and expiration date of invite code. Not required. 'null' means infinite",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Create vocabulary details",
+              "type": "object",
+              "properties": {
+                "maxUses": {
+                  "type": "integer"
+                },
+                "expirationDate": {
+                  "type": "string",
+                  "format": "date-time"
                 }
               }
             }
@@ -1513,7 +1671,11 @@
                       "Translations": {
                         "type": "array",
                         "items": {
-                          "name": "string"
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
                         }
                       }
                     }
@@ -1579,7 +1741,11 @@
                             "Translations": {
                               "type": "array",
                               "items": {
-                                "name": "string"
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                }
                               }
                             }
                           }
@@ -1604,6 +1770,44 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateInviteCode": {
+        "description": "Created invite code",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InviteCode"
+            }
+          }
+        }
+      },
+      "GetInviteCodes": {
+        "description": "Get all invite codes",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/InviteCode"
+              }
+            }
+          }
+        }
+      },
+      "CheckInviteCode": {
+        "description": "Check if invite code is valid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "usable": {
+                  "type": "boolean"
                 }
               }
             }
