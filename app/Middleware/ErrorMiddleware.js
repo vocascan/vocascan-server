@@ -45,7 +45,7 @@ const errorHandler = (err, _req, res, _next) => {
         message,
       },
     ],
-    ...(config.debug && { stack: err.stack }),
+    ...(config.debug && { stack: err.stack.split('\n') }),
   };
 
   if (config.debug || response.code >= 500) {
