@@ -52,4 +52,8 @@ module.exports = {
       archive_logs: true,
     },
   },
+
+  api: {
+    enable_swagger: true,
+  },
 };

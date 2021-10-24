@@ -77,7 +77,7 @@ const configSchema = Joi.object({
     .default({}),
 
   api: Joi.object({
-    swagger: Joi.boolean().default(true),
+    enable_swagger: Joi.boolean().default(true),
   }).default({}),
 });
 

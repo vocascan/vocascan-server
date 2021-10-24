@@ -74,7 +74,7 @@ router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware, Expo
 router.post('/import', ProtectMiddleware, ImportController.importVocabs);
 
 // Docs
-if (config.api.swagger) {
+if (config.api.enable_swagger) {
   router.get('/swagger.json', DocsController.document);
   router.use('/swagger', DocsController.swagger);
 }
