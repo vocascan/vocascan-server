@@ -6,6 +6,7 @@ const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 const { validateInviteCode } = require('../Services/InviteCodeProvider.js');
+const config = require('../config/config');
 
 // Validate inputs from /register and /login route
 function validateAuth(req) {
@@ -36,7 +37,7 @@ const checkIfAdmin = async (id) => {
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   // if server is locked check for invite codes
-  if (process.env.REGISTRATION_LOCKED === 'true') {
+  if (config.server.registration_locked) {
     if (!req.query.inviteCode) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Locked Server! Invite Code is missing');
     }
@@ -84,7 +85,7 @@ function validateLogin(req, res) {
 // Create new user and store into database
 async function createUser({ username, email, password }) {
   // Hash password
-  const hash = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
+  const hash = await bcrypt.hash(password, config.server.salt_rounds);
   const emailHash = crypto.createHash('sha256').update(email).digest('base64');
 
   const role = await Role.findOne({
@@ -173,7 +174,7 @@ async function checkPasswordValid(id, password) {
 async function changePassword(id, oldPassword, newPassword) {
   if (await checkPasswordValid(id, oldPassword)) {
     // Hash password
-    const hash = await bcrypt.hash(newPassword, +process.env.SALT_ROUNDS);
+    const hash = await bcrypt.hash(newPassword, config.server.salt_rounds);
     const counter = await User.update(
       { password: hash },
       {

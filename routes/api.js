@@ -1,5 +1,7 @@
 const express = require('express');
 
+const config = require('../app/config/config');
+
 // MIDDLEWARE
 const ProtectMiddleware = require('../app/Middleware/ProtectMiddleware');
 const AdminMiddleware = require('../app/Middleware/AdminMiddleware');
@@ -72,8 +74,10 @@ router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware, Expo
 router.post('/import', ProtectMiddleware, ImportController.importVocabs);
 
 // Docs
-router.get('/swagger.json', DocsController.document);
-router.use('/swagger', DocsController.swagger);
+if (config.api.enable_swagger) {
+  router.get('/swagger.json', DocsController.document);
+  router.use('/swagger', DocsController.swagger);
+}
 
 // Info
 router.get('/info', InfoController.sendInfo);

@@ -29,11 +29,14 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "chalk": "^4.1.0",
+    "cli-highlight": "^2.1.11",
     "dotenv": "^8.1.0",
     "express": "^4.16.2",
     "http-status": "^1.5.0",
+    "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "mariadb": "^2.5.3",
+    "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.2",
@@ -42,7 +45,8 @@
     "swagger-ui-express": "^4.1.6",
     "umzug": "^3.0.0-beta.15",
     "uuid": "^8.3.2",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "winston-transport": "^4.4.0"
   },
   "engines": {
     "node": ">=12.0.0"

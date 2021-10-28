@@ -3,7 +3,6 @@ const ShortUniqueId = require('short-unique-id');
 const uid = new ShortUniqueId({ length: 8 });
 
 module.exports = (sequelize) => {
-  // 1.019365018855e-8
   const InviteCode = sequelize.define(
     'InviteCode',
     {
