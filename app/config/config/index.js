@@ -1,3 +1,4 @@
+const path = require('path');
 const chalk = require('chalk');
 const dotenv = require('dotenv');
 
@@ -5,18 +6,22 @@ const { mergeDeep } = require('../../utils');
 const { parseFileConfig, parseEnvConfig, parseDeprecatedConfig } = require('./parsers');
 const configSchema = require('./schema');
 
-const parseConfig = (path) => {
+const parseConfig = ({ configPath, extraConfig = {} } = {}) => {
   // parse .env file
-  dotenv.config();
+  const envFilePath = path.resolve(process.cwd(), '.env');
+  const result = dotenv.config({ path: envFilePath });
+  if (result.parsed) {
+    console.log(chalk`{green info:} loaded env file "${envFilePath}"`);
+  }
 
   // parse config file
-  const configFile = parseFileConfig(path || process.env.VOCASCAN_CONFIG);
+  const configFile = parseFileConfig(configPath || process.env.VOCASCAN_CONFIG);
 
   // parse environment variables
   const configEnv = parseEnvConfig(process.env);
 
   // merge config
-  const mergedConfig = mergeDeep(configFile, configEnv);
+  const mergedConfig = mergeDeep(configFile, configEnv, extraConfig);
 
   // log deprecated messages
   // TODO: remove the deprecated config parser in v2.0.0

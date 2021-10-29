@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 /**
@@ -239,6 +240,23 @@ const template = (templateString) => {
   return compiledFunction;
 };
 
+/**
+ * Generate a random string
+ * @param {Number} length Length of the generated string
+ * @returns {String} Random string
+ */
+const generateRandomString = (length = 64) => crypto.randomBytes(length).toString('hex');
+
+/**
+ * Truncate a string to a specific length
+ * @param {String} str string to truncate
+ * @param {Number} maxLength maximum length before truncate
+ * @param {String} truncateChar char to append on a truncated string
+ * @returns {String} truncated string
+ */
+const truncateString = (str, maxLength = 10, truncateChar = '...') =>
+  str.length > maxLength ? str.substr(0, maxLength - 1) + truncateChar : str;
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
@@ -256,4 +274,6 @@ module.exports = {
   parseChalkTemplate,
   escapeString,
   template,
+  generateRandomString,
+  truncateString,
 };

@@ -11,13 +11,13 @@ const parseFileConfig = (configPath) => {
     // eslint-disable-next-line global-require
     const config = require(resolvedPath);
 
-    console.log(chalk`{green info:} loaded config file "${resolvedPath}"\n`);
+    console.log(chalk`{green info:} loaded config file "${resolvedPath}"`);
 
     return config;
   } catch {
     if (configPath) {
       // incase that the config path is directly set, warn the user
-      console.log(chalk`{yellow warn:} could not open config file "${resolvedPath}"\n`);
+      console.log(chalk`{yellow warn:} could not open config file "${resolvedPath}"`);
     }
 
     return {};
