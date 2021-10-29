@@ -10,6 +10,10 @@ const runServer = async (extraConfig) => {
     config = config.parseConfig({ extraConfig });
   }
 
+  // init db before loading routes
+  const db = require('./database');
+  await db.init();
+
   const http = require('http');
   const express = require('express');
   const chalk = require('chalk');
@@ -20,7 +24,6 @@ const runServer = async (extraConfig) => {
   const ApiError = require('./app/utils/ApiError.js');
 
   const routes = require('./routes');
-  const db = require('./database');
   const logger = require('./app/config/logger');
 
   const app = express();
@@ -45,9 +48,6 @@ const runServer = async (extraConfig) => {
 
   // handle error
   app.use(errorHandler);
-
-  // init db
-  await db.init();
 
   // Checks migrations and run them if they are not already applied. To keep
   // track of the executed migrations, a table (and sequelize model) called .migrations

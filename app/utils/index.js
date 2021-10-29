@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const readline = require('readline');
 
 /**
  * Generate JSON Web Token
@@ -257,6 +258,34 @@ const generateRandomString = (length = 64) => crypto.randomBytes(length).toStrin
 const truncateString = (str, maxLength = 10, truncateChar = '...') =>
   str.length > maxLength ? str.substr(0, maxLength - 1) + truncateChar : str;
 
+/**
+ * Hashes an email to store in the database
+ * @param {String} email  email
+ * @returns {String} hashed email
+ */
+const hashEmail = (email) => crypto.createHash('sha256').update(email).digest('base64');
+
+/**
+ * Prompts a confirm dialog to the console
+ * @param {String} question question to ask
+ * @returns {Promise} confirmed
+ */
+const askToConfirm = (question) => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(`${question} [y/n]:`, (input) => {
+      rl.close();
+
+      const confirmed = /^(y|yes)$/.test(input.toLocaleLowerCase().trim());
+      resolve(confirmed);
+    });
+  });
+};
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
@@ -276,4 +305,6 @@ module.exports = {
   template,
   generateRandomString,
   truncateString,
+  hashEmail,
+  askToConfirm,
 };

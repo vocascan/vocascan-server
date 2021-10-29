@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
-const { deleteKeysFromObject } = require('../utils');
+const { deleteKeysFromObject, hashEmail } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
@@ -86,7 +86,7 @@ function validateLogin(req, res) {
 async function createUser({ username, email, password }) {
   // Hash password
   const hash = await bcrypt.hash(password, config.server.salt_rounds);
-  const emailHash = crypto.createHash('sha256').update(email).digest('base64');
+  const emailHash = hashEmail(email);
 
   const role = await Role.findOne({
     attributes: ['id'],
@@ -112,7 +112,7 @@ async function createUser({ username, email, password }) {
 // Log user in
 async function loginUser({ email, password }) {
   // Get user with email from database
-  const emailHash = crypto.createHash('sha256').update(email).digest('base64');
+  const emailHash = hashEmail(email);
 
   const user = await User.findOne({
     attributes: ['id', 'username', 'password'],
