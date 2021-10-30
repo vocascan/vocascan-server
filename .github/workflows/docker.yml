@@ -4,8 +4,8 @@ on:
   push:
     tags:
       - v*
-    branches: [ main, experimental ]
-    paths-ignore: [ '**.md' ]
+    branches: [main, experimental]
+    paths-ignore: ['**.md']
   workflow_dispatch:
 
 env:
@@ -41,7 +41,7 @@ jobs:
           if [[ $branch = "main" ]]; then
               tag="latest"
           else
-              tag=$branch
+              tag="${branch//\//-}"
           fi
           set -x
           VERSION=$tag
