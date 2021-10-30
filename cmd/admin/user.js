@@ -1,4 +1,3 @@
-const { Op } = require('sequelize');
 const commander = require('commander');
 const bcrypt = require('bcrypt');
 const { Table } = require('console-table-printer');
@@ -43,7 +42,7 @@ userHandler
   .addOption(new commander.Option('-u, --username <username>').makeOptionMandatory())
   .addOption(new commander.Option('-e, --email <email>').makeOptionMandatory())
   .addOption(new commander.Option('-p, --password <password>'))
-  .addOption(new commander.Option('-r, --role <id/name>', 'chose a role for the new user').default('user'))
+  .addOption(new commander.Option('-r, --role <name>', 'chose a role for the new user').default('user'))
   .action(async (options) => {
     await db.init();
     const { User, Role } = db;
@@ -51,7 +50,7 @@ userHandler
     // check if role exists
     const role = await Role.findOne({
       where: {
-        [Op.or]: [{ id: options.role }, { name: options.role }],
+        name: options.role,
       },
     });
 
@@ -89,14 +88,14 @@ userHandler
 userHandler
   .command('list')
   .description('list all users')
-  .addOption(new commander.Option('-r, --role <id/name>', 'filter for a specific role'))
+  .addOption(new commander.Option('-r, --role <name>', 'filter for a specific role'))
   .action(async (options) => {
     await db.init();
     const { User, Role } = db;
 
     const users = await User.findAll({
       where: {
-        ...(options.role ? { [Op.or]: [{ '$role.id$': options.role }, { '$role.name$': options.role }] } : {}),
+        ...(options.role ? { '$role.name$': options.role } : {}),
       },
       include: [
         {
@@ -123,7 +122,7 @@ userHandler
   .addOption(new commander.Option('-i, --id <id>'))
   .addOption(new commander.Option('-u, --username <username>'))
   .addOption(new commander.Option('-p, --password <password>'))
-  .addOption(new commander.Option('-r, --role <id/role>'))
+  .addOption(new commander.Option('-r, --role <name>'))
   .action(async (options) => {
     await db.init();
     const { User, Role } = db;
@@ -169,7 +168,7 @@ userHandler
       // check if role exists
       const role = await Role.findOne({
         where: {
-          [Op.or]: [{ id: options.role }, { name: options.role }],
+          name: options.role,
         },
       });
 
