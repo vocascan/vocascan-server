@@ -34,7 +34,7 @@ db.init = async () => {
   }
 
   // get all models
-  fs.readdirSync(path.resolve('database', 'models'))
+  fs.readdirSync(path.resolve(__dirname, 'models'))
     // filter by models
     .filter((file) => {
       return file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js';
@@ -42,7 +42,7 @@ db.init = async () => {
     // import model
     .forEach((file) => {
       // eslint-disable-next-line global-require
-      const model = require(path.resolve('database', 'models', file))(db.sequelize);
+      const model = require(path.resolve(__dirname, 'models', file))(db.sequelize);
       db[model.name] = model;
     });
 

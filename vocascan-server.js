@@ -22,8 +22,8 @@ const opts = program.opts();
 require('./app/config/config').parseConfig({ configPath: opts.configFile });
 
 // read commands folder
-for (const cmdHandler of fs.readdirSync(path.resolve('cmd'), { withFileTypes: true })) {
-  const fullPath = path.resolve('cmd', cmdHandler.name);
+for (const cmdHandler of fs.readdirSync(path.resolve(__dirname, 'cmd'), { withFileTypes: true })) {
+  const fullPath = path.resolve(__dirname, 'cmd', cmdHandler.name);
 
   // check if command has sub commands in its own directory
   if (cmdHandler.isDirectory()) {
