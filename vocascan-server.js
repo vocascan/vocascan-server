@@ -52,4 +52,4 @@ for (const cmdHandler of fs.readdirSync(path.resolve('cmd'), { withFileTypes: tr
   }
 }
 
-program.parse(process.argv);
+program.showHelpAfterError().parse(process.argv);
