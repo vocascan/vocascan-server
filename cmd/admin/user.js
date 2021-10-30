@@ -35,8 +35,11 @@ const generateUserTable = (users) => {
   return table;
 };
 
+userHandler.description('manage vocascan users');
+
 userHandler
   .command('create')
+  .description('create a user')
   .addOption(new commander.Option('-u, --username <username>').makeOptionMandatory())
   .addOption(new commander.Option('-e, --email <email>').makeOptionMandatory())
   .addOption(new commander.Option('-p, --password <password>'))
@@ -85,6 +88,7 @@ userHandler
 
 userHandler
   .command('list')
+  .description('list all users')
   .addOption(new commander.Option('-r, --role <id/name>', 'filter for a specific role'))
   .action(async (options) => {
     await db.init();
@@ -115,6 +119,7 @@ userHandler
 
 userHandler
   .command('update')
+  .description('update users role or password')
   .addOption(new commander.Option('-i, --id <id>'))
   .addOption(new commander.Option('-u, --username <username>'))
   .addOption(new commander.Option('-p, --password <password>'))
@@ -187,6 +192,7 @@ userHandler
 
 userHandler
   .command('delete')
+  .description('delete a user')
   .addOption(new commander.Option('-i, --id <id>'))
   .addOption(new commander.Option('-u, --username <username>'))
   .addOption(new commander.Option('-y, --yes'))

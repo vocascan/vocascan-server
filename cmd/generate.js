@@ -8,8 +8,11 @@ const SECRET_TYPES = {
   JWT_SECRET: 'JWT_SECRET',
 };
 
+generate.description('generate secrets to use in the config file');
+
 generate
   .command('secret')
+  .description('generate secrets to use in the config file')
   .addArgument(new commander.Argument('<type>').choices(Object.values(SECRET_TYPES)))
   .action((type) => {
     if (type === SECRET_TYPES.JWT_SECRET) {

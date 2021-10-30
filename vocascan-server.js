@@ -3,13 +3,18 @@
 const fs = require('fs');
 const path = require('path');
 const commander = require('commander');
+const chalk = require('chalk');
 const { version } = require('./package.json');
 
 const program = new commander.Command();
 
 program
-  .version(version)
-  .option('-c --config-file <path>', 'specify a path to a custom configuration file')
+  .version(version, '-v, --version')
+  .description('the vocascan-server cli')
+  .option('-c, --config-file <path>', 'specify a path to a custom configuration file')
+  .configureOutput({
+    outputError: (str, write) => write(chalk.red('error:') + str.split('error:')[1]),
+  })
   .parseOptions(process.argv);
 
 const opts = program.opts();
@@ -33,7 +38,10 @@ for (const cmdHandler of fs.readdirSync(path.resolve('cmd'), { withFileTypes: tr
 
     // add sub commands
     for (const subCmdHandler of fs.readdirSync(fullPath)) {
-      handler.addCommand(require(path.resolve(fullPath, subCmdHandler)));
+      // check that to prevent recursion error
+      if (subCmdHandler !== 'index.js') {
+        handler.addCommand(require(path.resolve(fullPath, subCmdHandler)));
+      }
     }
 
     // register main handler to the program
