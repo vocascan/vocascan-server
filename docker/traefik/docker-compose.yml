@@ -27,7 +27,7 @@ services:
     environment:
       VOCASCAN_CONFIG: "/root/vocascan/vocascan.config.js"
     volumes:
-      - "./path/to/config/on/host.config.js:/root/vocascan/vocascan.config.js:ro"
+      - "./vocascan.config.js:/etc/vocascan/vocascan.config.js:ro"
     labels:
       - "traefik.http.routers.vocascan.rule=Host(`web.your_domain.com`)"
       - "traefik.http.routers.vocascan.tls=true"
