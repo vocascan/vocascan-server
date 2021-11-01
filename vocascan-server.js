@@ -11,15 +11,7 @@ const program = new commander.Command();
 program
   .version(version, '-v, --version')
   .description('the vocascan-server cli')
-  .option('-c, --config-file <path>', 'specify a path to a custom configuration file')
-  .configureOutput({
-    outputError: (str, write) => write(chalk.red('error:') + str.split('error:')[1]),
-  })
-  .parseOptions(process.argv);
-
-const opts = program.opts();
-
-require('./app/config/config').parseConfig({ configPath: opts.configFile });
+  .option('-c, --config-file <path>', 'specify a path to a custom configuration file');
 
 // read commands folder
 for (const cmdHandler of fs.readdirSync(path.resolve(__dirname, 'cmd'), { withFileTypes: true })) {
@@ -52,4 +44,9 @@ for (const cmdHandler of fs.readdirSync(path.resolve(__dirname, 'cmd'), { withFi
   }
 }
 
-program.showHelpAfterError().parse(process.argv);
+program
+  .configureOutput({
+    outputError: (str, write) => write(chalk.red('error:') + str.split('error:')[1]),
+  })
+  .showHelpAfterError()
+  .parse(process.argv);

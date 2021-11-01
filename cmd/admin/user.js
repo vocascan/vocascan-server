@@ -2,9 +2,11 @@ const commander = require('commander');
 const bcrypt = require('bcrypt');
 const { Table } = require('console-table-printer');
 const { truncateString, generateRandomString, hashEmail, askToConfirm } = require('../../app/utils');
-const config = require('../../app/config/config');
+const { parseConfig } = require('../../app/config/config');
 const db = require('../../database');
 const chalk = require('chalk');
+
+let config = {};
 
 const userHandler = new commander.Command('user');
 
@@ -36,6 +38,15 @@ const generateUserTable = (users) => {
 
 userHandler.description('manage vocascan users');
 
+userHandler.hook('preAction', async (thisCommand) => {
+  // get options from first level command
+  const opts = thisCommand.parent.parent.opts();
+  config = parseConfig({ configPath: opts.configFile });
+
+  // init database
+  await db.init();
+});
+
 userHandler
   .command('create')
   .description('create a user')
@@ -44,7 +55,6 @@ userHandler
   .addOption(new commander.Option('-p, --password <password>'))
   .addOption(new commander.Option('-r, --role <name>', 'chose a role for the new user').default('user'))
   .action(async (options) => {
-    await db.init();
     const { User, Role } = db;
 
     // check if role exists
@@ -90,7 +100,6 @@ userHandler
   .description('list all users')
   .addOption(new commander.Option('-r, --role <name>', 'filter for a specific role'))
   .action(async (options) => {
-    await db.init();
     const { User, Role } = db;
 
     const users = await User.findAll({
@@ -124,7 +133,6 @@ userHandler
   .addOption(new commander.Option('-p, --password <password>'))
   .addOption(new commander.Option('-r, --role <name>'))
   .action(async (options) => {
-    await db.init();
     const { User, Role } = db;
 
     // check if one option to identify is set
@@ -196,7 +204,6 @@ userHandler
   .addOption(new commander.Option('-u, --username <username>'))
   .addOption(new commander.Option('-y, --yes'))
   .action(async (options) => {
-    await db.init();
     const { User, Role } = db;
 
     // check if one option to identify is set

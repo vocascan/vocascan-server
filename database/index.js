@@ -3,16 +3,17 @@ const path = require('path');
 const { Sequelize } = require('sequelize');
 const { highlight } = require('cli-highlight');
 
-const { sqlLogger } = require('../app/config/logger');
-const config = require('../app/config/config');
-
-const Migration = require('./Migration');
-
 const basename = path.basename(__filename);
 
 const db = {};
 
 db.init = async () => {
+  /* eslint-disable global-require */
+  const { sqlLogger } = require('../app/config/logger');
+  const config = require('../app/config/config');
+  const Migration = require('./Migration');
+  /* eslint-enable global-require */
+
   const sequelizeOptions = {
     host: config.database.host,
     port: config.database.port,
