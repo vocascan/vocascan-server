@@ -1,3 +1,8 @@
+const http = require('http');
+const express = require('express');
+const chalk = require('chalk');
+const httpStatus = require('http-status');
+
 /**
  * Run vocascan server
  * @param {Object} extraConfig extra config can be used to configure the server programmatically
@@ -13,11 +18,6 @@ const runServer = async (extraConfig) => {
   // init db before loading routes
   const db = require('./database');
   await db.init();
-
-  const http = require('http');
-  const express = require('express');
-  const chalk = require('chalk');
-  const httpStatus = require('http-status');
 
   const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
   const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
