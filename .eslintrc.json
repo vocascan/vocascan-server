@@ -20,5 +20,13 @@
         "ignoreTemplateLiterals": true
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["vocascan-server.js", "cmd/**/*.js", "server.js"],
+      "rules": {
+        "global-require": "off"
+      }
+    }
+  ]
 }

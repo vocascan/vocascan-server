@@ -39,7 +39,7 @@ const configSchema = Joi.object({
   debug: Joi.boolean().default(false),
 
   server: Joi.object({
-    port: Joi.number().default(5000),
+    port: Joi.number().default(5000).min(1).max(65535),
     jwt_secret: Joi.string().required(),
     salt_rounds: Joi.number().integer().min(0).max(20).default(10),
     registration_locked: Joi.boolean().default(false),

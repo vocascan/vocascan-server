@@ -16,4 +16,6 @@ COPY --from=builder /build/node_modules /app/node_modules
 
 COPY . .
 
-CMD ["npm", "run", "start"]
+RUN npm link
+
+CMD ["vocascan-server", "web"]

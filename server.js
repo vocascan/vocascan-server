@@ -1,51 +1,72 @@
-require('./app/config/config').parseConfig();
-
-const config = require('./app/config/config');
-
+const http = require('http');
 const express = require('express');
 const chalk = require('chalk');
 const httpStatus = require('http-status');
 
-const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
-const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
-const ApiError = require('./app/utils/ApiError.js');
+/**
+ * Run vocascan server
+ * @param {Object} extraConfig extra config can be used to configure the server programmatically
+ */
+const runServer = async (extraConfig) => {
+  let config = require('./app/config/config');
 
-const routes = require('./routes');
-const db = require('./database');
-const logger = require('./app/config/logger');
+  // config has not been parsed already -> parse it
+  if (config.parseConfig) {
+    config = config.parseConfig({ extraConfig });
+  }
 
-const app = express();
+  // init db before loading routes
+  const db = require('./database');
+  await db.init();
 
-// logging middleware
-app.use(LoggingMiddleware);
+  const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
+  const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
+  const ApiError = require('./app/utils/ApiError.js');
 
-// middleware
-app.use(express.json());
+  const routes = require('./routes');
+  const logger = require('./app/config/logger');
 
-// routes
-app.use('/', routes);
+  const app = express();
+  const server = http.createServer(app);
 
-// send back a 404 error for any unknown api request
-app.use((_req, _res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
-});
+  // logging middleware
+  app.use(LoggingMiddleware);
 
-// convert error to ApiError, if needed
-app.use(errorConverter);
+  // middleware
+  app.use(express.json());
 
-// handle error
-app.use(errorHandler);
+  // routes
+  app.use('/', routes);
 
-Promise.resolve()
+  // send back a 404 error for any unknown api request
+  app.use((_req, _res, next) => {
+    next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  });
+
+  // convert error to ApiError, if needed
+  app.use(errorConverter);
+
+  // handle error
+  app.use(errorHandler);
+
   // Checks migrations and run them if they are not already applied. To keep
-  // track of the executed migrations, a table (and sequelize model) called SequelizeMeta
+  // track of the executed migrations, a table (and sequelize model) called .migrations
   // will be automatically created (if it doesn't exist already) and parsed.
-  .then(() => db.migrations.up(db))
-  .then(() => db.seeders.up(db))
+  await db.migrations.up();
+  await db.seeders.up();
 
   // start server
-  .then(() => {
-    app.listen(config.server.port, () => {
+  return new Promise((resolve) => {
+    server.listen(config.server.port, () => {
       logger.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
+      resolve(server);
     });
   });
+};
+
+// run runServer function if it was directly executed to keep downwards compatibility
+if (require.main === module) {
+  runServer();
+}
+
+module.exports = runServer;

@@ -5,19 +5,19 @@ const { mutateByPath, parseChalkTemplate } = require('../../utils');
 const { DEFAULT_CONFIG_PATH } = require('../../utils/constants');
 
 const parseFileConfig = (configPath) => {
-  const resolvedPath = path.resolve(configPath || DEFAULT_CONFIG_PATH);
+  const resolvedPath = path.resolve(process.cwd(), configPath || DEFAULT_CONFIG_PATH);
 
   try {
     // eslint-disable-next-line global-require
     const config = require(resolvedPath);
 
-    console.log(chalk`{green info:} loaded config file "${resolvedPath}"\n`);
+    console.log(chalk`{green info:} loaded config file "${resolvedPath}"`);
 
     return config;
   } catch {
     if (configPath) {
       // incase that the config path is directly set, warn the user
-      console.log(chalk`{yellow warn:} could not open config file "${resolvedPath}"\n`);
+      console.log(chalk`{yellow warn:} could not open config file "${resolvedPath}"`);
     }
 
     return {};
