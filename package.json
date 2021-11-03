@@ -1,6 +1,6 @@
 {
   "name": "@vocascan/server",
-  "version": "1.0.0",
+  "version": "1.1.0-rc.1",
   "description": "A highly configurable vocabulary trainer",
   "main": "./server.js",
   "scripts": {
@@ -14,6 +14,10 @@
   },
   "bin": {
     "vocascan-server": "./vocascan-server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vocascan/vocascan-server.git"
   },
   "author": "vocascan <vocascan@gmail.com>",
   "license": "MIT",
