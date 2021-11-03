@@ -10,7 +10,6 @@ const program = new commander.Command();
 
 program
   .version(version, '-v, --version')
-  .description('the vocascan-server cli')
   .option('-c, --config-file <path>', 'specify a path to a custom configuration file');
 
 // read commands folder

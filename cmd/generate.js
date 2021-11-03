@@ -8,7 +8,7 @@ const SECRET_TYPES = {
   JWT_SECRET: 'JWT_SECRET',
 };
 
-generate.description('generate secrets to use in the config file');
+generate.description('generation functions for strings needed for config files');
 
 generate
   .command('secret')
