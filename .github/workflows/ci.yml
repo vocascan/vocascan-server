@@ -62,11 +62,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           tag: ${{ steps.version.outputs.tag }}
-
-      - name: Change scope
-        env:
-          INPUT_TOKEN: ''
-        run: npm init --scope=vocascan -y
+          access: 'public'
 
       - name: Publish to gpr
         uses: JS-DevTools/npm-publish@v1
@@ -74,6 +70,7 @@ jobs:
           token: ${{ secrets.VOCASCAN_BOT_TOKEN }}
           registry: https://npm.pkg.github.com/
           tag: ${{ steps.version.outputs.tag }}
+          access: 'public'
 
   docker:
     name: 🐋 docker

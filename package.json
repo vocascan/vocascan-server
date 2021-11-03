@@ -1,5 +1,5 @@
 {
-  "name": "vocascan-server",
+  "name": "@vocascan/server",
   "version": "1.0.0",
   "description": "A highly configurable vocabulary trainer",
   "main": "./server.js",
@@ -15,7 +15,7 @@
   "bin": {
     "vocascan-server": "./vocascan-server.js"
   },
-  "author": "Noctera",
+  "author": "vocascan <vocascan@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "eslint": "^7.23.0",
