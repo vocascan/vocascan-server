@@ -1,19 +1,25 @@
 {
-  "name": "vocascan-server",
-  "version": "1.0.0",
+  "name": "@vocascan/server",
+  "version": "1.1.0-rc.1",
   "description": "A highly configurable vocabulary trainer",
-  "main": "server.js",
+  "main": "./server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node vocascan-server.js web",
+    "dev": "nodemon vocascan-server.js web",
     "test": "npm run lint",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "jwt-secret": "node ./scripts/jwt-secret.js",
     "swagger": "swagger-ui-watcher -p 3200 ./docs/api/swagger.json",
     "postinstall": "node -e \"process.exit(process.env.npm_config_sqlite === 'true')\" || npm i --no-save --no-package-lock sqlite3"
   },
-  "author": "Noctera",
+  "bin": {
+    "vocascan-server": "./vocascan-server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vocascan/vocascan-server.git"
+  },
+  "author": "vocascan <vocascan@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "eslint": "^7.23.0",
@@ -29,11 +35,16 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "chalk": "^4.1.0",
+    "cli-highlight": "^2.1.11",
+    "commander": "^8.3.0",
+    "console-table-printer": "^2.10.0",
     "dotenv": "^8.1.0",
     "express": "^4.16.2",
     "http-status": "^1.5.0",
+    "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "mariadb": "^2.5.3",
+    "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.2",
@@ -42,7 +53,8 @@
     "swagger-ui-express": "^4.1.6",
     "umzug": "^3.0.0-beta.15",
     "uuid": "^8.3.2",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "winston-transport": "^4.4.0"
   },
   "engines": {
     "node": ">=12.0.0"
