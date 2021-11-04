@@ -111,8 +111,8 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            vocascan/vocascan-server
-            ghcr.io/vocascan/vocascan-server
+            vocascan/server
+            ghcr.io/vocascan/server
           tags: ${{ steps.version.outputs.tags }}
 
       - name: Set up QEMU

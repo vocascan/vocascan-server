@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   vocascan:
-    image: vocascan/vocascan-server:latest
+    image: vocascan/server:latest
     restart: always
     tty: true
     depends_on:
