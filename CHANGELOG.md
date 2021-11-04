@@ -6,13 +6,13 @@ This changelog goes through all the changes that have been made in each release 
 ## [v1.1.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.1.0) - xxxx.xx.xx
 
 - Features
-  - vocascan cli (#63)
-  - config logger (#61)
-  - invite codes (#56)
+  - Vocascan cli (#63)
+  - Config logger (#61)
+  - Invite codes (#56)
   - Import/Export function (#54)
 - Bugfixes
-  - role seeders for MySQL setup (#58)
-  - swagger doc url behind reverse proxy (#55)
+  - Role seeders for MySQL setup (#58)
+  - Swagger doc url behind reverse proxy (#55)
 
 ## [v1.0.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.0.0) - 2021.06.13
 
