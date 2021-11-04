@@ -3,6 +3,17 @@
 This changelog goes through all the changes that have been made in each release on the
 [vocascan-server](https://github.com/vocascan/vocascan-server).
 
+## [v1.1.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.1.0) - xxxx.xx.xx
+
+- Features
+  - vocascan cli (#63)
+  - config logger (#61)
+  - invite codes (#56)
+  - Import/Export function (#54)
+- Bugfixes
+  - role seeders for MySQL setup (#58)
+  - swagger doc url behind reverse proxy (#55)
+
 ## [v1.0.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.0.0) - 2021.06.13
 
 Finally the time has come. The first release of Vocascan is ready. Vocascan is a server-client vocabulary trainer that
