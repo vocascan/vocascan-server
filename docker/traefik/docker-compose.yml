@@ -19,13 +19,13 @@ services:
     networks:
       - web
   vocascan:
-    image: vocascan/vocascan-server:experimental
+    image: vocascan/server
     restart: always
     tty: true
     depends_on:
       - db
     environment:
-      VOCASCAN_CONFIG: "/root/vocascan/vocascan.config.js"
+      VOCASCAN_CONFIG: "/etc/vocascan/vocascan.config.js"
     volumes:
       - "./vocascan.config.js:/etc/vocascan/vocascan.config.js:ro"
     labels:
