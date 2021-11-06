@@ -40,6 +40,9 @@ const parseConfig = ({ configPath, extraConfig = {} } = {}) => {
   const mergedConfigWithDefaultKeys = {
     server: {},
     database: {},
+    log: {
+      console: { colorize: true },
+    },
     api: {},
     ...mergedConfig,
   };
