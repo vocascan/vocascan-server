@@ -71,62 +71,64 @@ const routerLogger = loggers.add('router', {
 
 // add logger transports
 for (const [name, options] of Object.entries(config.log)) {
-  let Transport = null;
-  let transportOptions = { name };
+  if (options.enable) {
+    let Transport = null;
+    let transportOptions = { name };
 
-  if (options.mode === logTransportTypes.CONSOLE) {
-    Transport = winston.transports.Console;
-    transportOptions = {
-      ...transportOptions,
-      level: options.level,
-      stderrLevels: options.stderr_levels,
+    if (options.mode === logTransportTypes.CONSOLE) {
+      Transport = winston.transports.Console;
+      transportOptions = {
+        ...transportOptions,
+        level: options.level,
+        stderrLevels: options.stderr_levels,
+      };
+    } else if (options.mode === logTransportTypes.FILE) {
+      Transport = winston.transports.File;
+      transportOptions = {
+        ...transportOptions,
+        level: options.level,
+        filename: options.filename,
+        maxsize: options.max_size,
+        maxFiles: options.max_files,
+        zippedArchive: options.archive_logs,
+      };
+    }
+
+    const basicFormatOptions = {
+      colorize: options.colorize,
+      json: options.json,
     };
-  } else if (options.mode === logTransportTypes.FILE) {
-    Transport = winston.transports.File;
-    transportOptions = {
-      ...transportOptions,
-      level: options.level,
-      filename: options.filename,
-      maxsize: options.max_size,
-      maxFiles: options.max_files,
-      zippedArchive: options.archive_logs,
-    };
-  }
 
-  const basicFormatOptions = {
-    colorize: options.colorize,
-    json: options.json,
-  };
+    if (options.enable_default_log) {
+      const transport = new Transport({
+        ...transportOptions,
+        handleExceptions: options.handle_exceptions,
+        handleRejections: options.handle_rejections,
+        format: generateFormat({ ...basicFormatOptions, format: options.format_default, mode: 'default' }),
+      });
 
-  if (options.enable_default_log) {
-    const transport = new Transport({
-      ...transportOptions,
-      handleExceptions: options.handle_exceptions,
-      handleRejections: options.handle_rejections,
-      format: generateFormat({ ...basicFormatOptions, format: options.format_default, mode: 'default' }),
-    });
+      defaultLogger.add(transport);
+    }
 
-    defaultLogger.add(transport);
-  }
+    if (options.enable_sql_log) {
+      const transport = new Transport({
+        ...transportOptions,
+        format: generateFormat({ ...basicFormatOptions, format: options.format_sql, mode: 'sql' }),
+        level: 'sql',
+      });
 
-  if (options.enable_sql_log) {
-    const transport = new Transport({
-      ...transportOptions,
-      format: generateFormat({ ...basicFormatOptions, format: options.format_sql, mode: 'sql' }),
-      level: 'sql',
-    });
+      sqlLogger.add(transport);
+    }
 
-    sqlLogger.add(transport);
-  }
+    if (options.enable_router_log) {
+      const transport = new Transport({
+        ...transportOptions,
+        format: generateFormat({ ...basicFormatOptions, format: options.format_router, mode: 'router' }),
+        level: 'router',
+      });
 
-  if (options.enable_router_log) {
-    const transport = new Transport({
-      ...transportOptions,
-      format: generateFormat({ ...basicFormatOptions, format: options.format_router, mode: 'router' }),
-      level: 'router',
-    });
-
-    routerLogger.add(transport);
+      routerLogger.add(transport);
+    }
   }
 }
 

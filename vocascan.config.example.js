@@ -26,6 +26,7 @@ module.exports = {
 
   log: {
     my_console_logger: {
+      enable: true,
       mode: 'console',
       level: 'info',
       colorize: true,
@@ -42,6 +43,7 @@ module.exports = {
       stderr_levels: ['error'],
     },
     file: {
+      enable: true,
       mode: 'file',
       level: 'info',
       enable_sql_log: true,
