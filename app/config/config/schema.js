@@ -3,6 +3,7 @@ const { logTransportTypes, logLevels } = require('../../utils/constants');
 
 // sub schemas
 const logSchema = Joi.object({
+  enable: Joi.boolean().default(true),
   mode: Joi.string()
     .valid(...Object.values(logTransportTypes))
     .default('console'),
