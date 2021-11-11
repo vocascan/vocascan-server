@@ -597,7 +597,7 @@
     "/group/{groupId}/export": {
       "get": {
         "summary": "Export vocabs of a specific group",
-        "tags": ["import/export"],
+        "tags": ["group"],
         "operationId": "exportGroup",
         "parameters": [
           {
@@ -623,7 +623,7 @@
     "/languagePackage/{languagePackageId}/export": {
       "get": {
         "summary": "Export vocabs of a specific language package",
-        "tags": ["import/export"],
+        "tags": ["language package"],
         "operationId": "exportLanguagePackage",
         "parameters": [
           {
@@ -652,7 +652,7 @@
     "/import": {
       "post": {
         "summary": "import language package",
-        "tags": ["import/export"],
+        "tags": ["language package"],
         "operationId": "importLanguagePackage",
         "parameters": [
           {
@@ -687,7 +687,7 @@
     "/import‎": {
       "post": {
         "summary": "Import group",
-        "tags": ["import/export"],
+        "tags": ["group"],
         "operationId": "importGroup",
         "parameters": [
           {
