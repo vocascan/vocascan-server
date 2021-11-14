@@ -1070,6 +1070,30 @@
             "format": "date-time"
           }
         }
+      },
+      "Drawer": {
+        "description": "Drawer",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "languagePackageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage": {
+            "type": "integer"
+          },
+          "queryInterval": {
+            "type": "integer"
+          }
+        }
       }
     },
     "parameters": {
@@ -1551,7 +1575,7 @@
                         "format": "uuid"
                       },
                       "stage": {
-                        "type": "string"
+                        "type": "integer"
                       },
                       "queryInterval": {
                         "type": "integer"
@@ -1999,7 +2023,7 @@
                         "format": "uuid"
                       },
                       "stage": {
-                        "type": "string"
+                        "type": "integer"
                       },
                       "queryInterval": {
                         "type": "integer"
