@@ -1,6 +1,6 @@
 FROM node:14-alpine as builder
 
-RUN apk add --no-cache build-base python
+RUN apk add --no-cache build-base python3
 
 WORKDIR /build
 

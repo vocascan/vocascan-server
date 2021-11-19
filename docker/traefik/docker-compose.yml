@@ -1,0 +1,55 @@
+version: "3.8"
+services:
+  traefik:
+    image: traefik:v2.2
+    container_name: traefik
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+      - ./traefik_dynamic.toml:/traefik_dynamic.toml
+      - ./acme.json:/acme.json
+    labels:
+      - "traefik.frontend.rule=Host:monitor.your_domain.com"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+    networks:
+      - web
+  vocascan:
+    image: vocascan/server
+    restart: always
+    tty: true
+    depends_on:
+      - db
+    environment:
+      VOCASCAN_CONFIG: "/etc/vocascan/vocascan.config.js"
+    volumes:
+      - "./vocascan.config.js:/etc/vocascan/vocascan.config.js:ro"
+    labels:
+      - "traefik.http.routers.vocascan.rule=Host(`web.your_domain.com`)"
+      - "traefik.http.routers.vocascan.tls=true"
+      - "traefik.http.routers.vocascan.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.vocascan.loadbalancer.server.port=8000"
+    networks:
+      - internal
+      - web
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: "vocascan"
+      POSTGRES_PASSWORD: "vocascan"
+      POSTGRES_DB: "vocascan"
+    volumes:
+      - "./database:/var/lib/postgresql/data"
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - internal
+networks:
+  web:
+    external: true
+  internal:
+    external: false
