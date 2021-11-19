@@ -25,7 +25,7 @@ with PM2, Docker or Traefik, which should provide flexibility.
 - Bugfixes
   - Role seeders for MySQL setup (#58)
   - Swagger doc url behind reverse proxy (#55)
-  - fixed daily query limit
+  - fixed a bug with daily query limit
 
 ## [v1.0.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.0.0) - 2021.06.13
 
