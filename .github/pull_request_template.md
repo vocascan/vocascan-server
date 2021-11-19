@@ -1,9 +1,9 @@
 <!--- Provide a general summary of your changes in the Title above -->
 <!--- If there is no changelog entry, label this PR as trivial to bypass the Danger warning -->
 
-| Status  | Type  | Env Vars Change |
-| :---: | :---: | :---: | :--: | :--: |
-| :white_check_mark: Ready / :x: Hold | Feature/Bug/Tooling/Refactor/Hotfix | Yes/No |
+|               Status                |                Type                 | Env Vars Change |
+| :---------------------------------: | :---------------------------------: | :-------------: |
+| :white_check_mark: Ready / :x: Hold | Feature/Bug/Tooling/Refactor/Hotfix |     Yes/No      |
 
 ## Description
 
