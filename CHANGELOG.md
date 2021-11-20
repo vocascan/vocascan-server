@@ -3,7 +3,7 @@
 This changelog goes through all the changes that have been made in each release on the
 [vocascan-server](https://github.com/vocascan/vocascan-server).
 
-## [v1.1.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.1.0) - xxxx.xx.xx
+## [v1.1.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.1.0) - 2021.11.20
 
 After some time, the new version of Vocascan Server has finally been released, with import/export features to share your
 vocabulary packages. The new invitation codes will help you to keep your server all to yourself and your friends. We've
