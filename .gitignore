@@ -5,5 +5,8 @@
 .env
 *.sql
 *.sqlite
-
-
+vocascan.config.*
+!vocascan.config.example.*
+!docker/**/vocascan.config.*
+docker/**/database
+*.log

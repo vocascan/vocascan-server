@@ -1,6 +1,6 @@
 FROM node:14-alpine as builder
 
-RUN apk add --no-cache build-base python
+RUN apk add --no-cache build-base python3
 
 WORKDIR /build
 
@@ -16,4 +16,6 @@ COPY --from=builder /build/node_modules /app/node_modules
 
 COPY . .
 
-CMD ["npm", "run", "start"]
+RUN npm link
+
+CMD ["vocascan-server", "web"]

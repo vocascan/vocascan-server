@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  vocascan:
+    image: vocascan/server:latest
+    restart: always
+    tty: true
+    depends_on:
+      - db
+    environment:
+      VOCASCAN__SERVER__PORT: '8000'
+      VOCASCAN__SERVER__JWT_SECRET: ''
+      VOCASCAN__DATABASE__CONNECTION_URL: 'postgres://vocascan:vocascan@db:5432/vocascan'
+      VOCASCAN__LOG__CONSOLE__COLORIZE: 'true'
+      VOCASCAN__LOG__CONSOLE__ENABLE_SQL_LOG: 'true'
+      VOCASCAN__LOG__CONSOLE__ENABLE_ROUTER_LOG: 'true'
+      VOCASCAN__LOG__CONSOLE__STDERR_LEVELS: 'error'
+    ports:
+      - '8000:8000'
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: 'vocascan'
+      POSTGRES_PASSWORD: 'vocascan'
+      POSTGRES_DB: 'vocascan'
+    volumes:
+      - './database:/var/lib/postgresql/data'

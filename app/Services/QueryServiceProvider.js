@@ -165,7 +165,7 @@ async function countLearned({ userId, vocabularyCard, correct }) {
     where: {
       userId,
       languagePackageId: vocabularyCard.languagePackageId,
-      date: new Date(),
+      date: new Date().setHours(0, 0, 0, 0),
     },
   });
 

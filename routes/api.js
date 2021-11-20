@@ -1,7 +1,10 @@
 const express = require('express');
 
+const config = require('../app/config/config');
+
 // MIDDLEWARE
 const ProtectMiddleware = require('../app/Middleware/ProtectMiddleware');
+const AdminMiddleware = require('../app/Middleware/AdminMiddleware');
 
 // CONTROLLER
 const AuthController = require('../app/Controllers/AuthController.js');
@@ -13,6 +16,9 @@ const LanguageController = require('../app/Controllers/LanguageController.js');
 const DocsController = require('../app/Controllers/DocsController.js');
 const StatsController = require('../app/Controllers/StatsController.js');
 const InfoController = require('../app/Controllers/InfoController.js');
+const ImportController = require('../app/Controllers/ImportController.js');
+const ExportController = require('../app/Controllers/ExportController.js');
+const InviteCodeController = require('../app/Controllers/InviteCodeController.js');
 
 const router = express.Router();
 
@@ -62,11 +68,24 @@ router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.che
 // Language
 router.get('/language', ProtectMiddleware, LanguageController.sendLanguages);
 
+// Import / Export
+router.get('/group/:groupId/export', ProtectMiddleware, ExportController.exportGroup);
+router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware, ExportController.exportLanguagePackage);
+router.post('/import', ProtectMiddleware, ImportController.importVocabs);
+
 // Docs
-router.get('/swagger.json', DocsController.document);
-router.use('/swagger', DocsController.swagger);
+if (config.api.enable_swagger) {
+  router.get('/swagger.json', DocsController.document);
+  router.use('/swagger', DocsController.swagger);
+}
 
 // Info
 router.get('/info', InfoController.sendInfo);
+
+// Admin
+router.post('/inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.addInviteCode);
+router.delete('/inviteCode/:inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.deleteInviteCode);
+router.get('/inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.sendInviteCodes);
+router.get('/inviteCode/:inviteCode', InviteCodeController.checkInviteCode);
 
 module.exports = router;

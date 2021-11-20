@@ -1,44 +1,72 @@
-require('dotenv').config();
-
+const http = require('http');
 const express = require('express');
 const chalk = require('chalk');
-
-const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
-const ApiError = require('./app/utils/ApiError.js');
 const httpStatus = require('http-status');
 
-const routes = require('./routes');
-const db = require('./database');
+/**
+ * Run vocascan server
+ * @param {Object} extraConfig extra config can be used to configure the server programmatically
+ */
+const runServer = async (extraConfig) => {
+  let config = require('./app/config/config');
 
-const app = express();
+  // config has not been parsed already -> parse it
+  if (config.parseConfig) {
+    config = config.parseConfig({ extraConfig });
+  }
 
-// middleware
-app.use(express.json());
+  // init db before loading routes
+  const db = require('./database');
+  await db.init();
 
-// routes
-app.use('/', routes);
+  const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
+  const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
+  const ApiError = require('./app/utils/ApiError.js');
 
-// send back a 404 error for any unknown api request
-app.use((_req, _res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
-});
+  const routes = require('./routes');
+  const logger = require('./app/config/logger');
 
-// convert error to ApiError, if needed
-app.use(errorConverter);
+  const app = express();
+  const server = http.createServer(app);
 
-// handle error
-app.use(errorHandler);
+  // logging middleware
+  app.use(LoggingMiddleware);
 
-Promise.resolve()
+  // middleware
+  app.use(express.json());
+
+  // routes
+  app.use('/', routes);
+
+  // send back a 404 error for any unknown api request
+  app.use((_req, _res, next) => {
+    next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  });
+
+  // convert error to ApiError, if needed
+  app.use(errorConverter);
+
+  // handle error
+  app.use(errorHandler);
+
   // Checks migrations and run them if they are not already applied. To keep
-  // track of the executed migrations, a table (and sequelize model) called SequelizeMeta
+  // track of the executed migrations, a table (and sequelize model) called .migrations
   // will be automatically created (if it doesn't exist already) and parsed.
-  .then(() => db.migrations.up(db))
-  .then(() => db.seeders.up(db))
+  await db.migrations.up();
+  await db.seeders.up();
 
   // start server
-  .then(() => {
-    app.listen(process.env.PORT, () => {
-      console.info(chalk.yellow(`Server is running on port ${process.env.PORT}.`));
+  return new Promise((resolve) => {
+    server.listen(config.server.port, () => {
+      logger.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
+      resolve(server);
     });
   });
+};
+
+// run runServer function if it was directly executed to keep downwards compatibility
+if (require.main === module) {
+  runServer();
+}
+
+module.exports = runServer;

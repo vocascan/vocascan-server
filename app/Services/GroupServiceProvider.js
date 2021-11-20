@@ -30,7 +30,7 @@ async function getGroups(userId, languagePackageId) {
   }
 
   const groups = await Group.findAll({
-    attributes: ['id', 'name', 'description', 'active'],
+    attributes: ['id', 'languagePackageId', 'name', 'description', 'active'],
     where: {
       userId,
       languagePackageId,

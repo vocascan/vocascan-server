@@ -1,11 +1,15 @@
+const config = require('../config/config/index.js');
 const { getVersion, getGitDescribe } = require('../Services/InfoServiceProvider.js');
 const catchAsync = require('../utils/catchAsync.js');
+
+let gitDescribe;
 
 const sendInfo = catchAsync(async (_req, res) => {
   res.send({
     identifier: 'vocascan-server',
     version: getVersion(),
-    commitRef: await getGitDescribe(),
+    locked: config.server.registration_locked,
+    commitRef: gitDescribe === undefined ? (gitDescribe = await getGitDescribe()) : gitDescribe,
   });
 });
 
