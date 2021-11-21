@@ -5,7 +5,7 @@ This changelog goes through all the changes that have been made in each release 
 
 ## [v1.1.1](https://github.com/vocascan/vocascan-server/releases/tag/v1.1.1) - 2021.11.21
 
-In this bug-fixing version the Daily query limit is fixed, which due to a code error, took the date of the Docker container start.
+In this bug-fixing version the Daily query limit is fixed, which due to a code error, took the date when the server was started.
 
 - Bugfixes
   - Daily query limit (#69)
