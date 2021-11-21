@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
       },
       date: {
         type: DataTypes.DATEONLY,
-        defaultValue: new Date(),
+        defaultValue: () => new Date(),
         allowNull: false,
       },
       learnedTodayCorrect: {
