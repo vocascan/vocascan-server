@@ -11,6 +11,7 @@ module.exports = {
     jwt_secret: '',
     salt_rounds: 10,
     registration_locked: false,
+    cors: ['https://web.example1.com', 'https://web.example2.com'],
   },
 
   database: {
