@@ -21,6 +21,7 @@ const runServer = async (extraConfig) => {
 
   const { errorConverter, errorHandler } = require('./app/Middleware/ErrorMiddleware.js');
   const LoggingMiddleware = require('./app/Middleware/LoggingMiddleware');
+  const SecurityMiddleware = require('./app/Middleware/SecurityMiddleware');
   const ApiError = require('./app/utils/ApiError.js');
 
   const routes = require('./routes');
@@ -31,6 +32,9 @@ const runServer = async (extraConfig) => {
 
   // logging middleware
   app.use(LoggingMiddleware);
+
+  // security
+  app.use(SecurityMiddleware);
 
   // middleware
   app.use(express.json());

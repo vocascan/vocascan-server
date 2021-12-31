@@ -44,6 +44,7 @@ const configSchema = Joi.object({
     jwt_secret: Joi.string().required(),
     salt_rounds: Joi.number().integer().min(0).max(20).default(10),
     registration_locked: Joi.boolean().default(false),
+    cors: Joi.alternatives().try(Joi.boolean(), Joi.keyArray()).default(false),
   }).required(),
 
   database: Joi.object({
