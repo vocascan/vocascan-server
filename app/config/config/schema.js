@@ -81,6 +81,26 @@ const configSchema = Joi.object({
   api: Joi.object({
     enable_swagger: Joi.boolean().default(true),
   }).default({}),
+
+  pages: Joi.object({
+    privacy: Joi.object({
+      url: Joi.string(),
+      fallback: Joi.object({
+        type: Joi.string(),
+        location: Joi.string(),
+      }),
+      langs: Joi.object({
+        en: Joi.object({
+          type: Joi.string(),
+          location: Joi.string(),
+        }),
+        de: Joi.object({
+          type: Joi.string(),
+          location: Joi.string(),
+        }),
+      }),
+    }),
+  }),
 });
 
 module.exports = configSchema;

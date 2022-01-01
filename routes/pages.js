@@ -7,11 +7,9 @@ const StaticPagesController = require('../app/Controllers/StaticPagesController.
 const router = express.Router();
 
 if (config.pages) {
-  for (const [, value] of Object.entries(config.pages)) {
-    router.get(value.url, (req, res) => {
-      StaticPagesController.renderPage(req, res, value);
-    });
-  }
+  Object.values(config.pages).forEach((page) => {
+    router.get(page.url, StaticPagesController.getRenderPageHandler(page));
+  });
 }
 
 module.exports = router;
