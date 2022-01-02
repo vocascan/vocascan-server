@@ -23,13 +23,14 @@ const getRenderPageHandler = (pageValues) =>
     const language = req.query.lang;
 
     // if no language is given, render fallback page
-    if (!language) {
+    if (!language || !pageValues.langs) {
       renderPageHandler(res, pageValues.fallback);
 
       return;
     }
 
     const languagePage = pageValues.langs[language];
+
     // check if key (language) is available
     if (languagePage) {
       renderPageHandler(res, languagePage);
