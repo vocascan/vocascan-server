@@ -12,8 +12,10 @@ const renderPageHandler = catchAsync(async (res, page) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'Page was not found');
       }
     });
-  } else {
+  } else if (page.type === 'redirect') {
     res.redirect(page.location);
+  } else {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Unknown page type');
   }
 });
 
