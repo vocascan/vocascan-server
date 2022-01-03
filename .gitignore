@@ -10,3 +10,4 @@ vocascan.config.*
 !docker/**/vocascan.config.*
 docker/**/database
 *.log
+/staticPages

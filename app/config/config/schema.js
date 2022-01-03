@@ -35,6 +35,11 @@ const logSchema = Joi.object({
   archive_logs: Joi.boolean().when('mode', { is: 'file', otherwise: Joi.forbidden() }),
 });
 
+const renderPageSchema = Joi.object({
+  type: Joi.string().valid('file', 'redirect').required(),
+  location: Joi.string().required(),
+}).required();
+
 // main schema
 const configSchema = Joi.object({
   debug: Joi.boolean().default(false),
@@ -81,6 +86,17 @@ const configSchema = Joi.object({
   api: Joi.object({
     enable_swagger: Joi.boolean().default(true),
   }).default({}),
+
+  pages: Joi.object()
+    .unknown()
+    .pattern(
+      Joi.string(),
+      Joi.object({
+        url: Joi.string().required(),
+        fallback: renderPageSchema,
+        langs: Joi.object().unknown().pattern(Joi.string(), renderPageSchema),
+      })
+    ),
 });
 
 module.exports = configSchema;
