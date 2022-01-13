@@ -1,13 +1,12 @@
+const path = require('path');
 const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 
 const renderPageHandler = catchAsync(async (res, page) => {
-  const options = { root: process.cwd() };
-
   // check if page should be rendered from a static file or should be redirected to another one
   if (page.type === 'file') {
-    res.sendFile(page.location, options, (err) => {
+    res.sendFile(path.resolve(process.cwd(), page.location), (err) => {
       if (err) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Page was not found');
       }
