@@ -29,7 +29,7 @@ services:
     volumes:
       - './vocascan.config.js:/etc/vocascan/vocascan.config.js:ro'
     labels:
-      - 'traefik.http.routers.vocascan.rule=HostHost(`web.your_domain.com`) || (Host(`web.your_domain.com`) && PathPrefix(`/api/`))'
+      - 'traefik.http.routers.vocascan.rule=HostHost((`web.your_domain.com`) && PathPrefix(`/p/`)) && (Host(`web.your_domain.com`) && PathPrefix(`/api/`))'
       - 'traefik.http.routers.vocascan.tls=true'
       - 'traefik.http.routers.vocascan.tls.certresolver=lets-encrypt'
       - 'traefik.http.services.vocascan.loadbalancer.server.port=8000'
