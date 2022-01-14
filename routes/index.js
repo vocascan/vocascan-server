@@ -9,7 +9,7 @@ router.get('/', (_req, res) => {
   res.send('Hello World!');
 });
 
-router.use('/p', PageRouter);
+router.use('/', PageRouter);
 
 router.use('/api', APIRouter);
 
