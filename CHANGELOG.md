@@ -3,6 +3,15 @@
 This changelog goes through all the changes that have been made in each release on the
 [vocascan-server](https://github.com/vocascan/vocascan-server).
 
+## [v1.2.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.2.0) - 2022.01.22
+
+In this release of vocascan-server we have added new features to make your server more secure. On the one hand, the legal side. You can now include static HTML pages or redirects to your privacy policy or imprint. On the other hand, in security, with an improved CORS configuration option to restrict access to only allowed frontend domains.
+
+- Features
+  - Feature/legal templates (#72)
+- Security
+  - CORS (#71)
+
 ## [v1.1.1](https://github.com/vocascan/vocascan-server/releases/tag/v1.1.1) - 2021.11.21
 
 In this bug-fixing version the Daily query limit is fixed, which due to a code error, took the date when the server was started.
