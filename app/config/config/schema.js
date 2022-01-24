@@ -109,6 +109,11 @@ const configSchema = Joi.object({
     }).required(),
     from: Joi.string().required(),
   }),
+
+  service: Joi.object({
+    registration_invite_code: Joi.boolean().default(false),
+    registration_email_confirm: Joi.boolean().default(false),
+  }),
 });
 
 module.exports = configSchema;

@@ -1,4 +1,8 @@
+const path = require('path');
 const nodemailer = require('nodemailer');
+const ejs = require('ejs');
+const mjml = require('mjml');
+const chalk = require('chalk');
 
 const logger = require('../logger');
 const config = require('../config');
@@ -22,23 +26,28 @@ const init = async () => {
 
   try {
     await transport.verify();
-  } catch (err) {
-    logger.error(`connection to email provider at "${config.mailer.host}" cannot be established`);
-    logger.error(err);
 
-    process.exit(1);
+    logger.info(chalk`{green ✓} Connected to email server`);
+  } catch (err) {
+    logger.error(`Unable to connect to email server.`);
+    logger.error(err);
   }
 };
 
-const sendMail = async ({ to, subject, text, html }) => {
+const sendMail = async ({ to, subject, template, ctx }) => {
+  const parsed = await ejs.renderFile(path.resolve(__dirname, '../../Templates/mailer', template), ctx, {
+    cache: true,
+  });
+
+  const result = mjml(parsed);
+
   const info = await transport.sendMail({
     to,
     subject,
-    text,
-    html,
+    html: result.html,
   });
 
-  console.log(info);
+  return info;
 };
 
 module.exports = { init, sendMail };
