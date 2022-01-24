@@ -26,6 +26,7 @@ const runServer = async (extraConfig) => {
 
   const routes = require('./routes');
   const logger = require('./app/config/logger');
+  const mailer = require('./app/config/mailer');
 
   const app = express();
   const server = http.createServer(app);
@@ -58,6 +59,9 @@ const runServer = async (extraConfig) => {
   // will be automatically created (if it doesn't exist already) and parsed.
   await db.migrations.up();
   await db.seeders.up();
+
+  // initialize mailer
+  await mailer.init();
 
   // start server
   return new Promise((resolve) => {

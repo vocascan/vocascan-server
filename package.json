@@ -47,6 +47,7 @@
     "mariadb": "^2.5.3",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
+    "nodemailer": "^6.7.2",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.2",
     "sequelize": "^6.6.2",

@@ -97,6 +97,18 @@ const configSchema = Joi.object({
         langs: Joi.object().unknown().pattern(Joi.string(), renderPageSchema),
       })
     ),
+
+  mailer: Joi.object({
+    enabled: Joi.boolean().default(false),
+    host: Joi.string().required(),
+    port: Joi.number().required(),
+    secure: Joi.boolean().default(false),
+    auth: Joi.object({
+      user: Joi.string(),
+      pass: Joi.string(),
+    }).required(),
+    from: Joi.string().required(),
+  }),
 });
 
 module.exports = configSchema;
