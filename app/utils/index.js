@@ -5,32 +5,32 @@ const readline = require('readline');
 
 /**
  * Generate JSON Web Token
- * param needs user id for payload
  * @param {*} input jwt payload
+ * @param {String} secret jwt secret used to verify the token
+ * @param {Object} options jwt.sign extra options
+ * @param {String|Number} options.expiresIn expiration date
  * @returns {String} signed jwt token
  */
-function generateJWT(input, secret) {
-  return jwt.sign(input, secret);
+function generateJWT(input, secret, options) {
+  return jwt.sign(input, secret, options);
 }
 
 /**
- * get JWT Token from request
- * @param {Express.Request} req request object
- * @returns {String} Bearer token
+ * Verify a jwt token and parse data
+ * @param {String} token jwt token to verify
+ * @param {String} secret jwt secret used to verify the token
+ * @returns {*} parsed data
  */
-function parseTokenUserId(req, secret) {
-  // Get token from Authorization header
-  const token = req.header('Authorization').split(' ')[1];
-
-  // Read userId from token
-  const userId = new Promise((resolve, reject) => {
-    jwt.verify(token, secret, (error, decoded) => {
-      if (error) reject();
-      resolve(decoded.id);
+function verifyJWT(token, secret) {
+  return new Promise((res, rej) => {
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        rej(err);
+      } else {
+        res(decoded);
+      }
     });
   });
-
-  return userId;
 }
 
 /**
@@ -288,7 +288,7 @@ const askToConfirm = (question) => {
 
 module.exports = {
   generateJWT,
-  parseTokenUserId,
+  verifyJWT,
   filterObject,
   deleteKeysFromObject,
   round,

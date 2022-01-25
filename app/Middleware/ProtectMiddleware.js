@@ -1,9 +1,10 @@
-const { parseTokenUserId } = require('../utils');
+const { verifyJWT } = require('../utils');
 const { User } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const config = require('../config/config');
+const { tokenTypes } = require('../utils/constants');
 
 // Check for Authorization header and add user attribute to request object
 const ProtectMiddleware = catchAsync(async (req, _res, next) => {
@@ -12,11 +13,16 @@ const ProtectMiddleware = catchAsync(async (req, _res, next) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Not Authorized');
   }
 
-  let userId;
+  let payload = null;
 
   try {
     // Read userId from token
-    userId = await parseTokenUserId(req, config.server.jwt_secret);
+    const token = req.header('Authorization').split(' ')[1];
+    payload = await verifyJWT(token, config.server.jwt_secret);
+
+    if (payload.type !== tokenTypes.ACCESS) {
+      throw new Error();
+    }
   } catch (err) {
     // Handle broken token
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid auth token');
@@ -25,7 +31,7 @@ const ProtectMiddleware = catchAsync(async (req, _res, next) => {
   // Get user from database
   const user = await User.findOne({
     where: {
-      id: userId,
+      id: payload.id,
     },
   });
 

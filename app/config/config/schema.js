@@ -45,6 +45,7 @@ const configSchema = Joi.object({
   debug: Joi.boolean().default(false),
 
   server: Joi.object({
+    base_url: Joi.string(),
     port: Joi.number().default(5000).min(1).max(65535),
     jwt_secret: Joi.string().required(),
     salt_rounds: Joi.number().integer().min(0).max(20).default(10),
@@ -111,8 +112,10 @@ const configSchema = Joi.object({
   }),
 
   service: Joi.object({
-    registration_invite_code: Joi.boolean().default(false),
-    registration_email_confirm: Joi.boolean().default(false),
+    invite_code: Joi.boolean().default(false),
+    email_confirm: Joi.boolean().default(false),
+    email_confirm_live_time: Joi.string().default('2h'),
+    access_live_time: Joi.string().default('30d'),
   }),
 });
 

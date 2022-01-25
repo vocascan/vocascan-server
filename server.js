@@ -1,4 +1,5 @@
 const http = require('http');
+const path = require('path');
 const express = require('express');
 const chalk = require('chalk');
 const httpStatus = require('http-status');
@@ -30,6 +31,10 @@ const runServer = async (extraConfig) => {
 
   const app = express();
   const server = http.createServer(app);
+
+  // template engine
+  app.set('view engine', 'ejs');
+  app.set('views', path.resolve(__dirname, './app/Templates/views'));
 
   // logging middleware
   app.use(LoggingMiddleware);

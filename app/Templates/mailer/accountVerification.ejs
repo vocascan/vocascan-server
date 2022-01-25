@@ -1,0 +1,26 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="100px" src="/assets/img/logo-small.png"></mj-image>
+
+        <mj-divider border-color="#727cf5"></mj-divider>
+
+        <mj-text font-size="20px" color="#727cf5" font-family="helvetica">Hey <%= user.name %>,</mj-text>
+        <mj-text font-size="20px" color="#000" font-family="helvetica"
+          >Please confirm your account to use Vocascan</mj-text
+        >
+        <mj-button
+          align="center"
+          font-size="18px"
+          background-color="#727cf5"
+          border-radius="8px"
+          color="#eee"
+          font-family="open Sans Helvetica, Arial, sans-serif"
+          href="<%= verificationUrl %>"
+          >Verify Account</mj-button
+        >
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -1,12 +1,14 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
-const { deleteKeysFromObject, hashEmail } = require('../utils');
+const { deleteKeysFromObject, hashEmail, generateJWT } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
 const { validateInviteCode } = require('../Services/InviteCodeProvider.js');
 const config = require('../config/config');
+const { tokenTypes } = require('../utils/constants');
+const { sendMail } = require('../config/mailer');
 
 // Validate inputs from /register and /login route
 function validateAuth(req) {
@@ -191,6 +193,41 @@ async function changePassword(id, oldPassword, newPassword) {
   return true;
 }
 
+const sendAccountVerificationEmail = async (user) => {
+  const token = generateJWT(
+    {
+      id: user.id,
+      type: tokenTypes.VERIFY_EMAIL,
+    },
+    config.server.jwt_secret,
+    { expiresIn: config.service.email_confirm_live_time }
+  );
+
+  const verificationUrl = `${config.server.base_url}/p/verifyAccount?token=${token}`;
+
+  await sendMail({
+    to: user.email,
+    subject: 'Account Verification',
+    template: 'accountVerification.ejs',
+    ctx: {
+      user,
+      verificationUrl,
+    },
+  });
+};
+
+const verifyUser = async ({ id }) => {
+  const user = await User.findOne({
+    where: {
+      id,
+    },
+  });
+
+  user.verified = true;
+
+  await user.save();
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -200,4 +237,6 @@ module.exports = {
   changePassword,
   checkPasswordValid,
   checkIfAdmin,
+  sendAccountVerificationEmail,
+  verifyUser,
 };
