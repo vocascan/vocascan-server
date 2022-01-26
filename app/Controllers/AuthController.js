@@ -4,6 +4,7 @@ const {
   loginUser,
   validateRegister,
   validateLogin,
+  validatePassword,
   destroyUser,
   changePassword,
 } = require('../Services/AuthServiceProvider');
@@ -22,7 +23,10 @@ const register = catchAsync(async (req, res) => {
     await useInviteCode(req.query.inviteCode);
   }
 
-  res.send({ token, user });
+  if (validatePassword(req.body.password)) {
+    res.send({ token, user });
+  }
+  res.status(400).end();
 });
 
 const login = catchAsync(async (req, res) => {
@@ -58,6 +62,9 @@ const resetPassword = catchAsync(async (req, res) => {
 
   await changePassword(userId, oldPassword, newPassword);
 
+  if (validatePassword(req.body.newPassword)) {
+    res.status(200).end();
+  }
   res.status(204).end();
 });
 

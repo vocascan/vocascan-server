@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { deleteKeysFromObject, hashEmail } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
+const { bytesLength } = require('../utils/index.js');
 const httpStatus = require('http-status');
 const { validateInviteCode } = require('../Services/InviteCodeProvider.js');
 const config = require('../config/config');
@@ -80,6 +81,25 @@ async function validateRegister(req, res) {
 
 function validateLogin(req, res) {
   return validateAuth(req, res);
+}
+
+function validatePassword(password) {
+  const passwordLength = bytesLength(password);
+
+  const length = passwordLength >= 8 && passwordLength <= 72;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasNonAlphas = /\W/.test(password);
+
+  // eslint-disable-next-line no-nested-ternary
+  const passwordComplexity = length
+    ? length + hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas
+    : passwordLength !== 0
+    ? 1
+    : 0;
+
+  return passwordLength >= 8 && passwordLength <= 72 && passwordComplexity >= 4;
 }
 
 // Create new user and store into database
@@ -196,6 +216,7 @@ module.exports = {
   loginUser,
   validateRegister,
   validateLogin,
+  validatePassword,
   destroyUser,
   changePassword,
   checkPasswordValid,

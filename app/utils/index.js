@@ -286,6 +286,8 @@ const askToConfirm = (question) => {
   });
 };
 
+const bytesLength = (string) => new TextEncoder().encode(string).length;
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
@@ -307,4 +309,5 @@ module.exports = {
   truncateString,
   hashEmail,
   askToConfirm,
+  bytesLength,
 };
