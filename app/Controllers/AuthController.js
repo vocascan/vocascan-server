@@ -16,7 +16,12 @@ const { tokenTypes } = require('../utils/constants');
 const register = catchAsync(async (req, res) => {
   await validateRegister(req, res);
 
-  const user = await createUser(req.body);
+  const user = await createUser({
+    ...req.body,
+    verified: !config.service.email_confirm,
+    disabled: false,
+  });
+
   const token = generateJWT(
     {
       id: user.id,
@@ -27,7 +32,7 @@ const register = catchAsync(async (req, res) => {
   );
 
   // after everything is registered redeem the code
-  if (config.server.registration_locked) {
+  if (config.service.invite_code) {
     await useInviteCode(req.query.inviteCode);
   }
 

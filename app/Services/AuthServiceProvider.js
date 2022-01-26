@@ -39,7 +39,7 @@ const checkIfAdmin = async (id) => {
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   // if server is locked check for invite codes
-  if (config.server.registration_locked) {
+  if (config.service.invite_code) {
     if (!req.query.inviteCode) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Locked Server! Invite Code is missing');
     }
@@ -85,7 +85,7 @@ function validateLogin(req, res) {
 }
 
 // Create new user and store into database
-async function createUser({ username, email, password }) {
+async function createUser({ username, email, password, verified, disabled }) {
   // Hash password
   const hash = await bcrypt.hash(password, config.server.salt_rounds);
   const emailHash = hashEmail(email);
@@ -102,6 +102,8 @@ async function createUser({ username, email, password }) {
     email: emailHash,
     password: hash,
     roleId: role.id,
+    verified,
+    disabled,
   });
 
   // add flag if user is admin
@@ -222,6 +224,10 @@ const verifyUser = async ({ id }) => {
       id,
     },
   });
+
+  if (user.verified) {
+    throw new ApiError(httpStatus.GONE, 'User already verified');
+  }
 
   user.verified = true;
 

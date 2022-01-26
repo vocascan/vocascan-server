@@ -49,7 +49,9 @@ const configSchema = Joi.object({
     port: Joi.number().default(5000).min(1).max(65535),
     jwt_secret: Joi.string().required(),
     salt_rounds: Joi.number().integer().min(0).max(20).default(10),
-    registration_locked: Joi.boolean().default(false),
+    registration_locked: Joi.any()
+      .forbidden()
+      .messages({ 'any.unknown': 'The `sever.registration_locked` option is moved to `service.invite_code`' }),
     cors: Joi.alternatives().try(Joi.boolean(), Joi.keyArray()).default(false),
   }).required(),
 
