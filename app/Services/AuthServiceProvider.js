@@ -92,12 +92,15 @@ function validatePassword(password) {
   const hasNumbers = /\d/.test(password);
   const hasNonAlphas = /\W/.test(password);
 
-  // eslint-disable-next-line no-nested-ternary
-  const passwordComplexity = length
-    ? length + hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas
-    : passwordLength !== 0
-    ? 1
-    : 0;
+  let passwordComplexity;
+
+  if (length) {
+    passwordComplexity = length + hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas;
+  } else if (passwordLength !== 0) {
+    passwordComplexity = 1;
+  } else {
+    passwordComplexity = 0;
+  }
 
   return passwordLength >= 8 && passwordLength <= 72 && passwordComplexity >= 4;
 }

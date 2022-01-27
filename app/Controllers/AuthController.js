@@ -18,15 +18,15 @@ const register = catchAsync(async (req, res) => {
   const user = await createUser(req.body);
   const token = generateJWT({ id: user.id }, config.server.jwt_secret);
 
+  if (!validatePassword(req.body.password)) {
+    res.status(400).end();
+  }
+  res.send({ token, user });
+
   // after everything is registered redeem the code
   if (config.server.registration_locked) {
     await useInviteCode(req.query.inviteCode);
   }
-
-  if (validatePassword(req.body.password)) {
-    res.send({ token, user });
-  }
-  res.status(400).end();
 });
 
 const login = catchAsync(async (req, res) => {
@@ -60,12 +60,11 @@ const resetPassword = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { oldPassword, newPassword } = req.body;
 
-  await changePassword(userId, oldPassword, newPassword);
-
-  if (validatePassword(req.body.newPassword)) {
-    res.status(200).end();
+  if (!validatePassword(req.body.newPassword)) {
+    res.status(400).end();
   }
-  res.status(204).end();
+  res.status(200).end();
+  await changePassword(userId, oldPassword, newPassword);
 });
 
 module.exports = {
