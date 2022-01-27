@@ -55,6 +55,7 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(204).end();
 });
 
+
 const resetPassword = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
