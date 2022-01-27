@@ -205,15 +205,14 @@ const sendAccountVerificationEmail = async (user) => {
     { expiresIn: config.service.email_confirm_live_time }
   );
 
-  const verificationUrl = `${config.server.base_url}/p/verifyAccount?token=${token}`;
-
   await sendMail({
     to: user.email,
     subject: 'Account Verification',
     template: 'accountVerification.ejs',
     ctx: {
       user,
-      verificationUrl,
+      token,
+      baseUrl: config.server.base_url,
     },
   });
 };

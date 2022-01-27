@@ -1,23 +1,24 @@
 <mjml>
-  <mj-body>
-    <mj-section>
-      <mj-column>
-        <mj-image width="100px" src="/assets/img/logo-small.png"></mj-image>
-
-        <mj-divider border-color="#727cf5"></mj-divider>
-
-        <mj-text font-size="20px" color="#727cf5" font-family="helvetica">Hey <%= user.name %>,</mj-text>
-        <mj-text font-size="20px" color="#000" font-family="helvetica"
-          >Please confirm your account to use Vocascan</mj-text
+  <mj-body background-color="#fafbfc">
+    <mj-section padding-bottom="20px" padding-top="20px">
+      <mj-column vertical-align="middle" width="100%">
+        <mj-image width="100px" src="<%= baseUrl %>/p/logo/color-round.svg"></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#fff" padding-bottom="20px" padding-top="20px">
+      <mj-column vertical-align="middle" width="100%">
+        <mj-text align="center" font-size="21px">Hello <%= user.username %>,</mj-text>
+        <mj-text align="center" font-size="16px" line-height="1.4">
+          you have recently registered an account on <a href="<%= baseUrl %>"><%= baseUrl %></a>. Please verify your
+          Email address by clicking on the button below.</mj-text
         >
         <mj-button
           align="center"
           font-size="18px"
           background-color="#727cf5"
-          border-radius="8px"
-          color="#eee"
-          font-family="open Sans Helvetica, Arial, sans-serif"
-          href="<%= verificationUrl %>"
+          border-radius="10px"
+          color="#fff"
+          href="<%= baseUrl %>/p/verifyAccount?token=<%= token %>"
           >Verify Account</mj-button
         >
       </mj-column>

@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 
 const config = require('../app/config/config');
@@ -16,5 +17,8 @@ if (config.pages) {
 
 // verification pages
 router.get('/p/verifyAccount', VerificationController.verifyAccount);
+
+// logo
+router.use('/p/logo', express.static(path.resolve(__dirname, '../images/logo')));
 
 module.exports = router;
