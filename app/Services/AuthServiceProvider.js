@@ -92,15 +92,14 @@ function validatePassword(password) {
   const hasNumbers = /\d/.test(password);
   const hasNonAlphas = /\W/.test(password);
 
-  let passwordComplexity;
+  let passwordComplexity = 0;
 
   if (length) {
     passwordComplexity = length + hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas;
   } else if (passwordLength !== 0) {
     passwordComplexity = 1;
-  } else {
-    passwordComplexity = 0;
   }
+
   return passwordLength >= 8 && passwordLength <= 72 && passwordComplexity >= 4;
 }
 
