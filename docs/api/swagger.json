@@ -125,7 +125,7 @@
         }
       }
     },
-    "/user/password/reset": {
+    "/user/reset-password": {
       "post": {
         "summary": "Reset user password",
         "tags": ["auth"],
