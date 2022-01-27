@@ -21,12 +21,11 @@ const register = catchAsync(async (req, res) => {
   if (!validatePassword(req.body.password)) {
     res.status(400).end();
   }
-  res.send({ token, user });
-
   // after everything is registered redeem the code
   if (config.server.registration_locked) {
     await useInviteCode(req.query.inviteCode);
   }
+  res.send({ token, user });
 });
 
 const login = catchAsync(async (req, res) => {
@@ -55,7 +54,6 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(204).end();
 });
 
-
 const resetPassword = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
@@ -64,8 +62,8 @@ const resetPassword = catchAsync(async (req, res) => {
   if (!validatePassword(req.body.newPassword)) {
     res.status(400).end();
   }
-  res.status(200).end();
   await changePassword(userId, oldPassword, newPassword);
+  res.status(200).end();
 });
 
 module.exports = {

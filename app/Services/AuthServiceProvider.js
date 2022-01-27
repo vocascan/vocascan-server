@@ -101,7 +101,6 @@ function validatePassword(password) {
   } else {
     passwordComplexity = 0;
   }
-
   return passwordLength >= 8 && passwordLength <= 72 && passwordComplexity >= 4;
 }
 
