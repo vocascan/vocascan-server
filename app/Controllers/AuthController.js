@@ -1,3 +1,4 @@
+const httpStatus = require('http-status');
 const config = require('../config/config');
 const {
   createUser,
@@ -11,6 +12,7 @@ const {
 const { useInviteCode } = require('../Services/InviteCodeProvider');
 const { generateJWT, deleteKeysFromObject } = require('../utils');
 const catchAsync = require('../utils/catchAsync');
+const ApiError = require('../utils/ApiError');
 
 const register = catchAsync(async (req, res) => {
   await validateRegister(req, res);
@@ -19,7 +21,7 @@ const register = catchAsync(async (req, res) => {
   const token = generateJWT({ id: user.id }, config.server.jwt_secret);
 
   if (!validatePassword(req.body.password)) {
-    res.status(400).end();
+    throw new ApiError(httpStatus.BAD_REQUEST, 'password complexity failed', 'password');
   }
 
   // after everything is registered redeem the code
@@ -62,7 +64,7 @@ const resetPassword = catchAsync(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!validatePassword(req.body.newPassword)) {
-    res.status(400).end();
+    throw new ApiError(httpStatus.BAD_REQUEST, 'password complexity failed', 'newPassword');
   }
 
   await changePassword(userId, oldPassword, newPassword);
