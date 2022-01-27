@@ -63,6 +63,7 @@ const resetPassword = catchAsync(async (req, res) => {
     res.status(400).end();
   }
   await changePassword(userId, oldPassword, newPassword);
+  res.status(204).end();
 });
 
 module.exports = {
