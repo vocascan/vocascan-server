@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { deleteKeysFromObject, hashEmail, generateJWT } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
+const { bytesLength } = require('../utils/index.js');
 const httpStatus = require('http-status');
 const { validateInviteCode } = require('../Services/InviteCodeProvider.js');
 const config = require('../config/config');
@@ -82,6 +83,26 @@ async function validateRegister(req, res) {
 
 function validateLogin(req, res) {
   return validateAuth(req, res);
+}
+
+function validatePassword(password) {
+  const passwordLength = bytesLength(password);
+
+  const length = passwordLength >= 8 && passwordLength <= 72;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasNonAlphas = /\W/.test(password);
+
+  let passwordComplexity = 0;
+
+  if (length) {
+    passwordComplexity = length + hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas;
+  } else if (passwordLength !== 0) {
+    passwordComplexity = 1;
+  }
+
+  return passwordLength >= 8 && passwordLength <= 72 && passwordComplexity >= 4;
 }
 
 // Create new user and store into database
@@ -238,6 +259,7 @@ module.exports = {
   loginUser,
   validateRegister,
   validateLogin,
+  validatePassword,
   destroyUser,
   changePassword,
   checkPasswordValid,
