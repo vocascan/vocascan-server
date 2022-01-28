@@ -17,12 +17,12 @@ const ApiError = require('../utils/ApiError');
 const register = catchAsync(async (req, res) => {
   await validateRegister(req, res);
 
-  const user = await createUser(req.body);
-  const token = generateJWT({ id: user.id }, config.server.jwt_secret);
-
   if (!validatePassword(req.body.password)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'password complexity failed', 'password');
   }
+
+  const user = await createUser(req.body);
+  const token = generateJWT({ id: user.id }, config.server.jwt_secret);
 
   // after everything is registered redeem the code
   if (config.server.registration_locked) {
