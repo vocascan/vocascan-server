@@ -258,6 +258,8 @@ const verifyUser = async ({ id }) => {
   user.verified = true;
 
   await user.save();
+
+  return user;
 };
 
 module.exports = {

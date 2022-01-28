@@ -18,7 +18,8 @@ if (config.pages) {
 // verification pages
 router.get('/p/verifyAccount', VerificationController.verifyAccount);
 
-// logo
+// static files
 router.use('/p/logo', express.static(path.resolve(__dirname, '../images/logo')));
+router.use('/p/icons', express.static(path.resolve(__dirname, '../images/icons')));
 
 module.exports = router;

@@ -8,9 +8,14 @@ const { tokenTypes } = require('../utils/constants.js');
 
 const verifyAccount = catchAsync(async (req, res) => {
   const { token } = req.query;
+  const { base_url: baseUrl } = config.server;
 
   if (!token) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'No verification token');
+    return res.render('accountVerification', {
+      status: httpStatus.BAD_REQUEST,
+      error: 'No verification token provided',
+      baseUrl,
+    });
   }
 
   let payload = '';
@@ -22,12 +27,33 @@ const verifyAccount = catchAsync(async (req, res) => {
       throw new Error();
     }
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'No valid verification token');
+    return res.render('accountVerification', {
+      status: httpStatus.UNAUTHORIZED,
+      error: 'No valid verification token provided',
+      baseUrl,
+    });
   }
 
-  await verifyUser({ id: payload.id });
+  let user = null;
 
-  res.render('accountVerification');
+  try {
+    user = await verifyUser({ id: payload.id });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return res.render('accountVerification', {
+        status: httpStatus.GONE,
+        error: 'User is already verified',
+        baseUrl,
+      });
+    }
+  }
+
+  return res.render('accountVerification', {
+    status: httpStatus.OK,
+    error: null,
+    user,
+    baseUrl,
+  });
 });
 
 module.exports = {
