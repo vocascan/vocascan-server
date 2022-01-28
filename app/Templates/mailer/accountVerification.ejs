@@ -1,17 +1,20 @@
-<mjml>
-  <mj-body background-color="#fafbfc">
+<mjml background-color="#eceeee">
+  <mj-head>
+    <mj-style inline="inline">a { color: #727cf5; text-decoration: none }</mj-style>
+  </mj-head>
+  <mj-body background-color="#eceeee">
     <mj-section padding-bottom="20px" padding-top="20px">
       <mj-column vertical-align="middle" width="100%">
         <mj-image width="100px" src="<%= baseUrl %>/p/logo/color-round.svg"></mj-image>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#fff" padding-bottom="20px" padding-top="20px">
+    <mj-section background-color="#fff" padding-bottom="20px" padding-top="20px" border-radius="10px">
       <mj-column vertical-align="middle" width="100%">
         <mj-text align="center" font-size="21px">Hello <%= user.username %>,</mj-text>
         <mj-text align="center" font-size="16px" line-height="1.4">
           you have recently registered an account on <a href="<%= baseUrl %>"><%= baseUrl %></a>. Please verify your
-          Email address by clicking on the button below.</mj-text
-        >
+          Email address by clicking on the button below.
+        </mj-text>
         <mj-button
           align="center"
           font-size="18px"
@@ -21,6 +24,15 @@
           href="<%= baseUrl %>/p/verifyAccount?token=<%= token %>"
           >Verify Account</mj-button
         >
+      </mj-column>
+    </mj-section>
+    <mj-section padding-bottom="20px" padding-top="20px">
+      <mj-column vertical-align="middle" width="100%">
+        <mj-text align="center">
+          <a href="https://vocascan.com">Website</a> • <a href="https://github.com/vocascan">GitHub</a> •
+          <a href="https://docs.vocascan.com">Documentation</a> •
+          <a href="http://discord.vocascan.com">Discord</a>
+        </mj-text>
       </mj-column>
     </mj-section>
   </mj-body>
