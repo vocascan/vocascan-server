@@ -226,10 +226,16 @@ const sendAccountVerificationEmail = async (user) => {
     { expiresIn: config.service.email_confirm_live_time }
   );
 
+  const text = `Hello ${user.username},
+you have recently registered an account on ${config.server.base_url}. 
+Please verify your Email address by clicking on the link below.
+${config.server.base_url}/p/verifyAccount?token=${token}`;
+
   await sendMail({
     to: user.email,
     subject: 'Account Verification',
     template: 'accountVerification.ejs',
+    text,
     ctx: {
       user,
       token,

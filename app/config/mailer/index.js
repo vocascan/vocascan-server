@@ -34,7 +34,7 @@ const init = async () => {
   }
 };
 
-const sendMail = async ({ to, subject, template, ctx }) => {
+const sendMail = async ({ to, subject, template, text, ctx }) => {
   const parsed = await ejs.renderFile(path.resolve(__dirname, '../../Templates/mailer', template), ctx, {
     cache: true,
   });
@@ -44,6 +44,7 @@ const sendMail = async ({ to, subject, template, ctx }) => {
   const info = await transport.sendMail({
     to,
     subject,
+    text,
     html: result.html,
   });
 
