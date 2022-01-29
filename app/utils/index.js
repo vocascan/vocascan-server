@@ -286,6 +286,14 @@ const askToConfirm = (question) => {
   });
 };
 
+/**
+ * Return the length of a string in bytes
+ * See: https://stackoverflow.com/questions/5515869/string-length-in-bytes-in-javascript
+ * @param {String} string string
+ * @returns bytesLength
+ */
+const bytesLength = (string) => new TextEncoder().encode(string).length;
+
 module.exports = {
   generateJWT,
   parseTokenUserId,
@@ -307,4 +315,5 @@ module.exports = {
   truncateString,
   hashEmail,
   askToConfirm,
+  bytesLength,
 };
