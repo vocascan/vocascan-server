@@ -3,6 +3,15 @@
 This changelog goes through all the changes that have been made in each release on the
 [vocascan-server](https://github.com/vocascan/vocascan-server).
 
+## [v1.2.1](https://github.com/vocascan/vocascan-server/releases/tag/v1.2.1) - 2022.01.29
+
+In this release of vocascan-server we have added new security features to force secure passwords to the users.
+
+- Features
+  - Added Password Complexity to register and password reset (#79)
+- Bug
+  - closes Update Swagger Documentation for password reset (#80) (#81)
+
 ## [v1.2.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.2.0) - 2022.01.22
 
 In this release of vocascan-server we have added new features to make your server more secure. On the one hand, the legal side. You can now include static HTML pages or redirects to your privacy policy or imprint. On the other hand, in security, with an improved CORS configuration option to restrict access to only allowed frontend domains.
