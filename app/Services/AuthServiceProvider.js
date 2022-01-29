@@ -106,7 +106,7 @@ function validatePassword(password) {
 }
 
 // Create new user and store into database
-async function createUser({ username, email, password, verified, disabled }) {
+async function createUser({ username, email, password, emailVerified, disabled }) {
   // Hash password
   const hash = await bcrypt.hash(password, config.server.salt_rounds);
   const emailHash = hashEmail(email);
@@ -123,7 +123,7 @@ async function createUser({ username, email, password, verified, disabled }) {
     email: emailHash,
     password: hash,
     roleId: role.id,
-    verified,
+    emailVerified,
     disabled,
   });
 
@@ -140,7 +140,6 @@ async function loginUser({ email, password }) {
   const emailHash = hashEmail(email);
 
   const user = await User.findOne({
-    attributes: ['id', 'username', 'password'],
     where: {
       email: emailHash,
     },
@@ -160,7 +159,7 @@ async function loginUser({ email, password }) {
   const isAdmin = await checkIfAdmin(user.id);
   const tempUser = { ...user.toJSON(), isAdmin };
 
-  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], tempUser);
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], tempUser);
 }
 
 async function destroyUser(userId) {
@@ -229,7 +228,7 @@ const sendAccountVerificationEmail = async (user) => {
   const text = `Hello ${user.username},
 you have recently registered an account on ${config.server.base_url}. 
 Please verify your Email address by clicking on the link below.
-${config.server.base_url}/p/verifyAccount?token=${token}`;
+${config.server.base_url}/p/verifyEmail?token=${token}`;
 
   await sendMail({
     to: user.email,
@@ -251,11 +250,11 @@ const verifyUser = async ({ id }) => {
     },
   });
 
-  if (user.verified) {
-    throw new ApiError(httpStatus.GONE, 'User already verified');
+  if (user.emailVerified) {
+    throw new ApiError(httpStatus.GONE, 'User is already verified');
   }
 
-  user.verified = true;
+  user.emailVerified = true;
 
   await user.save();
 

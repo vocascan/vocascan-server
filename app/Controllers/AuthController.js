@@ -25,7 +25,7 @@ const register = catchAsync(async (req, res) => {
 
   const user = await createUser({
     ...req.body,
-    verified: !config.service.email_confirm,
+    emailVerified: !config.service.email_confirm,
     disabled: false,
   });
 
@@ -53,7 +53,7 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   validateLogin(req, res);
 
-  const user = await loginUser(req.body, res);
+  const user = await loginUser(req.body);
 
   if (user) {
     // generate JWT with userId

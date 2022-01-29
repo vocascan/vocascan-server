@@ -31,7 +31,7 @@ module.exports = (sequelize) => {
         type: DataTypes.UUID,
         allowNull: false,
       },
-      verified: {
+      emailVerified: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,

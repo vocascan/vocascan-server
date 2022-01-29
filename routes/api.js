@@ -19,6 +19,7 @@ const InfoController = require('../app/Controllers/InfoController.js');
 const ImportController = require('../app/Controllers/ImportController.js');
 const ExportController = require('../app/Controllers/ExportController.js');
 const InviteCodeController = require('../app/Controllers/InviteCodeController.js');
+const VerificationController = require('../app/Controllers/VerificationController.js');
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ const router = express.Router();
 router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
 router.patch('/user/reset-password', ProtectMiddleware, AuthController.resetPassword);
+router.patch('/user/request-email-verification', ProtectMiddleware, VerificationController.requestEmailVerification);
 
 // User
 router.get('/user', ProtectMiddleware, AuthController.profile);

@@ -2,11 +2,30 @@ const httpStatus = require('http-status');
 const config = require('../config/config/index.js');
 const ApiError = require('../utils/ApiError.js');
 const catchAsync = require('../utils/catchAsync.js');
-const { verifyJWT } = require('../utils/index.js');
-const { verifyUser } = require('../Services/AuthServiceProvider.js');
+const { verifyJWT, hashEmail } = require('../utils/index.js');
+const { verifyUser, sendAccountVerificationEmail } = require('../Services/AuthServiceProvider.js');
 const { tokenTypes } = require('../utils/constants.js');
+const logger = require('../config/logger');
 
-const verifyAccount = catchAsync(async (req, res) => {
+const requestEmailVerification = catchAsync(async (req, res) => {
+  if (!config.service.email_confirm) {
+    throw new ApiError(httpStatus.NOT_FOUND);
+  }
+
+  if (req.user.emailVerified) {
+    throw new ApiError(httpStatus.GONE, 'User is already verified');
+  }
+
+  if (hashEmail(req.body.email) !== req.user.email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email not valid', 'email');
+  }
+
+  await sendAccountVerificationEmail({ ...req.user.toJSON(), email: req.body.email });
+
+  res.status(httpStatus.NO_CONTENT).end();
+});
+
+const verifyEmail = catchAsync(async (req, res) => {
   const { token } = req.query;
   const { base_url: baseUrl } = config.server;
 
@@ -46,6 +65,15 @@ const verifyAccount = catchAsync(async (req, res) => {
         baseUrl,
       });
     }
+
+    console.log(error);
+    logger.error(error);
+
+    return res.render('accountVerification', {
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      error: 'Internal Server Error',
+      baseUrl,
+    });
   }
 
   return res.render('accountVerification', {
@@ -57,5 +85,6 @@ const verifyAccount = catchAsync(async (req, res) => {
 });
 
 module.exports = {
-  verifyAccount,
+  requestEmailVerification,
+  verifyEmail,
 };

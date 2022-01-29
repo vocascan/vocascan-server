@@ -16,7 +16,7 @@ if (config.pages) {
 }
 
 // verification pages
-router.get('/p/verifyAccount', VerificationController.verifyAccount);
+router.get('/p/verifyEmail', VerificationController.verifyEmail);
 
 // static files
 router.use('/p/logo', express.static(path.resolve(__dirname, '../images/logo')));

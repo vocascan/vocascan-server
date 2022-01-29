@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 async function up({ context: queryInterface }) {
-  await queryInterface.addColumn('users', 'verified', {
+  await queryInterface.addColumn('users', 'emailVerified', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
@@ -11,12 +11,12 @@ async function up({ context: queryInterface }) {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
-    after: 'verified',
+    after: 'emailVerified',
   });
 }
 
 async function down({ context: queryInterface }) {
-  await queryInterface.removeColumn('users', 'verified');
+  await queryInterface.removeColumn('users', 'emailVerified');
   await queryInterface.removeColumn('users', 'disabled');
 }
 
