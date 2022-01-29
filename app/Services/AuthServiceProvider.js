@@ -231,7 +231,7 @@ Please verify your Email address by clicking on the link below.
 ${config.server.base_url}/p/verifyEmail?token=${token}`;
 
   await sendMail({
-    to: user.email,
+    to: `"${user.username}" <${user.email}>`,
     subject: 'Account Verification',
     template: 'accountVerification.ejs',
     text,
