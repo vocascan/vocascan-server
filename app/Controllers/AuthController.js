@@ -71,7 +71,7 @@ const login = catchAsync(async (req, res) => {
 });
 
 const profile = catchAsync(async (req, res) => {
-  res.send(deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], req.user.toJSON()));
+  res.send(deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], req.user.toJSON()));
 });
 
 const deleteUser = catchAsync(async (req, res) => {

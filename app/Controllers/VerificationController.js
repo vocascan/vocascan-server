@@ -66,7 +66,6 @@ const verifyEmail = catchAsync(async (req, res) => {
       });
     }
 
-    console.log(error);
     logger.error(error);
 
     return res.render('accountVerification', {
