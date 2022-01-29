@@ -107,15 +107,18 @@ const configSchema = Joi.object({
     port: Joi.number().required(),
     secure: Joi.boolean().default(false),
     auth: Joi.object({
-      user: Joi.string(),
-      pass: Joi.string(),
+      user: Joi.string().required(),
+      pass: Joi.string().required(),
     }).required(),
     from: Joi.string().required(),
   }),
 
   service: Joi.object({
     invite_code: Joi.boolean().default(false),
-    email_confirm: Joi.boolean().default(false),
+    email_confirm: Joi.boolean()
+      .default(false)
+      .when('...mailer.enabled', { is: true, then: Joi.valid(true), otherwise: Joi.valid(false) })
+      .messages({ 'any.only': '`mailer` is not configured or enabled' }),
     email_confirm_live_time: Joi.ms().default('2h'),
     email_confirm_level: Joi.string().allow('low', 'medium', 'high').default('medium'),
     email_confirm_time: Joi.ms().default('14d'),
