@@ -116,8 +116,10 @@ const configSchema = Joi.object({
   service: Joi.object({
     invite_code: Joi.boolean().default(false),
     email_confirm: Joi.boolean().default(false),
-    email_confirm_live_time: Joi.string().default('2h'),
-    access_live_time: Joi.string().default('30d'),
+    email_confirm_live_time: Joi.ms().default('2h'),
+    email_confirm_level: Joi.string().allow('low', 'medium', 'high').default('medium'),
+    email_confirm_time: Joi.ms().default('14d'),
+    access_live_time: Joi.ms().default('30d'),
   }),
 });
 

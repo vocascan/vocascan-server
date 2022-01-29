@@ -26,54 +26,58 @@ const router = express.Router();
 // Auth
 router.post('/user/register', AuthController.register);
 router.post('/user/login', AuthController.login);
-router.patch('/user/reset-password', ProtectMiddleware, AuthController.resetPassword);
-router.patch('/user/request-email-verification', ProtectMiddleware, VerificationController.requestEmailVerification);
+router.patch('/user/reset-password', ProtectMiddleware(false), AuthController.resetPassword);
+router.patch(
+  '/user/request-email-verification',
+  ProtectMiddleware(false),
+  VerificationController.requestEmailVerification
+);
 
 // User
-router.get('/user', ProtectMiddleware, AuthController.profile);
-router.delete('/user', ProtectMiddleware, AuthController.deleteUser);
+router.get('/user', ProtectMiddleware(false), AuthController.profile);
+router.delete('/user', ProtectMiddleware(false), AuthController.deleteUser);
 
 // Stats
-router.get('/user/stats', ProtectMiddleware, StatsController.sendAccountStats);
+router.get('/user/stats', ProtectMiddleware(), StatsController.sendAccountStats);
 
 // Language package
-router.post('/languagePackage', ProtectMiddleware, LanguagePackageController.addLanguagePackage);
-router.get('/languagePackage', ProtectMiddleware, LanguagePackageController.sendLanguagePackages);
+router.post('/languagePackage', ProtectMiddleware(), LanguagePackageController.addLanguagePackage);
+router.get('/languagePackage', ProtectMiddleware(), LanguagePackageController.sendLanguagePackages);
 router.delete(
   '/languagePackage/:languagePackageId',
-  ProtectMiddleware,
+  ProtectMiddleware(),
   LanguagePackageController.deleteLanguagePackage
 );
-router.put('/languagePackage/:languagePackageId', ProtectMiddleware, LanguagePackageController.modifyLanguagePackage);
+router.put('/languagePackage/:languagePackageId', ProtectMiddleware(), LanguagePackageController.modifyLanguagePackage);
 
 // Group
-router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.addGroup);
-router.get('/languagePackage/:languagePackageId/group', ProtectMiddleware, GroupController.sendGroups);
-router.delete('/group/:groupId', ProtectMiddleware, GroupController.deleteGroup);
-router.put('/group/:groupId', ProtectMiddleware, GroupController.modifyGroup);
+router.post('/languagePackage/:languagePackageId/group', ProtectMiddleware(), GroupController.addGroup);
+router.get('/languagePackage/:languagePackageId/group', ProtectMiddleware(), GroupController.sendGroups);
+router.delete('/group/:groupId', ProtectMiddleware(), GroupController.deleteGroup);
+router.put('/group/:groupId', ProtectMiddleware(), GroupController.modifyGroup);
 
 // Vocabulary
 router.post(
   '/languagePackage/:languagePackageId/group/:groupId/vocabulary',
-  ProtectMiddleware,
+  ProtectMiddleware(),
   VocabularyController.addVocabularyCard
 );
-router.delete('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.deleteVocabularyCard);
-router.get('/group/:groupId/vocabulary', ProtectMiddleware, VocabularyController.sendGroupVocabulary);
-router.put('/vocabulary/:vocabularyId', ProtectMiddleware, VocabularyController.modifyVocabulary);
+router.delete('/vocabulary/:vocabularyId', ProtectMiddleware(), VocabularyController.deleteVocabularyCard);
+router.get('/group/:groupId/vocabulary', ProtectMiddleware(), VocabularyController.sendGroupVocabulary);
+router.put('/vocabulary/:vocabularyId', ProtectMiddleware(), VocabularyController.modifyVocabulary);
 
 // Query
-router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware, QueryController.sendQueryVocabulary);
+router.get('/languagePackage/:languagePackageId/query', ProtectMiddleware(), QueryController.sendQueryVocabulary);
 
-router.patch('/vocabulary/:vocabularyId', ProtectMiddleware, QueryController.checkVocabulary);
+router.patch('/vocabulary/:vocabularyId', ProtectMiddleware(), QueryController.checkVocabulary);
 
 // Language
-router.get('/language', ProtectMiddleware, LanguageController.sendLanguages);
+router.get('/language', ProtectMiddleware(), LanguageController.sendLanguages);
 
 // Import / Export
-router.get('/group/:groupId/export', ProtectMiddleware, ExportController.exportGroup);
-router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware, ExportController.exportLanguagePackage);
-router.post('/import', ProtectMiddleware, ImportController.importVocabs);
+router.get('/group/:groupId/export', ProtectMiddleware(), ExportController.exportGroup);
+router.get('/languagePackage/:languagePackageId/export', ProtectMiddleware(), ExportController.exportLanguagePackage);
+router.post('/import', ProtectMiddleware(), ImportController.importVocabs);
 
 // Docs
 if (config.api.enable_swagger) {
@@ -85,9 +89,9 @@ if (config.api.enable_swagger) {
 router.get('/info', InfoController.sendInfo);
 
 // Admin
-router.post('/inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.addInviteCode);
-router.delete('/inviteCode/:inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.deleteInviteCode);
-router.get('/inviteCode', ProtectMiddleware, AdminMiddleware, InviteCodeController.sendInviteCodes);
+router.post('/inviteCode', ProtectMiddleware(), AdminMiddleware, InviteCodeController.addInviteCode);
+router.delete('/inviteCode/:inviteCode', ProtectMiddleware(), AdminMiddleware, InviteCodeController.deleteInviteCode);
+router.get('/inviteCode', ProtectMiddleware(), AdminMiddleware, InviteCodeController.sendInviteCodes);
 router.get('/inviteCode/:inviteCode', InviteCodeController.checkInviteCode);
 
 module.exports = router;
