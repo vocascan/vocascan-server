@@ -117,7 +117,7 @@ const configSchema = Joi.object({
     invite_code: Joi.boolean().default(false),
     email_confirm: Joi.boolean()
       .default(false)
-      .when('...mailer.enabled', { is: true, then: Joi.valid(true), otherwise: Joi.valid(false) })
+      .when('...mailer.enabled', { not: true, then: Joi.valid(false) })
       .messages({ 'any.only': '`mailer` is not configured or enabled' }),
     email_confirm_live_time: Joi.ms().default('2h'),
     email_confirm_level: Joi.string().allow('low', 'medium', 'high').default('medium'),
