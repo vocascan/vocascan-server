@@ -12,7 +12,8 @@ const readline = require('readline');
  * @returns {String} signed jwt token
  */
 function generateJWT(input, secret, options) {
-  return jwt.sign(input, secret, options);
+  // expiresIn needs to be a string to be interpreted as milliseconds
+  return jwt.sign(input, secret, { ...options, expiresIn: `${options.expiresIn}` });
 }
 
 /**
