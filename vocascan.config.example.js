@@ -84,9 +84,11 @@ module.exports = {
   },
 
   service: {
-    invite_code: true,
+    invite_code: false,
     email_confirm: true,
     email_confirm_live_time: '2h',
+    email_confirm_level: 'medium',
+    email_confirm_time: '14d',
     access_live_time: '30d',
   },
 };
