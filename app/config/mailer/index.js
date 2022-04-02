@@ -53,7 +53,7 @@ const sendMail = async ({ to, subject, template, text, ctx }) => {
     html: result.html,
   });
 
-  logger.debug(`Email was successfully send to ${to}`);
+  logger.debug(`Email (template=${template}) was successfully send to ${to}`);
 
   return info;
 };

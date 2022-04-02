@@ -1,6 +1,6 @@
 <% layout('./layout') %>
 
-<% if(!it.error) { %>
+<% if(it.user) { %>
   <div class="flex">
     <img width="50px" class="icon" src="<%= it.baseUrl %>/p/icons/success.svg" />
 
