@@ -27,13 +27,11 @@ const requestEmailVerification = catchAsync(async (req, res) => {
 
 const verifyEmail = catchAsync(async (req, res) => {
   const { token } = req.query;
-  const { base_url: baseUrl } = config.server;
 
   if (!token) {
     return res.render('accountVerification', {
       status: httpStatus.BAD_REQUEST,
       error: 'No verification token provided',
-      baseUrl,
     });
   }
 
@@ -49,7 +47,6 @@ const verifyEmail = catchAsync(async (req, res) => {
     return res.render('accountVerification', {
       status: httpStatus.UNAUTHORIZED,
       error: 'No valid verification token provided',
-      baseUrl,
     });
   }
 
@@ -62,7 +59,6 @@ const verifyEmail = catchAsync(async (req, res) => {
       return res.render('accountVerification', {
         status: httpStatus.GONE,
         error: 'User is already verified',
-        baseUrl,
       });
     }
 
@@ -71,7 +67,6 @@ const verifyEmail = catchAsync(async (req, res) => {
     return res.render('accountVerification', {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       error: 'Internal Server Error',
-      baseUrl,
     });
   }
 
@@ -79,7 +74,6 @@ const verifyEmail = catchAsync(async (req, res) => {
     status: httpStatus.OK,
     error: null,
     user,
-    baseUrl,
   });
 });
 

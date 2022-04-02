@@ -1,6 +1,6 @@
 const path = require('path');
 const nodemailer = require('nodemailer');
-const ejs = require('ejs');
+const eta = require('eta');
 const mjml = require('mjml');
 const chalk = require('chalk');
 
@@ -35,9 +35,14 @@ const init = async () => {
 };
 
 const sendMail = async ({ to, subject, template, text, ctx }) => {
-  const parsed = await ejs.renderFile(path.resolve(__dirname, '../../Templates/mailer', template), ctx, {
-    cache: true,
-  });
+  const parsed = await eta.renderFile(
+    template,
+    { baseUrl: config.server.base_url, ...ctx },
+    {
+      cache: true,
+      views: path.resolve(__dirname, '../../Templates/mailer'),
+    }
+  );
 
   const result = mjml(parsed);
 

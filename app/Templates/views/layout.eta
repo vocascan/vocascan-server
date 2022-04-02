@@ -56,28 +56,17 @@
   </head>
   <body>
     <div class="center-wrapper">
-      <img width="100px" src="<%= baseUrl %>/p/logo/color-round.svg" />
+      <img width="100px" src="<%= it.baseUrl %>/p/logo/color-round.svg" />
 
       <div class="container">
-        <% if(error) { %>
+        <% if(it.error) { %>
         <div class="flex">
-          <img width="50px" class="icon" src="<%= baseUrl %>/p/icons/error.svg" />
+          <img width="50px" class="icon" src="<%= it.baseUrl %>/p/icons/error.svg" />
 
-          <h1><%= status %> - <%= error %></h1>
+          <h1><%= it.status %> - <%= it.error %></h1>
         </div>
         <% } else { %>
-        <div class="flex">
-          <img width="50px" class="icon" src="<%= baseUrl %>/p/icons/success.svg" />
-
-          <h1>Verification successful</h1>
-        </div>
-
-        <h2>Hello <%= user.username %>,</h2>
-        <p>
-          you successfully verified your account.<br />
-          You can now use Vocascan to learn your vocabulary.
-        </p>
-        <p>Thank you for using Vocascan.</p>
+          <%~ it.body %>
         <% } %>
       </div>
 

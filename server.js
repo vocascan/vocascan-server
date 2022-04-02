@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const chalk = require('chalk');
 const httpStatus = require('http-status');
+const eta = require('eta');
 
 /**
  * Run vocascan server
@@ -33,8 +34,13 @@ const runServer = async (extraConfig) => {
   const server = http.createServer(app);
 
   // template engine
-  app.set('view engine', 'ejs');
+  app.engine('eta', eta.renderFile);
+  app.set('view engine', 'eta');
   app.set('views', path.resolve(__dirname, './app/Templates/views'));
+  app.use((_req, res, next) => {
+    res.locals.baseUrl = config.server.base_url;
+    next();
+  });
 
   // logging middleware
   app.use(LoggingMiddleware);

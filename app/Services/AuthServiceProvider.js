@@ -233,12 +233,11 @@ ${config.server.base_url}/p/verifyEmail?token=${token}`;
   await sendMail({
     to: `"${user.username}" <${user.email}>`,
     subject: 'Account Verification',
-    template: 'accountVerification.ejs',
+    template: 'accountVerification',
     text,
     ctx: {
       user,
       token,
-      baseUrl: config.server.base_url,
     },
   });
 };

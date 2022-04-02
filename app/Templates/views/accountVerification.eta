@@ -1,0 +1,16 @@
+<% layout('./layout') %>
+
+<% if(!it.error) { %>
+  <div class="flex">
+    <img width="50px" class="icon" src="<%= it.baseUrl %>/p/icons/success.svg" />
+
+    <h1>Verification successful</h1>
+  </div>
+
+  <h2>Hello <%= it.user.username %>,</h2>
+  <p>
+    you successfully verified your account.<br />
+    You can now use Vocascan to learn your vocabulary.
+  </p>
+  <p>Thank you for using Vocascan.</p>
+<% } %>

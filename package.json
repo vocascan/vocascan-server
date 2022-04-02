@@ -40,7 +40,7 @@
     "console-table-printer": "^2.10.0",
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
-    "ejs": "^3.1.6",
+    "eta": "^1.12.3",
     "express": "^4.16.2",
     "http-status": "^1.5.0",
     "joi": "^17.4.2",
