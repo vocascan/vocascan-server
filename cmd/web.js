@@ -1,20 +1,22 @@
 const commander = require('commander');
-
-const { parseConfig } = require('../app/config/config');
-
 const web = new commander.Command('web');
 
-web.hook('preAction', async (thisCommand) => {
-  // get options from first level command
-  const opts = thisCommand.parent.opts();
-  parseConfig({ configPath: opts.configFile });
-});
+web
+  .description('start the vocascan-server')
+  .addOption(new commander.Option('-p, --port <port>'))
+  .action(async (options) => {
+    const { createServer } = require('../server');
 
-web.description('start the vocascan-server').action(async () => {
-  const { createServer } = require('../server');
+    const config = {};
 
-  const server = await createServer();
-  server.start();
-});
+    if (options.port && !Number.isNaN(+options.port)) {
+      config.server = {
+        port: +options.port,
+      };
+    }
+
+    const server = await createServer(config);
+    server.start();
+  });
 
 module.exports = web;
