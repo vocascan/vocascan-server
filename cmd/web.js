@@ -10,10 +10,11 @@ web.hook('preAction', async (thisCommand) => {
   parseConfig({ configPath: opts.configFile });
 });
 
-web.description('start the vocascan-server').action(() => {
-  const runServer = require('../server');
+web.description('start the vocascan-server').action(async () => {
+  const { createServer } = require('../server');
 
-  runServer();
+  const server = await createServer();
+  server.start();
 });
 
 module.exports = web;
