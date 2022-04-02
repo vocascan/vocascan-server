@@ -30,6 +30,9 @@ const createServer = async (extraConfig) => {
   const server = {};
   server.app = express();
   server.http = http.createServer(server.app);
+  server.db = db;
+  server.logger = logger;
+  server.config = config;
 
   // logging middleware
   server.app.use(LoggingMiddleware);
