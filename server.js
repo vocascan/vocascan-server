@@ -6,8 +6,10 @@ const httpStatus = require('http-status');
 /**
  * Run vocascan server
  * @param {Object} extraConfig extra config can be used to configure the server programmatically
+ * @param {Object} options options for programmatically run
+ * @param {Function} options.preLoad function that run before applying the 404 and error handlers
  */
-const createServer = async (extraConfig) => {
+const createServer = async (extraConfig, options) => {
   let config = require('./app/config/config');
 
   // config has not been parsed already -> parse it
@@ -46,6 +48,10 @@ const createServer = async (extraConfig) => {
   // routes
   server.app.use('/', routes);
 
+  if (options && options.preLoad) {
+    await Promise.resolve(options.preLoad(server));
+  }
+
   // send back a 404 error for any unknown api request
   server.app.use((_req, _res, next) => {
     next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
@@ -57,18 +63,24 @@ const createServer = async (extraConfig) => {
   // handle error
   server.app.use(errorHandler);
 
-  server.start = async () => {
+  server.migrate = async () => {
     // Checks migrations and run them if they are not already applied. To keep
     // track of the executed migrations, a table (and sequelize model) called .migrations
     // will be automatically created (if it doesn't exist already) and parsed.
     await db.migrations.up();
     await db.seeders.up();
+  };
+
+  server.start = async ({ migrate = true } = {}) => {
+    if (migrate) {
+      await server.migrate();
+    }
 
     // start server
     return new Promise((resolve) => {
       server.http.listen(config.server.port, () => {
         logger.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
-        resolve(server);
+        resolve();
       });
     });
   };
