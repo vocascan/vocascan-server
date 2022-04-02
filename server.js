@@ -73,6 +73,10 @@ const createServer = async (extraConfig) => {
     });
   };
 
+  server.stop = async () => {
+    server.http.close();
+  };
+
   return server;
 };
 
