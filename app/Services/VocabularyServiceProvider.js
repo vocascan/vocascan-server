@@ -2,6 +2,7 @@ const { VocabularyCard, Translation, Drawer, Group } = require('../../database')
 const { deleteKeysFromObject } = require('../utils');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
+const { Op } = require('sequelize');
 
 // create language package
 async function createVocabularyCard({
@@ -72,7 +73,7 @@ async function createTranslations(translations, userId, languagePackageId, vocab
   return false;
 }
 
-async function getGroupVocabulary(userId, groupId) {
+async function getGroupVocabulary(userId, groupId, search) {
   const group = await Group.count({
     where: {
       id: groupId,
@@ -92,10 +93,11 @@ async function getGroupVocabulary(userId, groupId) {
       },
     ],
     attributes: ['id', 'name', 'active', 'description'],
-    where: {
-      userId,
-      groupId,
-    },
+    where: search
+      ? {
+          [Op.and]: [{ userId, groupId }, { name: { [Op.like]: `%${search}%` } }],
+        }
+      : { userId, groupId },
   });
 
   return vocabulary;
