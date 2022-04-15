@@ -94,19 +94,15 @@ async function getGroupVocabulary(userId, groupId, search) {
       },
     ],
     attributes: ['id', 'name', 'active', 'description'],
-    where: search
-      ? {
-          [Op.and]: [
-            {
-              userId,
-              groupId,
-            },
-            sequelize.where(sequelize.fn('lower', sequelize.col('VocabularyCard.name')), {
-              [Op.like]: `%${search}%`,
-            }),
-          ],
-        }
-      : { userId, groupId },
+    where: {
+      [Op.and]: [
+        { userId, groupId },
+        search &&
+          sequelize.where(sequelize.fn('lower', sequelize.col('VocabularyCard.name')), {
+            [Op.like]: `%${search.toLowerCase()}%`,
+          }),
+      ],
+    },
   });
 
   return vocabulary;
