@@ -9,7 +9,7 @@ const eta = require('eta');
  * Run vocascan server
  * @param {Object} extraConfig extra config can be used to configure the server programmatically
  */
-const runServer = async (extraConfig) => {
+const createServer = async (extraConfig) => {
   let config = require('./app/config/config');
 
   // config has not been parsed already -> parse it
@@ -30,62 +30,83 @@ const runServer = async (extraConfig) => {
   const logger = require('./app/config/logger');
   const mailer = require('./app/config/mailer');
 
-  const app = express();
-  const server = http.createServer(app);
+  const server = {};
+  server.app = express();
+  server.http = http.createServer(server.app);
+  server.db = db;
+  server.logger = logger;
+  server.config = config;
 
   // template engine
-  app.engine('eta', eta.renderFile);
-  app.set('view engine', 'eta');
-  app.set('views', path.resolve(__dirname, './app/Templates/views'));
-  app.use((_req, res, next) => {
+  server.app.engine('eta', eta.renderFile);
+  server.app.set('view engine', 'eta');
+  server.app.set('views', path.resolve(__dirname, './app/Templates/views'));
+  server.app.use((_req, res, next) => {
     res.locals.baseUrl = config.server.base_url;
     next();
   });
 
   // logging middleware
-  app.use(LoggingMiddleware);
+  server.app.use(LoggingMiddleware);
 
   // security
-  app.use(SecurityMiddleware);
+  server.app.use(SecurityMiddleware);
 
   // middleware
-  app.use(express.json());
+  server.app.use(express.json());
 
   // routes
-  app.use('/', routes);
+  server.app.use('/', routes);
 
   // send back a 404 error for any unknown api request
-  app.use((_req, _res, next) => {
+  server.app.use((_req, _res, next) => {
     next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
   });
 
   // convert error to ApiError, if needed
-  app.use(errorConverter);
+  server.app.use(errorConverter);
 
   // handle error
-  app.use(errorHandler);
+  server.app.use(errorHandler);
 
-  // Checks migrations and run them if they are not already applied. To keep
-  // track of the executed migrations, a table (and sequelize model) called .migrations
-  // will be automatically created (if it doesn't exist already) and parsed.
-  await db.migrations.up();
-  await db.seeders.up();
+  server.migrate = async () => {
+    // Checks migrations and run them if they are not already applied. To keep
+    // track of the executed migrations, a table (and sequelize model) called .migrations
+    // will be automatically created (if it doesn't exist already) and parsed.
+    await db.migrations.up();
+    await db.seeders.up();
+  };
 
-  // initialize mailer
-  await mailer.init();
+  server.start = async ({ migrate = true } = {}) => {
+    if (migrate) {
+      await server.migrate();
+    }
 
-  // start server
-  return new Promise((resolve) => {
-    server.listen(config.server.port, () => {
-      logger.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
-      resolve(server);
+    // initialize mailer
+    await mailer.init();
+
+    // start server
+    return new Promise((resolve) => {
+      server.http.listen(config.server.port, () => {
+        logger.info(chalk.yellow(`Server is running on port ${config.server.port}.`));
+        resolve();
+      });
     });
-  });
+  };
+
+  server.stop = async () => {
+    server.http.close();
+  };
+
+  return server;
 };
 
 // run runServer function if it was directly executed to keep downwards compatibility
 if (require.main === module) {
-  runServer();
+  createServer().then((server) => server.start());
 }
 
-module.exports = runServer;
+module.exports = {
+  createServer,
+  version: require('./package.json').version,
+};
