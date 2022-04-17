@@ -45,7 +45,9 @@ const configSchema = Joi.object({
   debug: Joi.boolean().default(false),
 
   server: Joi.object({
-    base_url: Joi.string(),
+    base_url: Joi.string()
+      .when('...mailer.enabled', { is: true, then: Joi.required() })
+      .messages({ 'any.required': '`mailer` is enabled so `server.base_url` should be set to work correctly' }),
     port: Joi.number().default(5000).min(1).max(65535),
     jwt_secret: Joi.string().required(),
     salt_rounds: Joi.number().integer().min(0).max(20).default(10),
