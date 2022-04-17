@@ -6,10 +6,8 @@ const httpStatus = require('http-status');
 /**
  * Run vocascan server
  * @param {Object} extraConfig extra config can be used to configure the server programmatically
- * @param {Object} options options for programmatically run
- * @param {Function} options.preLoad function that run before applying the 404 and error handlers
  */
-const createServer = async (extraConfig, options) => {
+const createServer = async (extraConfig) => {
   let config = require('./app/config/config');
 
   // config has not been parsed already -> parse it
@@ -47,10 +45,6 @@ const createServer = async (extraConfig, options) => {
 
   // routes
   server.app.use('/', routes);
-
-  if (options && options.preLoad) {
-    await Promise.resolve(options.preLoad(server));
-  }
 
   // send back a 404 error for any unknown api request
   server.app.use((_req, _res, next) => {
