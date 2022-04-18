@@ -36,9 +36,15 @@ const logTransportTypes = {
 
 const DEFAULT_CONFIG_PATH = './vocascan.config';
 
+const tokenTypes = {
+  ACCESS: 'access',
+  VERIFY_EMAIL: 'verifyEmail',
+};
+
 module.exports = {
   drawers,
   logLevels,
   logTransportTypes,
   DEFAULT_CONFIG_PATH,
+  tokenTypes,
 };

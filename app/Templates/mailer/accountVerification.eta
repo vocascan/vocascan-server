@@ -1,0 +1,16 @@
+<% layout('./layout') %>
+
+<mj-text align="center" font-size="21px">Hello <%= it.user.username %>,</mj-text>
+<mj-text align="center" font-size="16px" line-height="1.4">
+  you have recently registered an account on <a href="<%= it.baseUrl %>"><%= it.baseUrl %></a>. Please verify your Email
+  address by clicking on the button below.
+</mj-text>
+<mj-button
+  align="center"
+  font-size="18px"
+  background-color="#727cf5"
+  border-radius="10px"
+  color="#fff"
+  href="<%= it.baseUrl %>/p/verifyEmail?token=<%= it.token %>"
+  >Verify Account</mj-button
+>

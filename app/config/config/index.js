@@ -44,6 +44,7 @@ const parseConfig = ({ configPath, extraConfig = {} } = {}) => {
       console: { colorize: true },
     },
     api: {},
+    service: {},
     ...mergedConfig,
   };
 

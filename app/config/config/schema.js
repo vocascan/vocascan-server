@@ -45,10 +45,15 @@ const configSchema = Joi.object({
   debug: Joi.boolean().default(false),
 
   server: Joi.object({
+    base_url: Joi.string()
+      .when('...mailer.enabled', { is: true, then: Joi.required() })
+      .messages({ 'any.required': '`mailer` is enabled so `server.base_url` should be set to work correctly' }),
     port: Joi.number().default(5000).min(1).max(65535),
     jwt_secret: Joi.string().required(),
     salt_rounds: Joi.number().integer().min(0).max(20).default(10),
-    registration_locked: Joi.boolean().default(false),
+    registration_locked: Joi.any()
+      .forbidden()
+      .messages({ 'any.unknown': 'The `sever.registration_locked` option is moved to `service.invite_code`' }),
     cors: Joi.alternatives().try(Joi.boolean(), Joi.keyArray()).default(false),
   }).required(),
 
@@ -97,6 +102,30 @@ const configSchema = Joi.object({
         langs: Joi.object().unknown().pattern(Joi.string(), renderPageSchema),
       })
     ),
+
+  mailer: Joi.object({
+    enabled: Joi.boolean().default(false),
+    host: Joi.string().required(),
+    port: Joi.number().required(),
+    secure: Joi.boolean().default(false),
+    auth: Joi.object({
+      user: Joi.string().required(),
+      pass: Joi.string().required(),
+    }).required(),
+    from: Joi.string().required(),
+  }),
+
+  service: Joi.object({
+    invite_code: Joi.boolean().default(false),
+    email_confirm: Joi.boolean()
+      .default(false)
+      .when('...mailer.enabled', { not: true, then: Joi.valid(false) })
+      .messages({ 'any.only': '`mailer` is not configured or enabled' }),
+    email_confirm_live_time: Joi.ms().default('2h'),
+    email_confirm_level: Joi.string().allow('low', 'medium', 'high').default('medium'),
+    email_confirm_time: Joi.ms().default('14d'),
+    access_live_time: Joi.ms().default('30d'),
+  }),
 });
 
 module.exports = configSchema;

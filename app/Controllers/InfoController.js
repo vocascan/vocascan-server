@@ -8,7 +8,7 @@ const sendInfo = catchAsync(async (_req, res) => {
   res.send({
     identifier: 'vocascan-server',
     version: getVersion(),
-    locked: config.server.registration_locked,
+    locked: config.service.invite_code,
     commitRef: gitDescribe === undefined ? (gitDescribe = await getGitDescribe()) : gitDescribe,
   });
 });
