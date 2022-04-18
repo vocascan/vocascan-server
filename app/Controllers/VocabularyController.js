@@ -49,8 +49,9 @@ const sendGroupVocabulary = catchAsync(async (req, res) => {
   // get userId from request
   const userId = req.user.id;
   const { groupId } = req.params;
+  const { search } = req.query;
 
-  const vocabulary = await getGroupVocabulary(userId, groupId);
+  const vocabulary = await getGroupVocabulary(userId, groupId, search);
 
   res.send(vocabulary);
 });
