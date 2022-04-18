@@ -1,7 +1,9 @@
 const http = require('http');
+const path = require('path');
 const express = require('express');
 const chalk = require('chalk');
 const httpStatus = require('http-status');
+const eta = require('eta');
 
 /**
  * Run vocascan server
@@ -26,6 +28,7 @@ const createServer = async (extraConfig) => {
 
   const routes = require('./routes');
   const logger = require('./app/config/logger');
+  const mailer = require('./app/config/mailer');
 
   const server = {};
   server.app = express();
@@ -33,6 +36,15 @@ const createServer = async (extraConfig) => {
   server.db = db;
   server.logger = logger;
   server.config = config;
+
+  // template engine
+  server.app.engine('eta', eta.renderFile);
+  server.app.set('view engine', 'eta');
+  server.app.set('views', path.resolve(__dirname, './app/Templates/views'));
+  server.app.use((_req, res, next) => {
+    res.locals.baseUrl = config.server.base_url;
+    next();
+  });
 
   // logging middleware
   server.app.use(LoggingMiddleware);
@@ -69,6 +81,9 @@ const createServer = async (extraConfig) => {
     if (migrate) {
       await server.migrate();
     }
+
+    // initialize mailer
+    await mailer.init();
 
     // start server
     return new Promise((resolve) => {

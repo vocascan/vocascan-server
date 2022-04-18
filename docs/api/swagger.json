@@ -104,6 +104,20 @@
       }
     },
     "/user": {
+      "get": {
+        "summary": "Get user profile",
+        "tags": ["user"],
+        "operationId": "getUserProfile",
+        "description": "Nothing needed. UserId gets parsed from JWT",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UserProfile"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      },
       "delete": {
         "summary": "Delete user",
         "tags": ["user"],
@@ -126,7 +140,7 @@
       }
     },
     "/user/reset-password": {
-      "post": {
+      "patch": {
         "summary": "Reset user password",
         "tags": ["auth"],
         "operationId": "resetPassword",
@@ -145,6 +159,33 @@
           },
           "404": {
             "$ref": "#/components/responses/404"
+          }
+        }
+      }
+    },
+    "/user/request-email-verification": {
+      "patch": {
+        "summary": "Request email verification email",
+        "tags": ["auth"],
+        "operationId": "requestEmailVerification",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/RequestEmailVerification"
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "410": {
+            "$ref": "#/components/responses/410"
           }
         }
       }
@@ -203,7 +244,7 @@
     "/user/stats": {
       "get": {
         "summary": "Get stats about user",
-        "tags": ["stats"],
+        "tags": ["user"],
         "operationId": "getUserStats",
         "responses": {
           "200": {
@@ -837,8 +878,17 @@
             "format": "uuid"
           },
           "username": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "disabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "isAdmin": {
+            "type": "boolean"
           }
         }
       },
@@ -1318,6 +1368,24 @@
           }
         }
       },
+      "RequestEmailVerification": {
+        "description": "Users email is used to send the email as the email is saved hashed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "user email",
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              }
+            }
+          }
+        }
+      },
       "UserLogin": {
         "description": "Login User details",
         "content": {
@@ -1668,6 +1736,16 @@
                   "type": "string"
                 }
               }
+            }
+          }
+        }
+      },
+      "UserProfile": {
+        "description": "User profile",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
             }
           }
         }
@@ -2094,6 +2172,9 @@
       },
       "409": {
         "description": "APIConflictError is a already exists error"
+      },
+      "410": {
+        "description": "APIGoneError is a resource gone error"
       },
       "500": {
         "description": "APIInternalServerError is a internal server error"
