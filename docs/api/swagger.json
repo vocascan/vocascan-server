@@ -1140,7 +1140,7 @@
       "search": {
         "in": "query",
         "name": "search",
-        "description": "Filter vocabulary names",
+        "description": "Filter vocabulary by names and translation names",
         "schema": {
           "type": "string"
         }
