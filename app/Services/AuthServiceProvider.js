@@ -145,7 +145,7 @@ async function loginUser({ email, password }) {
     },
   });
 
-  if (!user) {
+  if (!user || user.disabled) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
   }
 
