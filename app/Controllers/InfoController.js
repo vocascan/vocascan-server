@@ -10,6 +10,8 @@ const sendInfo = catchAsync(async (_req, res) => {
     version: getVersion(),
     locked: config.service.invite_code,
     commitRef: gitDescribe === undefined ? (gitDescribe = await getGitDescribe()) : gitDescribe,
+    email_confirm_level: config.service.email_confirm_level,
+    email_confirm_time: config.service.email_confirm_time,
   });
 });
 
