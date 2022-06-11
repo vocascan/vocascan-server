@@ -132,6 +132,8 @@ userHandler
   .addOption(new commander.Option('-u, --username <username>'))
   .addOption(new commander.Option('-p, --password <password>'))
   .addOption(new commander.Option('-r, --role <name>'))
+  .addOption(new commander.Option('--emailVerified <enabled>').choices(['true', 'false']))
+  .addOption(new commander.Option('--disabled <enabled>').choices(['true', 'false']))
   .action(async (options) => {
     const { User, Role } = db;
 
@@ -143,9 +145,9 @@ userHandler
     }
 
     // check if one option to change is set
-    if (!options.password && !options.role) {
+    if (!('password' in options) && !('role' in options) && !('emailVerified' in options) && !('disabled' in options)) {
       return console.error(
-        chalk`{red error:} one of '-p, --password <password>' or '-r, --role <role>' should be set to change.`
+        chalk`{red error:} one of '-p, --password <password>', '-r, --role <role>' or '-v, --verify' should be set to change.`
       );
     }
 
@@ -167,12 +169,12 @@ userHandler
       return console.error(chalk`{red ✗} user does not exist`);
     }
 
-    if (options.password) {
+    if ('password' in options) {
       const passwordHash = await bcrypt.hash(options.password, config.server.salt_rounds);
       user.password = passwordHash;
     }
 
-    if (options.role) {
+    if ('role' in options) {
       // check if role exists
       const role = await Role.findOne({
         where: {
@@ -186,6 +188,14 @@ userHandler
 
       user.roleId = role.id;
       user.Role = role;
+    }
+
+    if ('emailVerified' in options) {
+      user.emailVerified = options.emailVerified === 'true';
+    }
+
+    if ('disabled' in options) {
+      user.disabled = options.disabled === 'true';
     }
 
     await user.save();

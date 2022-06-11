@@ -892,6 +892,10 @@
           },
           "isAdmin": {
             "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-06-08T10:34:21.798Z"
           }
         }
       },
@@ -1072,8 +1076,27 @@
           "version": {
             "type": "string"
           },
+          "locked": {
+            "type": "boolean"
+          },
           "commitRef": {
             "type": "string"
+          },
+          "email_confirm": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "level": {
+                "type": "string",
+                "example": "medium"
+              },
+              "time": {
+                "type": "number",
+                "example": 86400
+              }
+            }
           }
         }
       },

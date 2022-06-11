@@ -131,7 +131,7 @@ async function createUser({ username, email, password, emailVerified, disabled }
   const isAdmin = await checkIfAdmin(user.id);
   const tempUser = { ...user.toJSON(), isAdmin };
 
-  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], tempUser);
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'updatedAt'], tempUser);
 }
 
 // Log user in
@@ -145,7 +145,7 @@ async function loginUser({ email, password }) {
     },
   });
 
-  if (!user) {
+  if (!user || user.disabled) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
   }
 
@@ -159,7 +159,7 @@ async function loginUser({ email, password }) {
   const isAdmin = await checkIfAdmin(user.id);
   const tempUser = { ...user.toJSON(), isAdmin };
 
-  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], tempUser);
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'updatedAt'], tempUser);
 }
 
 async function destroyUser(userId) {

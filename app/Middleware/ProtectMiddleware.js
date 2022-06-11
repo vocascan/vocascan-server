@@ -36,7 +36,7 @@ const ProtectMiddleware = (emailVerified = true) =>
       },
     });
 
-    if (!user) {
+    if (!user || user.disabled) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid auth token');
     }
 
