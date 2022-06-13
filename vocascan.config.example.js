@@ -7,10 +7,10 @@ module.exports = {
   debug: false,
 
   server: {
+    base_url: 'http://example.com',
     port: 5000,
     jwt_secret: '',
     salt_rounds: 10,
-    registration_locked: false,
     cors: ['https://web.example1.com', 'https://web.example2.com'],
   },
 
@@ -58,5 +58,37 @@ module.exports = {
 
   api: {
     enable_swagger: true,
+  },
+
+  pages: {
+    privacyPolicy: {
+      url: '/p/privacy-policy',
+      fallback: { type: 'redirect', location: '/p/privacy-policy?lang=de' },
+      langs: {
+        en: { type: 'file', location: './staticPages/privacy-policy_en.html' },
+        de: { type: 'file', location: './staticPages/privacy-policy_de.html' },
+        ru: { type: 'file', location: './staticPages/privacy-policy_ru.html' },
+      },
+    },
+  },
+
+  mailer: {
+    enabled: true,
+    host: 'smtp.ethereal.email',
+    port: 587,
+    auth: {
+      user: '',
+      pass: '',
+    },
+    from: '"Vocascan" <vocascan@example.com>',
+  },
+
+  service: {
+    invite_code: false,
+    email_confirm: true,
+    email_confirm_live_time: '2h',
+    email_confirm_level: 'medium',
+    email_confirm_time: '14d',
+    access_live_time: '30d',
   },
 };

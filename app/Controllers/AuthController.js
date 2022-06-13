@@ -8,10 +8,12 @@ const {
   validatePassword,
   destroyUser,
   changePassword,
+  sendAccountVerificationEmail,
 } = require('../Services/AuthServiceProvider');
 const { useInviteCode } = require('../Services/InviteCodeProvider');
 const { generateJWT, deleteKeysFromObject } = require('../utils');
 const catchAsync = require('../utils/catchAsync');
+const { tokenTypes } = require('../utils/constants');
 const ApiError = require('../utils/ApiError');
 
 const register = catchAsync(async (req, res) => {
@@ -21,12 +23,28 @@ const register = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'password complexity failed', 'password');
   }
 
-  const user = await createUser(req.body);
-  const token = generateJWT({ id: user.id }, config.server.jwt_secret);
+  const user = await createUser({
+    ...req.body,
+    emailVerified: !config.service.email_confirm,
+    disabled: false,
+  });
+
+  const token = generateJWT(
+    {
+      id: user.id,
+      type: tokenTypes.ACCESS,
+    },
+    config.server.jwt_secret,
+    { expiresIn: config.service.access_live_time }
+  );
 
   // after everything is registered redeem the code
-  if (config.server.registration_locked) {
+  if (config.service.invite_code) {
     await useInviteCode(req.query.inviteCode);
+  }
+
+  if (config.service.email_confirm) {
+    await sendAccountVerificationEmail({ ...user, email: req.body.email });
   }
 
   res.send({ token, user });
@@ -35,18 +53,25 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   validateLogin(req, res);
 
-  const user = await loginUser(req.body, res);
+  const user = await loginUser(req.body);
 
   if (user) {
     // generate JWT with userId
-    const token = generateJWT({ id: user.id }, config.server.jwt_secret);
+    const token = generateJWT(
+      {
+        id: user.id,
+        type: tokenTypes.ACCESS,
+      },
+      config.server.jwt_secret,
+      { expiresIn: config.service.access_live_time }
+    );
 
     res.send({ token, user });
   }
 });
 
 const profile = catchAsync(async (req, res) => {
-  res.send(deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], req.user.toJSON()));
+  res.send(deleteKeysFromObject(['roleId', 'email', 'password', 'updatedAt'], req.user.toJSON()));
 });
 
 const deleteUser = catchAsync(async (req, res) => {

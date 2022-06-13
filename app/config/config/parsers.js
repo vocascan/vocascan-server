@@ -49,7 +49,7 @@ const parseDeprecatedConfig = (config) => {
     DB_DATABASE: 'database.database',
     JWT_SECRET: 'server.jwt_secret',
     SALT_ROUNDS: 'server.salt_rounds',
-    REGISTRATION_LOCKED: 'server.registration_locked',
+    REGISTRATION_LOCKED: 'service.invite_code',
     DEBUG: 'debug',
   };
 

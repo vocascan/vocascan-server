@@ -3,6 +3,17 @@
 This changelog goes through all the changes that have been made in each release on the
 [vocascan-server](https://github.com/vocascan/vocascan-server).
 
+## [v1.3.0](https://github.com/vocascan/vocascan-server/releases/tag/v1.3.0) - 2022.06.13
+
+In this version of the vocascan-server, we added the function to prevent unverified users from logging in. You can choose between different modes to adjust the security level of your server directly to your intentions.
+
+- Features
+  - Vocabulary-Search in group route (#85)
+  - Email verification (#78)
+- Refactor
+  - Email verification adjustment (#86)
+  - Improved run programmatically (#84)
+
 ## [v1.2.1](https://github.com/vocascan/vocascan-server/releases/tag/v1.2.1) - 2022.01.29
 
 In this release of vocascan-server we have added new security features to force secure passwords to the users.

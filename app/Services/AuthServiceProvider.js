@@ -1,13 +1,15 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
-const { deleteKeysFromObject, hashEmail } = require('../utils');
+const { deleteKeysFromObject, hashEmail, generateJWT } = require('../utils');
 const { User, Role } = require('../../database');
 const ApiError = require('../utils/ApiError.js');
 const { bytesLength } = require('../utils/index.js');
 const httpStatus = require('http-status');
 const { validateInviteCode } = require('../Services/InviteCodeProvider.js');
 const config = require('../config/config');
+const { tokenTypes } = require('../utils/constants');
+const { sendMail } = require('../config/mailer');
 
 // Validate inputs from /register and /login route
 function validateAuth(req) {
@@ -38,7 +40,7 @@ const checkIfAdmin = async (id) => {
 // Validate inputs from /register route
 async function validateRegister(req, res) {
   // if server is locked check for invite codes
-  if (config.server.registration_locked) {
+  if (config.service.invite_code) {
     if (!req.query.inviteCode) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Locked Server! Invite Code is missing');
     }
@@ -104,7 +106,7 @@ function validatePassword(password) {
 }
 
 // Create new user and store into database
-async function createUser({ username, email, password }) {
+async function createUser({ username, email, password, emailVerified, disabled }) {
   // Hash password
   const hash = await bcrypt.hash(password, config.server.salt_rounds);
   const emailHash = hashEmail(email);
@@ -121,13 +123,15 @@ async function createUser({ username, email, password }) {
     email: emailHash,
     password: hash,
     roleId: role.id,
+    emailVerified,
+    disabled,
   });
 
   // add flag if user is admin
   const isAdmin = await checkIfAdmin(user.id);
   const tempUser = { ...user.toJSON(), isAdmin };
 
-  return deleteKeysFromObject(['roleId', 'email', 'password', 'createdAt', 'updatedAt'], tempUser);
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'updatedAt'], tempUser);
 }
 
 // Log user in
@@ -136,13 +140,12 @@ async function loginUser({ email, password }) {
   const emailHash = hashEmail(email);
 
   const user = await User.findOne({
-    attributes: ['id', 'username', 'password'],
     where: {
       email: emailHash,
     },
   });
 
-  if (!user) {
+  if (!user || user.disabled) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
   }
 
@@ -156,7 +159,7 @@ async function loginUser({ email, password }) {
   const isAdmin = await checkIfAdmin(user.id);
   const tempUser = { ...user.toJSON(), isAdmin };
 
-  return deleteKeysFromObject(['roleId', 'password', 'createdAt', 'updatedAt'], tempUser);
+  return deleteKeysFromObject(['roleId', 'email', 'password', 'updatedAt'], tempUser);
 }
 
 async function destroyUser(userId) {
@@ -212,6 +215,51 @@ async function changePassword(id, oldPassword, newPassword) {
   return true;
 }
 
+const sendAccountVerificationEmail = async (user) => {
+  const token = generateJWT(
+    {
+      id: user.id,
+      type: tokenTypes.VERIFY_EMAIL,
+    },
+    config.server.jwt_secret,
+    { expiresIn: config.service.email_confirm_live_time }
+  );
+
+  const text = `Hello ${user.username},
+you have recently registered an account on ${config.server.base_url}. 
+Please verify your Email address by clicking on the link below.
+${config.server.base_url}/p/verifyEmail?token=${token}`;
+
+  await sendMail({
+    to: `"${user.username}" <${user.email}>`,
+    subject: 'Account Verification',
+    template: 'accountVerification',
+    text,
+    ctx: {
+      user,
+      token,
+    },
+  });
+};
+
+const verifyUser = async ({ id }) => {
+  const user = await User.findOne({
+    where: {
+      id,
+    },
+  });
+
+  if (user.emailVerified) {
+    throw new ApiError(httpStatus.GONE, 'User is already verified');
+  }
+
+  user.emailVerified = true;
+
+  await user.save();
+
+  return user;
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -222,4 +270,6 @@ module.exports = {
   changePassword,
   checkPasswordValid,
   checkIfAdmin,
+  sendAccountVerificationEmail,
+  verifyUser,
 };
