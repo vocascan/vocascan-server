@@ -24,13 +24,15 @@ const sendGroups = catchAsync(async (req, res) => {
 
   // decide if we have to fetch stats
   const includeStats = (req.query.stats || false) === 'true';
+  const onlyStaged = (req.query.staged || false) === 'true';
 
   // get groups
-  const groups = await getGroups(userId, languagePackageId);
+  const groups = await getGroups(userId, languagePackageId, onlyStaged);
 
   const formatted = await Promise.all(
     groups.map(async (group) => ({
-      ...group.toJSON(),
+      // if onlyStaged return just group, as response has already been prepared
+      ...(onlyStaged ? group : { ...group.toJSON() }),
 
       ...(includeStats
         ? {

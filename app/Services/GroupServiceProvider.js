@@ -1,4 +1,4 @@
-const { LanguagePackage, Group } = require('../../database');
+const { LanguagePackage, Group, VocabularyCard, Drawer } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
@@ -17,7 +17,7 @@ async function createGroup({ name, description, active }, userId, languagePackag
 }
 
 // get groups
-async function getGroups(userId, languagePackageId) {
+async function getGroups(userId, languagePackageId, onlyStaged) {
   const languagePackage = await LanguagePackage.count({
     where: {
       id: languagePackageId,
@@ -29,15 +29,41 @@ async function getGroups(userId, languagePackageId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'no groups found, because the language package does not exist');
   }
 
+  // if only groups with staged vocabs should be returned, include vocabs with drawer stages to validate
   const groups = await Group.findAll({
     attributes: ['id', 'languagePackageId', 'name', 'description', 'active'],
-    where: {
-      userId,
-      languagePackageId,
-    },
+    include: onlyStaged
+      ? [
+          {
+            model: VocabularyCard,
+            attributes: [],
+            include: [
+              {
+                model: Drawer,
+                attributes: ['stage'],
+              },
+            ],
+          },
+        ]
+      : null,
+    ...(onlyStaged
+      ? {
+          where: {
+            userId,
+            languagePackageId,
+            '$VocabularyCards.Drawer.stage$': 0,
+          },
+        }
+      : {
+          where: {
+            userId,
+            languagePackageId,
+          },
+        }),
   });
 
-  return groups;
+  // if onlyStaged, remove VocabularyCards from response
+  return onlyStaged ? groups.map((group) => deleteKeysFromObject(['VocabularyCards'], group.dataValues)) : groups;
 }
 
 async function destroyGroup(userId, groupId) {
