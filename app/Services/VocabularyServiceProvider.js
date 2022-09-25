@@ -74,7 +74,7 @@ async function createTranslations(translations, userId, languagePackageId, vocab
   return false;
 }
 
-async function getGroupVocabulary(userId, groupId, search) {
+async function getGroupVocabulary(userId, groupId, search, onlyStaged) {
   const group = await Group.count({
     where: {
       id: groupId,
@@ -92,11 +92,19 @@ async function getGroupVocabulary(userId, groupId, search) {
         model: Translation,
         attributes: ['name'],
       },
+      {
+        model: Drawer,
+        attributes: ['stage'],
+      },
     ],
     attributes: ['id', 'name', 'active', 'description'],
     where: {
       [Op.and]: [
-        { userId, groupId },
+        {
+          userId,
+          groupId,
+          ...(onlyStaged ? { '$Drawer.stage$': 0 } : null),
+        },
         search && {
           [Op.or]: [
             sequelize.where(sequelize.fn('lower', sequelize.col('VocabularyCard.name')), {
