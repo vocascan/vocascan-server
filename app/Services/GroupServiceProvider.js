@@ -46,20 +46,12 @@ async function getGroups(userId, languagePackageId, onlyStaged) {
           },
         ]
       : null,
-    ...(onlyStaged
-      ? {
-          where: {
-            userId,
-            languagePackageId,
-            '$VocabularyCards.Drawer.stage$': 0,
-          },
-        }
-      : {
-          where: {
-            userId,
-            languagePackageId,
-          },
-        }),
+
+    where: {
+      userId,
+      languagePackageId,
+      ...(onlyStaged ? { '$VocabularyCards.Drawer.stage$': 0 } : null),
+    },
   });
 
   // if onlyStaged, remove VocabularyCards from response
