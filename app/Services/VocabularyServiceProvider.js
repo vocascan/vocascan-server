@@ -122,6 +122,49 @@ async function getGroupVocabulary(userId, groupId, search, onlyStaged) {
   return vocabulary;
 }
 
+// this function is the same as getGroupVocabulary, but for multiple group ids and without search functionality
+// Because we don't use TypeScript watch out which one you use
+// TODO: Maybe I will add those two functions together one time
+async function getGroupsVocabulary(userId, groupIds, onlyStaged) {
+  groupIds.map(async (groupId) => {
+    const group = await Group.count({
+      where: {
+        id: groupId,
+        userId,
+      },
+    });
+
+    if (group === 0) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'no vocabulary cards found, because the group does not exist');
+    }
+  });
+
+  const vocabulary = await VocabularyCard.findAll({
+    include: [
+      {
+        model: Translation,
+        attributes: ['name'],
+      },
+      {
+        model: Drawer,
+        attributes: ['stage'],
+      },
+    ],
+    attributes: ['id', 'name', 'active', 'description'],
+    where: {
+      userId,
+      ...(onlyStaged ? { '$Drawer.stage$': 0 } : null),
+      [Op.or]: [
+        groupIds.map((groupId) => {
+          return { groupId };
+        }),
+      ],
+    },
+  });
+
+  return vocabulary;
+}
+
 async function destroyVocabularyCard(userId, vocabularyCardId) {
   const counter = await VocabularyCard.destroy({
     where: {
@@ -188,5 +231,6 @@ module.exports = {
   createTranslations,
   destroyVocabularyCard,
   getGroupVocabulary,
+  getGroupsVocabulary,
   updateVocabulary,
 };

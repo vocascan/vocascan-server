@@ -81,7 +81,7 @@ async function getQueryVocabulary(languagePackageId, userId, limit) {
 }
 
 // return the unactivated vocabulary
-async function getUnactivatedVocabulary(languagePackageId, userId) {
+async function getUnactivatedVocabulary(languagePackageId, userId, groupIds) {
   // Get drawers id
   const drawer = await Drawer.findOne({
     attributes: ['id'],
@@ -120,6 +120,15 @@ async function getUnactivatedVocabulary(languagePackageId, userId) {
       drawerId: drawer.id,
       '$Group.active$': true,
       active: true,
+      ...(groupIds
+        ? {
+            [Op.or]: [
+              groupIds.map((groupId) => {
+                return { '$Group.id$': groupId };
+              }),
+            ],
+          }
+        : null),
     },
   });
 
