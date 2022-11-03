@@ -122,11 +122,9 @@ async function getUnactivatedVocabulary(languagePackageId, userId, groupIds) {
       active: true,
       ...(groupIds
         ? {
-            [Op.or]: [
-              groupIds.map((groupId) => {
-                return { '$Group.id$': groupId };
-              }),
-            ],
+            groupId: {
+              [Op.or]: [groupIds],
+            },
           }
         : null),
     },

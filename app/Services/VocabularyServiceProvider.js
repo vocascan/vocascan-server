@@ -154,11 +154,9 @@ async function getGroupsVocabulary(userId, groupIds, onlyStaged) {
     where: {
       userId,
       ...(onlyStaged ? { '$Drawer.stage$': 0 } : null),
-      [Op.or]: [
-        groupIds.map((groupId) => {
-          return { groupId };
-        }),
-      ],
+      groupId: {
+        [Op.or]: [groupIds],
+      },
     },
   });
 
