@@ -154,11 +154,7 @@ async function getGroupsVocabulary(userId, groupIds, onlyStaged, onlyActivated) 
     where: {
       userId,
       ...(onlyStaged ? { '$Drawer.stage$': 0 } : null),
-      ...(onlyActivated
-        ? sequelize.where('$Drawer.stage$', {
-            [Op.gt]: 0,
-          })
-        : null),
+      ...(onlyActivated ? { '$Drawer.stage$': !0 } : null),
       groupId: {
         [Op.or]: [groupIds],
       },

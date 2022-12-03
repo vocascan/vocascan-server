@@ -29,8 +29,6 @@ async function getGroups(userId, languagePackageId, onlyStaged, onlyActivated) {
     throw new ApiError(httpStatus.NOT_FOUND, 'no groups found, because the language package does not exist');
   }
 
-  console.log('!!!! searching groups !!!!!');
-
   // if only groups with staged vocabs should be returned, include vocabs with drawer stages to validate
   const groups = await Group.findAll({
     attributes: ['id', 'languagePackageId', 'name', 'description', 'active'],
@@ -57,8 +55,6 @@ async function getGroups(userId, languagePackageId, onlyStaged, onlyActivated) {
       ...(onlyActivated && { '$VocabularyCards.active$': true } ? { '$VocabularyCards.Drawer.stage$': !0 } : null),
     },
   });
-
-  console.log('!!!! Groups found !!!!!');
 
   // if onlyStaged or onlyActivated, remove VocabularyCards from response
   return onlyStaged || onlyActivated

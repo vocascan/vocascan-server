@@ -39,9 +39,11 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
       const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId, groupId);
       res.send(vocabulary);
     }
-  } else if (onlyActivated) {
+  }
+
+  if (onlyActivated) {
     if (groupId) {
-      // custom learning
+      // custom learning with only activated vocabs
       const vocabulary = await getGroupsVocabulary(userId, groupId, false, true);
       res.send(vocabulary);
     } else {
@@ -49,7 +51,15 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
       const vocabulary = await getGroupsVocabulary(userId, groupId, false, false);
       res.send(vocabulary);
     }
-  } else {
+  }
+
+  if (!onlyStaged && !onlyActivated && groupId) {
+    // custom learning with activated and staged vocabs
+    const vocabulary = await getGroupsVocabulary(userId, groupId, false, false);
+    res.send(vocabulary);
+  }
+
+  if (!onlyStaged && !onlyActivated && !groupId) {
     // if no groups are set, just return vocabs depending on the learning algorithm
     const vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
     res.send(vocabulary);

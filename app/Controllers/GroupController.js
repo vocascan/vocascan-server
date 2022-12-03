@@ -35,7 +35,6 @@ const sendGroups = catchAsync(async (req, res) => {
 
   // get groups
   const groups = await getGroups(userId, languagePackageId, onlyStaged, onlyActivated);
-  console.log('not formatted');
   const formatted = await Promise.all(
     groups.map(async (group) => ({
       // if onlyStaged return just group, as response has already been prepared
@@ -51,8 +50,6 @@ const sendGroups = catchAsync(async (req, res) => {
         : {}),
     }))
   );
-
-  console.log('formatted');
   res.send(formatted);
 });
 
