@@ -1,5 +1,7 @@
 const { createGroup, getGroups, destroyGroup, updateGroup } = require('../Services/GroupServiceProvider.js');
 const { getStats } = require('../Services/StatsServiceProvider.js');
+const ApiError = require('../utils/ApiError.js');
+const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 
 const addGroup = catchAsync(async (req, res) => {
@@ -24,16 +26,20 @@ const sendGroups = catchAsync(async (req, res) => {
 
   // decide if we have to fetch stats
   const includeStats = (req.query.stats || false) === 'true';
-  const onlyStaged = (req.query.staged || false) === 'true';
+  const onlyStaged = (req.query.onlyStaged || false) === 'true';
+  const onlyActivated = (req.query.onlyActivated || false) === 'true';
+
+  if (onlyStaged && onlyActivated) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'you can not select both onlyStaged and onlyActivated');
+  }
 
   // get groups
-  const groups = await getGroups(userId, languagePackageId, onlyStaged);
-
+  const groups = await getGroups(userId, languagePackageId, onlyStaged, onlyActivated);
+  console.log('not formatted');
   const formatted = await Promise.all(
     groups.map(async (group) => ({
       // if onlyStaged return just group, as response has already been prepared
-      ...(onlyStaged ? group : { ...group.toJSON() }),
-
+      ...(onlyStaged || onlyActivated ? group : { ...group.toJSON() }),
       ...(includeStats
         ? {
             stats: await getStats({
@@ -46,6 +52,7 @@ const sendGroups = catchAsync(async (req, res) => {
     }))
   );
 
+  console.log('formatted');
   res.send(formatted);
 });
 

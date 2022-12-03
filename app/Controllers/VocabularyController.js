@@ -50,7 +50,7 @@ const sendGroupVocabulary = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { groupId } = req.params;
   const { search } = req.query;
-  const onlyStaged = (req.query.staged || false) === 'true';
+  const onlyStaged = (req.query.onlyStaged || false) === 'true';
 
   const vocabulary = await getGroupVocabulary(userId, groupId, search, onlyStaged);
 

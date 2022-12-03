@@ -1,5 +1,5 @@
 const { ForeignKeyConstraintError } = require('sequelize');
-const { LanguagePackage, Group } = require('../../database');
+const { LanguagePackage, Group, VocabularyCard, Drawer } = require('../../database');
 const { deleteKeysFromObject } = require('../utils');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
@@ -34,14 +34,43 @@ async function createLanguagePackage(
 }
 
 // get language package
-async function getLanguagePackages(userId, groups) {
+async function getLanguagePackages(userId, groups, onlyActivated) {
   // Get user with email from database
   const languagePackages = await LanguagePackage.findAll({
     // if groups is true, return groups to every language package
-    include: groups ? [{ model: Group, attributes: ['id', 'name', 'description', 'active'] }] : [],
+    /* eslint-disable no-nested-ternary */
+    include: groups
+      ? [
+          {
+            model: Group,
+            attributes: ['id', 'name', 'description', 'active'],
+          },
+        ]
+      : onlyActivated
+      ? [
+          {
+            model: Group,
+            attributes: ['id', 'name', 'description', 'active'],
+            include: [
+              {
+                model: VocabularyCard,
+                attributes: ['id'],
+                include: [
+                  {
+                    model: Drawer,
+                    attributes: ['stage'],
+                  },
+                ],
+              },
+            ],
+          },
+        ]
+      : [],
+    /* eslint-enable no-nested-ternary */
     attributes: ['id', 'name', 'foreignWordLanguage', 'translatedWordLanguage', 'vocabsPerDay', 'rightWords'],
     where: {
       userId,
+      ...(onlyActivated && { '$Groups.active$': true } ? { '$Groups.VocabularyCards.Drawer.stage$': !0 } : null),
     },
   });
 

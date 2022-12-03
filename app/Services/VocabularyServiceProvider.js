@@ -125,7 +125,7 @@ async function getGroupVocabulary(userId, groupId, search, onlyStaged) {
 // this function is the same as getGroupVocabulary, but for multiple group ids and without search functionality
 // Because we don't use TypeScript watch out which one you use
 // TODO: Maybe I will add those two functions together one time
-async function getGroupsVocabulary(userId, groupIds, onlyStaged) {
+async function getGroupsVocabulary(userId, groupIds, onlyStaged, onlyActivated) {
   groupIds.map(async (groupId) => {
     const group = await Group.count({
       where: {
@@ -154,6 +154,11 @@ async function getGroupsVocabulary(userId, groupIds, onlyStaged) {
     where: {
       userId,
       ...(onlyStaged ? { '$Drawer.stage$': 0 } : null),
+      ...(onlyActivated
+        ? sequelize.where('$Drawer.stage$', {
+            [Op.gt]: 0,
+          })
+        : null),
       groupId: {
         [Op.or]: [groupIds],
       },

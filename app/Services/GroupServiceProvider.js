@@ -17,7 +17,7 @@ async function createGroup({ name, description, active }, userId, languagePackag
 }
 
 // get groups
-async function getGroups(userId, languagePackageId, onlyStaged) {
+async function getGroups(userId, languagePackageId, onlyStaged, onlyActivated) {
   const languagePackage = await LanguagePackage.count({
     where: {
       id: languagePackageId,
@@ -29,33 +29,41 @@ async function getGroups(userId, languagePackageId, onlyStaged) {
     throw new ApiError(httpStatus.NOT_FOUND, 'no groups found, because the language package does not exist');
   }
 
+  console.log('!!!! searching groups !!!!!');
+
   // if only groups with staged vocabs should be returned, include vocabs with drawer stages to validate
   const groups = await Group.findAll({
     attributes: ['id', 'languagePackageId', 'name', 'description', 'active'],
-    include: onlyStaged
-      ? [
-          {
-            model: VocabularyCard,
-            attributes: [],
-            include: [
-              {
-                model: Drawer,
-                attributes: ['stage'],
-              },
-            ],
-          },
-        ]
-      : null,
+    include:
+      onlyStaged || onlyActivated
+        ? [
+            {
+              model: VocabularyCard,
+              attributes: ['id'],
+              include: [
+                {
+                  model: Drawer,
+                  attributes: ['stage'],
+                },
+              ],
+            },
+          ]
+        : null,
 
     where: {
       userId,
       languagePackageId,
-      ...(onlyStaged ? { '$VocabularyCards.Drawer.stage$': 0 } : null),
+      ...(onlyStaged && { '$VocabularyCards.active$': true } ? { '$VocabularyCards.Drawer.stage$': 0 } : null),
+      ...(onlyActivated && { '$VocabularyCards.active$': true } ? { '$VocabularyCards.Drawer.stage$': !0 } : null),
     },
   });
 
-  // if onlyStaged, remove VocabularyCards from response
-  return onlyStaged ? groups.map((group) => deleteKeysFromObject(['VocabularyCards'], group.dataValues)) : groups;
+  console.log('!!!! Groups found !!!!!');
+
+  // if onlyStaged or onlyActivated, remove VocabularyCards from response
+  return onlyStaged || onlyActivated
+    ? groups.map((group) => deleteKeysFromObject(['VocabularyCards'], group.dataValues))
+    : groups;
 }
 
 async function destroyGroup(userId, groupId) {

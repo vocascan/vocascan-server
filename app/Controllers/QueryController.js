@@ -16,7 +16,8 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { languagePackageId } = req.params;
   const { limit } = { limit: '100', ...req.query };
-  const isStaged = (req.query.staged || false) === 'true';
+  const onlyStaged = (req.query.onlyStaged || false) === 'true';
+  const onlyActivated = (req.query.onlyActivated || false) === 'true';
   let { groupId } = { groupId: null, ...req.query };
 
   // convert groups to Array, if only one group was sent. Express is storing it a string instead of an Array
@@ -28,7 +29,7 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
 
   // if groups are set return vocabs of group independ from their current stage
   // (used for vocab acitvation and custom learning)
-  if (isStaged) {
+  if (onlyStaged) {
     if (groupId) {
       // specific vocab activation
       const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId, groupId);
@@ -38,10 +39,16 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
       const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId, groupId);
       res.send(vocabulary);
     }
-  } else if (groupId) {
-    // custom learning
-    const vocabulary = await getGroupsVocabulary(userId, groupId, false);
-    res.send(vocabulary);
+  } else if (onlyActivated) {
+    if (groupId) {
+      // custom learning
+      const vocabulary = await getGroupsVocabulary(userId, groupId, false, true);
+      res.send(vocabulary);
+    } else {
+      // custom learning
+      const vocabulary = await getGroupsVocabulary(userId, groupId, false, false);
+      res.send(vocabulary);
+    }
   } else {
     // if no groups are set, just return vocabs depending on the learning algorithm
     const vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
