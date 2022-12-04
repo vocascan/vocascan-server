@@ -15,6 +15,7 @@ const sendInfo = catchAsync(async (_req, res) => {
       level: config.service.email_confirm_level,
       time: config.service.email_confirm_time,
     },
+    max_file_upload: config.server.max_file_upload,
   });
 });
 

@@ -1,6 +1,7 @@
 const http = require('http');
 const path = require('path');
 const express = require('express');
+const bodyParser = require('body-parser');
 const chalk = require('chalk');
 const httpStatus = require('http-status');
 const eta = require('eta');
@@ -45,6 +46,10 @@ const createServer = async (extraConfig) => {
     res.locals.baseUrl = config.server.base_url;
     next();
   });
+
+  // set body parser limit
+  server.app.use(bodyParser.json({ limit: config.server.max_file_upload }));
+  server.app.use(bodyParser.urlencoded({ extended: true, limit: config.server.max_file_upload }));
 
   // logging middleware
   server.app.use(LoggingMiddleware);
