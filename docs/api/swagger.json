@@ -223,6 +223,9 @@
           },
           {
             "$ref": "#/components/parameters/stats"
+          },
+          {
+            "$ref": "#/components/parameters/onlyActivated"
           }
         ],
         "responses": {
@@ -297,6 +300,12 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/languagePackageId"
+          },
+          {
+            "$ref": "#/components/parameters/onlyActivated"
+          },
+          {
+            "$ref": "#/components/parameters/onlyStaged"
           }
         ],
         "responses": {
@@ -361,6 +370,9 @@
           },
           {
             "$ref": "#/components/parameters/search"
+          },
+          {
+            "$ref": "#/components/parameters/onlyStaged"
           }
         ],
         "responses": {
@@ -392,7 +404,13 @@
             "$ref": "#/components/parameters/limit"
           },
           {
-            "$ref": "#/components/parameters/staged"
+            "$ref": "#/components/parameters/onlyStaged"
+          },
+          {
+            "$ref": "#/components/parameters/onlyActivated"
+          },
+          {
+            "$ref": "#/components/parameters/query/groupId"
           }
         ],
         "responses": {
@@ -1254,15 +1272,34 @@
           "default": false
         }
       },
-      "staged": {
+      "onlyActivated": {
         "in": "query",
-        "name": "staged",
-        "description": "If true, all unactivated vocabs will be returned",
+        "name": "onlyActivated",
+        "description": "Only return packages/groups/vocabs if it has at least one activated vocab card",
         "schema": {
           "type": "boolean",
           "default": false
         }
       },
+      "onlyStaged": {
+        "in": "query",
+        "name": "onlyStaged",
+        "description": "Only return packages/groups/vocabs if it hast at least one unactivated vocab card",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "query": {
+        "groupId": {
+        "in": "query",
+        "name": "groupId",
+        "description": "if this parameters will be added to the query, it will return all vocabs from this specific group. Can be combined with only activated and onlyStaged. you can add multiple groupIds with: ?groupId={groupId1}&groupId={groupId2}",
+        "schema": {
+          "type": "string"
+        }
+      }
+      },      
       "answer": {
         "in": "query",
         "name": "answer",

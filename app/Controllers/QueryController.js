@@ -59,6 +59,7 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
     res.send(vocabulary);
   }
 
+  // regular daily query
   if (!onlyStaged && !onlyActivated && !groupId) {
     // if no groups are set, just return vocabs depending on the learning algorithm
     const vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
