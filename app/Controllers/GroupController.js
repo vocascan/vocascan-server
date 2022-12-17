@@ -37,7 +37,7 @@ const sendGroups = catchAsync(async (req, res) => {
   const groups = await getGroups(userId, languagePackageId, onlyStaged, onlyActivated);
   const formatted = await Promise.all(
     groups.map(async (group) => ({
-      // if onlyStaged return just group, as response has already been prepared
+      // if onlyStaged or onlyActivated return just group, as response has already been prepared
       ...(onlyStaged || onlyActivated ? group : { ...group.toJSON() }),
       ...(includeStats
         ? {
