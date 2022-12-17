@@ -19,7 +19,7 @@
     "type": "git",
     "url": "git://github.com/vocascan/vocascan-server.git"
   },
-  "author": "vocascan <vocascan@gmail.com>",
+  "author": "vocascan <support@vocascan.com>",
   "license": "MIT",
   "devDependencies": {
     "eslint": "^7.23.0",
