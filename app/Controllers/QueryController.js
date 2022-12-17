@@ -27,9 +27,9 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
     }
   }
 
-  // if groups are set return vocabs of group independ from their current stage
-  // (used for vocab acitvation and custom learning)
+  // only staged vocabs
   if (onlyStaged) {
+    // if group ids are set, only return staged vocabs from that groups
     if (groupId) {
       // specific vocab activation
       const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId, groupId);
@@ -41,26 +41,20 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
     }
   }
 
-  if (onlyActivated) {
-    if (groupId) {
-      // custom learning with only activated vocabs
-      const vocabulary = await getGroupsVocabulary(userId, groupId, false, true);
-      res.send(vocabulary);
-    } else {
-      // custom learning
-      const vocabulary = await getGroupsVocabulary(userId, groupId, false, false);
-      res.send(vocabulary);
-    }
+  // custom learning with only activated vocabs
+  if (!onlyStaged && onlyActivated && groupId) {
+    const vocabulary = await getGroupsVocabulary(userId, groupId, false, true, true);
+    res.send(vocabulary);
   }
 
+  // custom learning with activated and staged vocabs
   if (!onlyStaged && !onlyActivated && groupId) {
-    // custom learning with activated and staged vocabs
-    const vocabulary = await getGroupsVocabulary(userId, groupId, false, false);
+    const vocabulary = await getGroupsVocabulary(userId, groupId, false, false, true);
     res.send(vocabulary);
   }
 
   // regular daily query
-  if (!onlyStaged && !onlyActivated && !groupId) {
+  if (!onlyStaged && onlyActivated && !groupId) {
     // if no groups are set, just return vocabs depending on the learning algorithm
     const vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
     res.send(vocabulary);
