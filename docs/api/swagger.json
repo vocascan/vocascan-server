@@ -1082,6 +1082,9 @@
           "commitRef": {
             "type": "string"
           },
+          "max_file_upload": {
+            "type": "string"
+          },
           "email_confirm": {
             "type": "object",
             "properties": {

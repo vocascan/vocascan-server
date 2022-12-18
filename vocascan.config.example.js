@@ -12,6 +12,7 @@ module.exports = {
     jwt_secret: '',
     salt_rounds: 10,
     cors: ['https://web.example1.com', 'https://web.example2.com'],
+    max_file_upload: '10mb',
   },
 
   database: {

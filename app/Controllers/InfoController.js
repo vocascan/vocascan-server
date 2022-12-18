@@ -10,6 +10,7 @@ const sendInfo = catchAsync(async (_req, res) => {
     version: getVersion(),
     locked: config.service.invite_code,
     commitRef: gitDescribe === undefined ? (gitDescribe = await getGitDescribe()) : gitDescribe,
+    max_file_upload: config.server.max_file_upload,
     email_confirm: {
       enabled: config.service.email_confirm,
       level: config.service.email_confirm_level,

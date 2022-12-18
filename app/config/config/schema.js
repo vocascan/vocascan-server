@@ -55,6 +55,7 @@ const configSchema = Joi.object({
       .forbidden()
       .messages({ 'any.unknown': 'The `sever.registration_locked` option is moved to `service.invite_code`' }),
     cors: Joi.alternatives().try(Joi.boolean(), Joi.keyArray()).default(false),
+    max_file_upload: Joi.string().default('1mb'),
   }).required(),
 
   database: Joi.object({
