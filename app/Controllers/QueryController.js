@@ -22,7 +22,7 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
 
   // convert groups to Array, if only one group was sent. Express is storing it a string instead of an Array
   if (!Array.isArray(groupId)) {
-    if (groupId != null) {
+    if (groupId !== null) {
       groupId = [groupId];
     }
   }
