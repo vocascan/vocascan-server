@@ -2,8 +2,7 @@ const { VocabularyCard, Translation, Drawer, Group } = require('../../database')
 const { deleteKeysFromObject } = require('../utils');
 const ApiError = require('../utils/ApiError.js');
 const httpStatus = require('http-status');
-const sequelize = require('sequelize');
-const { Op } = sequelize;
+const { Sequelize, Op } = require('sequelize');
 
 // create language package
 async function createVocabularyCard({
@@ -74,7 +73,7 @@ async function createTranslations(translations, userId, languagePackageId, vocab
   return false;
 }
 
-async function getGroupVocabulary(userId, groupId, search) {
+async function getGroupVocabulary(userId, groupId, search, onlyStaged) {
   const group = await Group.count({
     where: {
       id: groupId,
@@ -92,22 +91,73 @@ async function getGroupVocabulary(userId, groupId, search) {
         model: Translation,
         attributes: ['name'],
       },
+      {
+        model: Drawer,
+        attributes: ['stage'],
+      },
     ],
     attributes: ['id', 'name', 'active', 'description'],
     where: {
       [Op.and]: [
-        { userId, groupId },
+        {
+          userId,
+          groupId,
+          ...(onlyStaged ? { '$Drawer.stage$': 0 } : null),
+        },
         search && {
           [Op.or]: [
-            sequelize.where(sequelize.fn('lower', sequelize.col('VocabularyCard.name')), {
+            Sequelize.where(Sequelize.fn('lower', Sequelize.col('VocabularyCard.name')), {
               [Op.like]: `%${search.toLowerCase()}%`,
             }),
-            sequelize.where(sequelize.fn('lower', sequelize.col('Translations.name')), {
+            Sequelize.where(Sequelize.fn('lower', Sequelize.col('Translations.name')), {
               [Op.like]: `%${search.toLowerCase()}%`,
             }),
           ],
         },
       ],
+    },
+  });
+
+  return vocabulary;
+}
+
+// this function is the same as getGroupVocabulary, but for multiple group ids and without search functionality
+// Because we don't use TypeScript watch out which one you use
+// TODO: Maybe I will add those two functions together one time
+async function getGroupsVocabulary(userId, groupIds, onlyStaged, onlyActivated, random) {
+  groupIds.map(async (groupId) => {
+    const group = await Group.count({
+      where: {
+        id: groupId,
+        userId,
+      },
+    });
+
+    if (group === 0) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'no vocabulary cards found, because the group does not exist');
+    }
+  });
+
+  const vocabulary = await VocabularyCard.findAll({
+    include: [
+      {
+        model: Translation,
+        attributes: ['name'],
+      },
+      {
+        model: Drawer,
+        attributes: ['stage'],
+      },
+    ],
+    order: random ? Sequelize.literal('random()') : null,
+    attributes: ['id', 'name', 'active', 'description'],
+    where: {
+      userId,
+      ...(onlyStaged ? { '$Drawer.stage$': 0 } : null),
+      ...(onlyActivated ? { '$Drawer.stage$': !0 } : null),
+      groupId: {
+        [Op.or]: [groupIds],
+      },
     },
   });
 
@@ -180,5 +230,6 @@ module.exports = {
   createTranslations,
   destroyVocabularyCard,
   getGroupVocabulary,
+  getGroupsVocabulary,
   updateVocabulary,
 };

@@ -8,6 +8,7 @@ const {
   getNumberOfUnresolvedVocabulary,
   getNumberOfLearnedTodayVocabulary,
 } = require('../Services/StatsServiceProvider.js');
+const { getGroupsVocabulary } = require('../Services/VocabularyServiceProvider.js');
 const catchAsync = require('../utils/catchAsync');
 
 const sendQueryVocabulary = catchAsync(async (req, res) => {
@@ -15,15 +16,46 @@ const sendQueryVocabulary = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { languagePackageId } = req.params;
   const { limit } = { limit: '100', ...req.query };
-  const { staged } = { staged: false, ...req.query };
-  // convert to bool
-  const isStaged = staged === 'true';
+  const onlyStaged = (req.query.onlyStaged || false) === 'true';
+  const onlyActivated = (req.query.onlyActivated || false) === 'true';
+  let { groupId } = { groupId: null, ...req.query };
 
-  // if staged = true return the staged vocabulary
-  if (isStaged) {
-    const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId);
+  // convert groups to Array, if only one group was sent. Express is storing it a string instead of an Array
+  if (!Array.isArray(groupId)) {
+    if (groupId !== null) {
+      groupId = [groupId];
+    }
+  }
+
+  // only staged vocabs
+  if (onlyStaged) {
+    // if group ids are set, only return staged vocabs from that groups
+    if (groupId) {
+      // specific vocab activation
+      const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId, groupId);
+      res.send(vocabulary);
+    } else {
+      // return all unactivated vocabs
+      const vocabulary = await getUnactivatedVocabulary(languagePackageId, userId, groupId);
+      res.send(vocabulary);
+    }
+  }
+
+  // custom learning with only activated vocabs
+  if (!onlyStaged && onlyActivated && groupId) {
+    const vocabulary = await getGroupsVocabulary(userId, groupId, false, true, true);
     res.send(vocabulary);
-  } else {
+  }
+
+  // custom learning with activated and staged vocabs
+  if (!onlyStaged && !onlyActivated && groupId) {
+    const vocabulary = await getGroupsVocabulary(userId, groupId, false, false, true);
+    res.send(vocabulary);
+  }
+
+  // regular daily query
+  if (!onlyStaged && onlyActivated && !groupId) {
+    // if no groups are set, just return vocabs depending on the learning algorithm
     const vocabulary = await getQueryVocabulary(languagePackageId, userId, limit);
     res.send(vocabulary);
   }
